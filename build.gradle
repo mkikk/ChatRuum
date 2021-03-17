@@ -1,4 +1,6 @@
 plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
     id 'java'
 }
 
@@ -9,9 +11,20 @@ repositories {
     mavenCentral()
 }
 
+sourceCompatibility = 11
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+application {
+    mainClassName = 'Test'
+}
+
+javafx {
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 test {
