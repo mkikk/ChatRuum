@@ -3,6 +3,7 @@ package networking;
 /**
  * @deprecated Currently not supported by event emitter implementation
  */
+@Deprecated
 @FunctionalInterface
 public interface RemovableEventHandler<S extends Session, T> {
     /**
