@@ -1,19 +1,32 @@
 plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
     id 'java'
 }
 
-group 'org.example'
+group 'com.github.mkikk.chatruum'
 version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+sourceCompatibility = 11
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
     compile 'io.netty:netty-all:4.1.60.Final'
+}
+application {
+    mainClassName = 'Test'
+}
+
+javafx {
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 test {

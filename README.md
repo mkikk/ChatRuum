@@ -1,9 +1,7 @@
 # ChatRuum
 OOP group work.  
 
-___
-
-### Rollid:
+**Rollid:**  
 UI  - Kikkatalo  
 server - Sulg  
 kliendi serveri proto - Juhan Oskar  
@@ -31,15 +29,12 @@ Kanali sisu- viimased n sõnumit, aktiivsed kasutajad(nimi, arv), saada uut info
 
 ___
 
-### UI:
-Scene builder (gluon)  
+**UI** - Scene builder (gluon)  
 sisse logimise aken  
 main menu (kanaliga liitumine, üldsätted)  
 vestluse menu  
 
-___
-
-### Server:
+**Server**  
 kanalite loomine  
 saadetud sõnumid  
 kasutajate info  
