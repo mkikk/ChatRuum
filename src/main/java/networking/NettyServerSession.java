@@ -1,8 +1,8 @@
 package networking;
 
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import networking.data.User;
 import networking.events.ConnectionEvent;
 import networking.events.ConnectionEvent.State;
 

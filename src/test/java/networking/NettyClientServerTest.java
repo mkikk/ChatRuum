@@ -2,6 +2,7 @@ package networking;
 
 import networking.events.ConnectionEvent;
 import networking.events.ConnectionEvent.State;
+import networking.messages.PasswordLoginMessage;
 import networking.messages.TestMessage;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,10 @@ class NettyClientServerTest {
             server.on(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
             server.on(ConnectionEvent.class, (s, e) -> {
                 if (e.state == State.CONNECTED) {
-                    s.sendMessage(new TestMessage("server siin"));
+                    s.sendMessage(new TestMessage("server siin 1"));
+                    s.sendMessage(new TestMessage("server siin 2"));
+                    s.sendMessage(new TestMessage("server siin 3"));
+                    s.sendMessage(new TestMessage("server siin 4"));
                 }
             });
             server.on(TestMessage.class, (s, tm) -> {
@@ -45,13 +49,13 @@ class NettyClientServerTest {
                 }
             });
             client.on(TestMessage.class, (s, tm) -> {
-                assertEquals(tm.text, "server siin");
+                assertTrue(tm.text.startsWith("server siin"));
                 clientCheck.set(true);
             });
             clientThread = new Thread(client);
             clientThread.start();
 
-            Thread.sleep(1000);
+            Thread.sleep(5000);
         } finally {
             closeThread(clientThread);
             closeThread(serverThread);

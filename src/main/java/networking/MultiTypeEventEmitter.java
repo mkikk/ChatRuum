@@ -13,15 +13,24 @@ public class MultiTypeEventEmitter<S extends Session> {
         messageHandlers = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Add event handler.
+     * @return Added event handler, for convenience when using lambdas.
+     */
     @SuppressWarnings("unchecked")
-    protected  <T extends Event> void add(Class<T> type, EventHandler<S, T> handler) {
+    protected <T extends Event> EventHandler<S, T> add(Class<T> type, EventHandler<S, T> handler) {
         var handlers = (EventDispatcher<S, T>) messageHandlers.computeIfAbsent(type, t -> new EventDispatcher<S, T>());
         handlers.add(handler);
+        return handler;
     }
 
-    protected  <T extends Event> void remove(Class<T> type, EventHandler<S, T> handler) {
+    /**
+     * Remove event handler.
+     * @return True if handler was removed, false otherwise.
+     */
+    protected <T extends Event> boolean remove(Class<T> type, EventHandler<S, T> handler) {
         var handlers = messageHandlers.getOrDefault(type, null);
-        if (handler != null) handlers.remove(handler);
+        return handler != null && handlers.remove(handler);
     }
 
     @SuppressWarnings("unchecked")

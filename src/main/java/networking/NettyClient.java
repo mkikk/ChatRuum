@@ -26,8 +26,12 @@ public class NettyClient extends ChannelInitializer<SocketChannel> implements Ru
         this.port = port;
     }
 
-    protected <T extends Event> void on(Class<T> type, EventHandler<NettyClientSession, T> handler) {
-        eventEmitter.add(type, handler);
+    protected <T extends Event> EventHandler<NettyClientSession, T> on(Class<T> type, EventHandler<NettyClientSession, T> handler) {
+        return eventEmitter.add(type, handler);
+    }
+
+    protected <T extends Event> boolean remove(Class<T> type, EventHandler<NettyClientSession, T> handler) {
+        return eventEmitter.remove(type, handler);
     }
 
     @Override

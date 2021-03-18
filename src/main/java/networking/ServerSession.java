@@ -1,5 +1,7 @@
 package networking;
 
+import networking.data.User;
+
 public interface ServerSession extends Session {
     /**
      * Seostab sessiooni konkreetse kasutajaga. Seda meetodit peaks rakendama pärast seda kui sisselogimine on edukalt läbi viidud ja kliendi isik on kontrollitud.

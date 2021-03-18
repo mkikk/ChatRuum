@@ -10,5 +10,4 @@ public class PasswordLoginMessage implements Message {
         this.username = username;
         this.password = password;
     }
-
 }
