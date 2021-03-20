@@ -25,11 +25,11 @@ public class NettyServer extends ChannelInitializer<SocketChannel> implements Ru
         this.port = port;
     }
 
-    protected <T extends Event> EventHandler<NettyServerSession, T> on(Class<T> type, EventHandler<NettyServerSession, T> handler) {
+    public <T extends Event> EventHandler<NettyServerSession, T> on(Class<T> type, EventHandler<NettyServerSession, T> handler) {
         return eventEmitter.add(type, handler);
     }
 
-    protected <T extends Event> boolean remove(Class<T> type, EventHandler<NettyServerSession, T> handler) {
+    public <T extends Event> boolean remove(Class<T> type, EventHandler<NettyServerSession, T> handler) {
         return eventEmitter.remove(type, handler);
     }
 

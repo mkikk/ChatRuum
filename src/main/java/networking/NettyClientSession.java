@@ -21,6 +21,11 @@ public class NettyClientSession extends ChannelInboundHandlerAdapter implements 
     }
 
     @Override
+    public boolean isActive() {
+        return curCtx != null;
+    }
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) {
         curCtx = ctx;
         eventEmitter.call(this, new ConnectionEvent(ConnectionState.CONNECTED));

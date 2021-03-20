@@ -7,5 +7,7 @@ public interface Session {
      * Kui sessioon on suletud siis ei pruugi sõnumi saatmine toimuda.
      * @param message
      */
-    public void sendMessage(Message message);
+    void sendMessage(Message message);
+
+    boolean isActive();
 }

@@ -2,15 +2,18 @@ package networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import networking.data.User;
+import networking.events.ConnectionState;
+import server.Channel;
+import server.ServerSession;
+import server.User;
 import networking.events.ConnectionEvent;
-import networking.events.ConnectionEvent.State;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
 public class NettyServerSession extends ChannelInboundHandlerAdapter implements ServerSession {
     protected final MultiTypeEventEmitter<NettyServerSession> eventEmitter;
     protected User user;
+    protected Channel activeChannel;
     protected ChannelHandlerContext curCtx;
 
     public NettyServerSession(MultiTypeEventEmitter<NettyServerSession> eventEmitter) {
@@ -39,18 +42,24 @@ public class NettyServerSession extends ChannelInboundHandlerAdapter implements 
 
     @Override
     public void sendMessage(Message message) {
-        curCtx.writeAndFlush(message).addListener(FIRE_EXCEPTION_ON_FAILURE);
+        if (curCtx != null) curCtx.writeAndFlush(message).addListener(FIRE_EXCEPTION_ON_FAILURE);
+    }
+
+    @Override
+    public boolean isActive() {
+        return curCtx != null;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         curCtx = ctx;
-        eventEmitter.call(this, new ConnectionEvent(State.CONNECTED));
+        eventEmitter.call(this, new ConnectionEvent(ConnectionState.CONNECTED));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        eventEmitter.call(this, new ConnectionEvent(State.DISCONNECTED));
+        eventEmitter.call(this, new ConnectionEvent(ConnectionState.DISCONNECTED));
+        curCtx = null;
     }
 
     @Override
@@ -60,8 +69,10 @@ public class NettyServerSession extends ChannelInboundHandlerAdapter implements 
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        // TODO: Is this appropriate error handling?
         cause.printStackTrace();
         ctx.close();
-        eventEmitter.call(this, new ConnectionEvent(State.ERROR));
+        eventEmitter.call(this, new ConnectionEvent(ConnectionState.ERROR));
+        curCtx = null;
     }
 }

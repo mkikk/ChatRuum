@@ -26,7 +26,7 @@ class NettyClientServerTest {
             server.on(TestMessage.class, (s, tm) -> System.out.println("Server: " + tm.text));
             server.on(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
             server.on(ConnectionEvent.class, (s, e) -> {
-                if (e.state == State.CONNECTED) {
+                if (e.state == ConnectionState.CONNECTED) {
                     s.sendMessage(new TestMessage("server siin 1"));
                     s.sendMessage(new TestMessage("server siin 2"));
                     s.sendMessage(new TestMessage("server siin 3"));
@@ -44,7 +44,7 @@ class NettyClientServerTest {
             client.on(TestMessage.class, (s, tm) -> System.out.println("Client: " + tm.text));
             client.on(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
             client.on(ConnectionEvent.class, (s, e) -> {
-                if (e.state == State.CONNECTED) {
+                if (e.state == ConnectionState.CONNECTED) {
                     s.sendMessage(new TestMessage("klient siin"));
                 }
             });

@@ -6,16 +6,10 @@ public class ConnectionEvent implements Event {
     /**
      * Ühenduse seisund
      */
-    public final State state;
+    public final ConnectionState state;
 
-    public ConnectionEvent(State state) {
+    public ConnectionEvent(ConnectionState state) {
         this.state = state;
-    }
-
-    public enum State {
-        CONNECTED,
-        DISCONNECTED,
-        ERROR
     }
 }
 
