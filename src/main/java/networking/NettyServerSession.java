@@ -28,6 +28,16 @@ public class NettyServerSession extends ChannelInboundHandlerAdapter implements 
     }
 
     @Override
+    public void setActiveChannel(Channel activeChannel) {
+        this.activeChannel = activeChannel;
+    }
+
+    @Override
+    public Channel getActiveChannel() {
+        return activeChannel;
+    }
+
+    @Override
     public void sendMessage(Message message) {
         curCtx.writeAndFlush(message).addListener(FIRE_EXCEPTION_ON_FAILURE);
     }

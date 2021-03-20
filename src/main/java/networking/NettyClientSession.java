@@ -3,7 +3,7 @@ package networking;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import networking.events.ConnectionEvent;
-import networking.events.ConnectionEvent.State;
+import networking.events.ConnectionState;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
@@ -23,13 +23,13 @@ public class NettyClientSession extends ChannelInboundHandlerAdapter implements 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         curCtx = ctx;
-        eventEmitter.call(this, new ConnectionEvent(State.CONNECTED));
+        eventEmitter.call(this, new ConnectionEvent(ConnectionState.CONNECTED));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        curCtx = ctx;
-        eventEmitter.call(this, new ConnectionEvent(State.DISCONNECTED));
+        eventEmitter.call(this, new ConnectionEvent(ConnectionState.DISCONNECTED));
+        curCtx = null;
     }
 
     @Override
@@ -41,6 +41,7 @@ public class NettyClientSession extends ChannelInboundHandlerAdapter implements 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();
-        eventEmitter.call(this, new ConnectionEvent(State.ERROR));
+        eventEmitter.call(this, new ConnectionEvent(ConnectionState.ERROR));
+        curCtx = null;
     }
 }

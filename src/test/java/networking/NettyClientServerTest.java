@@ -1,8 +1,8 @@
 package networking;
 
 import networking.events.ConnectionEvent;
-import networking.events.ConnectionEvent.State;
-import networking.messages.PasswordLoginMessage;
+import networking.events.ConnectionState;
+import networking.messages.serverbound.PasswordLoginMessage;
 import networking.messages.TestMessage;
 import org.junit.jupiter.api.Test;
 
