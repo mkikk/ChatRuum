@@ -1,4 +1,4 @@
-package networking;
+package networking.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,15 +10,14 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import networking.Event;
+import networking.EventHandler;
+import networking.MultiTypeEventEmitter;
 
 public class NettyClient extends ChannelInitializer<SocketChannel> implements Runnable {
     protected final MultiTypeEventEmitter<NettyClientSession> eventEmitter;
     protected final String host;
     protected final int port;
-
-    public NettyClient(String host) {
-        this(host, 5050);
-    }
 
     public NettyClient(String host, int port) {
         this.eventEmitter = new MultiTypeEventEmitter<>();

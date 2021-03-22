@@ -1,9 +1,9 @@
 package server;
 
-import networking.NettyServer;
-import networking.messages.Response;
-import networking.messages.clientbound.LoginResponseMessage;
-import networking.messages.serverbound.*;
+import networking.netty.NettyServer;
+import networking.events.responses.Response;
+import networking.events.responses.LoginResponseMessage;
+import networking.events.requests.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +14,10 @@ public class ChatRuumServer {
     private final NettyServer server;
     private Thread serverThread;
 
-    public ChatRuumServer() {
+    public ChatRuumServer(int port) {
         channels = new HashMap<>();
         users = new HashMap<>();
-        server = new NettyServer();
+        server = new NettyServer(port);
         setupServer();
     }
 

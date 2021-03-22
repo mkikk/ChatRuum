@@ -1,4 +1,4 @@
-package networking;
+package networking.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,26 +10,32 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.logging.LoggingHandler;
+import networking.Event;
+import networking.EventHandler;
+import networking.MultiTypeEventEmitter;
 
 public class NettyServer extends ChannelInitializer<SocketChannel> implements Runnable {
     protected final MultiTypeEventEmitter<NettyServerSession> eventEmitter;
     protected final int port;
-
-    public NettyServer() {
-        this(5050);
-    }
 
     public NettyServer(int port) {
         this.eventEmitter = new MultiTypeEventEmitter<>();
         this.port = port;
     }
 
-    public <T extends Event> EventHandler<NettyServerSession, T> on(Class<T> type, EventHandler<NettyServerSession, T> handler) {
+    public <T extends Event> EventHandler<NettyServerSession, T> onEvent(Class<T> type, EventHandler<NettyServerSession, T> handler) {
         return eventEmitter.add(type, handler);
     }
 
-    public <T extends Event> boolean remove(Class<T> type, EventHandler<NettyServerSession, T> handler) {
+    public <T extends Event> EventHandler<NettyServerSession, T> onRequest(Class<T> type, EventHandler<NettyServerSession, T> handler) {
+        return eventEmitter.add(type, handler);
+    }
+
+    public <T extends Event> boolean removeEvent(Class<T> type, EventHandler<NettyServerSession, T> handler) {
+        return eventEmitter.remove(type, handler);
+    }
+
+    public <T extends Event> boolean removeRequest(Class<T> type, EventHandler<NettyServerSession, T> handler) {
         return eventEmitter.remove(type, handler);
     }
 

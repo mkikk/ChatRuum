@@ -2,7 +2,7 @@ package networking;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class EventDispatcher<S extends Session, T> {
+public class EventDispatcher<S, T> {
     private final ConcurrentLinkedQueue<EventHandler<S, T>> handlers;
     // private final ConcurrentLinkedQueue<RemovableEventHandler<S, T>> removableHandlers;
 
