@@ -3,12 +3,11 @@ package networking.netty;
 import io.netty.channel.ChannelHandlerContext;
 import networking.Event;
 import networking.MultiTypeEventEmitter;
-import networking.ServerSession;
 import server.Channel;
-import server.ChatRuumServerSession;
+import server.ServerSession;
 import server.User;
 
-public class NettyServerSession extends NettySession implements ServerSession, ChatRuumServerSession {
+public class NettyServerSession extends NettySession implements ServerSession {
     private final MultiTypeEventEmitter<NettyServerSession> eventEmitter;
     protected User user;
     protected Channel activeChannel;
@@ -35,11 +34,6 @@ public class NettyServerSession extends NettySession implements ServerSession, C
     @Override
     public Channel getActiveChannel() {
         return activeChannel;
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) {
-        super.handlerAdded(ctx);
     }
 
     @Override

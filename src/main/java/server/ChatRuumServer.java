@@ -1,9 +1,9 @@
 package server;
 
+import networking.messages.Response;
+import networking.messages.clientbound.LoginResponseMessage;
+import networking.messages.serverbound.*;
 import networking.netty.NettyServer;
-import networking.events.responses.Response;
-import networking.events.responses.LoginResponseMessage;
-import networking.events.requests.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.on(JoinChannelMessage.class, (session,msg) -> {
+        server.on(JoinChannelMessage.class, (session, msg) -> {
             System.out.println("Joining channel: " + msg.channelName);
             final Channel channel = channels.get(msg.channelName);
             if (channel != null && channel.checkPassword(msg.channelPassword)) {

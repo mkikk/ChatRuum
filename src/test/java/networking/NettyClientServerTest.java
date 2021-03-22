@@ -4,6 +4,8 @@ import networking.events.ConnectionEvent;
 import networking.events.ConnectionState;
 import networking.messages.serverbound.PasswordLoginMessage;
 import networking.messages.TestMessage;
+import networking.netty.NettyClient;
+import networking.netty.NettyServer;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
