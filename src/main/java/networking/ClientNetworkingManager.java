@@ -1,4 +1,4 @@
-package networking.netty;
+package networking;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,26 +10,28 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import networking.Event;
-import networking.EventHandler;
-import networking.MultiTypeEventEmitter;
 
-public class NettyClient extends ChannelInitializer<SocketChannel> implements Runnable {
-    protected final MultiTypeEventEmitter<NettyClientSession> eventEmitter;
+/**
+ * Provides a convenient interface for networked communication on the client side.
+ * Uses netty and java built in serialization internally.
+ * TODO: Need new name to better reflect its intended use
+ */
+public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> implements Runnable {
+    protected final MultiTypeEventEmitter<ClientSession> eventEmitter;
     protected final String host;
     protected final int port;
 
-    public NettyClient(String host, int port) {
+    public ClientNetworkingManager(String host, int port) {
         this.eventEmitter = new MultiTypeEventEmitter<>();
         this.host = host;
         this.port = port;
     }
 
-    public <T extends Event> EventHandler<NettyClientSession, T> on(Class<T> type, EventHandler<NettyClientSession, T> handler) {
+    public <T extends Event> EventHandler<ClientSession, T> on(Class<T> type, EventHandler<ClientSession, T> handler) {
         return eventEmitter.add(type, handler);
     }
 
-    public <T extends Event> boolean remove(Class<T> type, EventHandler<NettyClientSession, T> handler) {
+    public <T extends Event> boolean remove(Class<T> type, EventHandler<ClientSession, T> handler) {
         return eventEmitter.remove(type, handler);
     }
 
@@ -39,7 +41,7 @@ public class NettyClient extends ChannelInitializer<SocketChannel> implements Ru
         p.addLast(
                 new ObjectEncoder(),
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                new NettyClientSession(eventEmitter)
+                new ClientSession(eventEmitter)
         );
     }
 

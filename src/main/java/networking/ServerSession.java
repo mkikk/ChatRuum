@@ -1,37 +1,29 @@
-package networking.netty;
+package networking;
 
-import io.netty.channel.ChannelHandlerContext;
-import networking.Event;
-import networking.MultiTypeEventEmitter;
 import server.Channel;
-import server.ServerSession;
 import server.User;
 
-public class NettyServerSession extends NettySession implements ServerSession {
-    private final MultiTypeEventEmitter<NettyServerSession> eventEmitter;
+public class ServerSession extends Session {
+    private final MultiTypeEventEmitter<ServerSession> eventEmitter;
     protected User user;
     protected Channel activeChannel;
 
-    public NettyServerSession(MultiTypeEventEmitter<NettyServerSession> eventEmitter) {
+    public ServerSession(MultiTypeEventEmitter<ServerSession> eventEmitter) {
         this.eventEmitter = eventEmitter;
     }
 
-    @Override
     public void setUser(User user) {
         this.user = user;
     }
 
-    @Override
     public User getUser() {
         return user;
     }
 
-    @Override
     public void setActiveChannel(Channel activeChannel) {
         this.activeChannel = activeChannel;
     }
 
-    @Override
     public Channel getActiveChannel() {
         return activeChannel;
     }
