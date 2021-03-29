@@ -20,11 +20,13 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 application {
-    mainClassName = 'Test'
+    mainClassName = 'GUI.'
 }
 
 javafx {
     modules = ['javafx.controls', 'javafx.fxml']
+    version = "15.0.1"
+
 }
 
 test {
