@@ -3,16 +3,17 @@ package server.networking;
 import networking.Event;
 import networking.EventDispatcher;
 import networking.AbstractSession;
+import networking.MultiTypeEventEmitter;
 import server.Channel;
 import server.User;
 
 public class ServerSession extends AbstractSession {
-    private final EventDispatcher<ServerSession> eventDispatcher;
+    private final MultiTypeEventEmitter<ServerSession> eventEmitter;
     protected User user;
     protected Channel activeChannel;
 
-    public ServerSession(EventDispatcher<ServerSession> eventDispatcher) {
-        this.eventDispatcher = eventDispatcher;
+    public ServerSession(MultiTypeEventEmitter<ServerSession> eventEmitter) {
+        this.eventEmitter = eventEmitter;
     }
 
     public void setUser(User user) {
@@ -33,6 +34,6 @@ public class ServerSession extends AbstractSession {
 
     @Override
     protected void callEventHandlers(Event event) {
-        eventDispatcher.call(this, event);
+        eventEmitter.call(this, event);
     }
 }

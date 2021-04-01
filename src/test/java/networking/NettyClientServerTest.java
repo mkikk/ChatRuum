@@ -1,12 +1,10 @@
 package networking;
 
-import client.networking.ClientEventHandlerGroup;
 import client.networking.ClientNetworkingManager;
 import networking.events.ConnectionEvent;
 import networking.events.ConnectionState;
 import networking.messages.TestMessage;
 import org.junit.jupiter.api.Test;
-import server.networking.ServerEventHandlerGroup;
 import server.networking.ServerNetworkingManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,20 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NettyClientServerTest {
     private static final int testPort = 5432;
-
-    ServerEventHandlerGroup createServerDebugHandlers() {
-        var handlers = new ServerEventHandlerGroup();
-        handlers.on(TestMessage.class, (s, tm) -> System.out.println("Server: " + tm.text));
-        handlers.on(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
-        return handlers;
-    }
-
-    ClientEventHandlerGroup createClientDebugHandlers() {
-        var handlers = new ClientEventHandlerGroup();
-        handlers.on(TestMessage.class, (s, tm) -> System.out.println("Client: " + tm.text));
-        handlers.on(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
-        return handlers;
-    }
 
     @Test
     void testMessaging() throws InterruptedException {
@@ -40,8 +24,9 @@ class NettyClientServerTest {
         Thread serverThread = null;
         try {
             var server = new ServerNetworkingManager(testPort);
-            var handlers = new ServerEventHandlerGroup();
-            handlers.on(ConnectionEvent.class, (s, e) -> {
+            server.on(TestMessage.class, (s, tm) -> System.out.println("Server: " + tm.text));
+            server.on(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
+            server.on(ConnectionEvent.class, (s, e) -> {
                 if (e.state == ConnectionState.CONNECTED) {
                     s.sendMessage(new TestMessage("server siin 1"));
                     s.sendMessage(new TestMessage("server siin 2"));
@@ -49,28 +34,25 @@ class NettyClientServerTest {
                     s.sendMessage(new TestMessage("server siin 4"));
                 }
             });
-            handlers.on(TestMessage.class, (s, tm) -> {
+            server.on(TestMessage.class, (s, tm) -> {
                 assertEquals(tm.text, "klient siin");
                 serverCheck.set(true);
             });
-            server.addHandlerGroup(createServerDebugHandlers());
-            server.addHandlerGroup(handlers);
             serverThread = new Thread(server);
             serverThread.start();
 
             var client = new ClientNetworkingManager("localhost", testPort);
-            var clientHandlers = new ClientEventHandlerGroup();
-            clientHandlers.on(ConnectionEvent.class, (s, e) -> {
+            client.on(TestMessage.class, (s, tm) -> System.out.println("Client: " + tm.text));
+            client.on(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
+            client.on(ConnectionEvent.class, (s, e) -> {
                 if (e.state == ConnectionState.CONNECTED) {
                     s.sendMessage(new TestMessage("klient siin"));
                 }
             });
-            clientHandlers.on(TestMessage.class, (s, tm) -> {
+            client.on(TestMessage.class, (s, tm) -> {
                 assertTrue(tm.text.startsWith("server siin"));
                 clientCheck.set(true);
             });
-            client.addHandlerGroup(clientHandlers);
-            client.addHandlerGroup(createClientDebugHandlers());
             System.out.println(clientCheck.get());
             clientThread = new Thread(client);
             clientThread.start();

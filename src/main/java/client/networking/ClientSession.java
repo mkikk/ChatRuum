@@ -2,17 +2,17 @@ package client.networking;
 
 import networking.AbstractSession;
 import networking.Event;
-import networking.EventDispatcher;
+import networking.MultiTypeEventEmitter;
 
 public class ClientSession extends AbstractSession {
-    protected final EventDispatcher<ClientSession> eventDispatcher;
+    protected final MultiTypeEventEmitter<ClientSession> eventEmitter;
 
-    public ClientSession(EventDispatcher<ClientSession> eventDispatcher) {
-        this.eventDispatcher = eventDispatcher;
+    public ClientSession(MultiTypeEventEmitter<ClientSession> eventEmitter) {
+        this.eventEmitter = eventEmitter;
     }
 
     @Override
     protected void callEventHandlers(Event event) {
-        eventDispatcher.call(this, event);
+        eventEmitter.call(this, event);
     }
 }
