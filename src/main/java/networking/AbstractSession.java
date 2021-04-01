@@ -8,10 +8,10 @@ import networking.events.ConnectionState;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
-public abstract class Session extends ChannelInboundHandlerAdapter {
+public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
     protected ChannelHandlerContext ctx;
 
-    protected abstract <T extends Event> void callEventHandlers(T event);
+    protected abstract void callEventHandlers(Event event);
 
     /**
      * Sends the message over the network session as soon as possible.

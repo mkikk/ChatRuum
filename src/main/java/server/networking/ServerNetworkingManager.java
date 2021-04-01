@@ -1,4 +1,4 @@
-package networking;
+package server.networking;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import networking.EventDispatcher;
 
 /**
  * Provides a convenient interface for networked communication on the server side.
@@ -19,20 +20,20 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
  * Netty code based on https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/objectecho/ObjectEchoServer.java
  */
 public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> implements Runnable {
-    protected final MultiTypeEventEmitter<ServerSession> eventEmitter;
+    protected final EventDispatcher<ServerSession> eventDispatcher;
     protected final int port;
 
     public ServerNetworkingManager(int port) {
-        this.eventEmitter = new MultiTypeEventEmitter<>();
+        this.eventDispatcher = new EventDispatcher<>();
         this.port = port;
     }
 
-    public <T extends Event> EventHandler<ServerSession, T> on(Class<T> type, EventHandler<ServerSession, T> handler) {
-        return eventEmitter.add(type, handler);
+    public void addHandlerGroup(ServerEventHandlerGroup handlerGroup) {
+        eventDispatcher.add(handlerGroup);
     }
 
-    public <T extends Event> boolean remove(Class<T> type, EventHandler<ServerSession, T> handler) {
-        return eventEmitter.remove(type, handler);
+    public boolean removeHandlerGroup(ServerEventHandlerGroup handlerGroup) {
+        return eventDispatcher.remove(handlerGroup);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> i
         p.addLast(
                 new ObjectEncoder(),
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                new ServerSession(eventEmitter)
+                new ServerSession(eventDispatcher)
         );
     }
 

@@ -3,7 +3,8 @@ package server;
 import networking.messages.Response;
 import networking.messages.clientbound.LoginResponseMessage;
 import networking.messages.serverbound.*;
-import networking.ServerNetworkingManager;
+import server.networking.ServerEventHandlerGroup;
+import server.networking.ServerNetworkingManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,8 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        server.on(PasswordLoginMessage.class, (session, msg) -> {
+        var handlers = new ServerEventHandlerGroup();
+        handlers.on(PasswordLoginMessage.class, (session, msg) -> {
             System.out.println("User logging in: " + msg.username);
 
             final User user = users.get(msg.username);
@@ -34,7 +36,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.on(JoinChannelMessage.class, (session, msg) -> {
+        handlers.on(JoinChannelMessage.class, (session, msg) -> {
             System.out.println("Joining channel: " + msg.channelName);
             final Channel channel = channels.get(msg.channelName);
             if (channel != null && channel.checkPassword(msg.channelPassword)) {
@@ -42,19 +44,21 @@ public class ChatRuumServer {
             }
         });
 
-        server.on(ViewChannelMessage.class, (session, msg) -> {
+        handlers.on(ViewChannelMessage.class, (session, msg) -> {
             System.out.println("Viewing channel: " + msg.channelName);
             session.setActiveChannel(channels.get(msg.channelName));
         });
-        server.on(SendMessageMessage.class, (session, msg) -> {
+        handlers.on(SendMessageMessage.class, (session, msg) -> {
             Channel channel = session.getActiveChannel();
             channel.sendMessage(new Message(msg.text, session.getUser()));
 
         });
-        server.on(ExitChannelMessage.class, (session, msg) -> {
+        handlers.on(ExitChannelMessage.class, (session, msg) -> {
             System.out.println("Exiting channel: " + msg.channelName);
             session.setActiveChannel(null);
         });
+
+        server.addHandlerGroup(handlers);
     }
 
     public void startServer() {

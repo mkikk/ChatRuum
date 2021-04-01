@@ -1,4 +1,4 @@
-package networking;
+package client.networking;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +10,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import networking.Event;
+import networking.EventDispatcher;
+import networking.EventHandler;
+import server.networking.ServerEventHandlerGroup;
 
 /**
  * Provides a convenient interface for networked communication on the client side.
@@ -19,22 +23,22 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
  * Netty code based on https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/objectecho/ObjectEchoClient.java
  */
 public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> implements Runnable {
-    protected final MultiTypeEventEmitter<ClientSession> eventEmitter;
+    protected final EventDispatcher<ClientSession> eventDispatcher;
     protected final String host;
     protected final int port;
 
     public ClientNetworkingManager(String host, int port) {
-        this.eventEmitter = new MultiTypeEventEmitter<>();
+        this.eventDispatcher = new EventDispatcher<>();
         this.host = host;
         this.port = port;
     }
 
-    public <T extends Event> EventHandler<ClientSession, T> on(Class<T> type, EventHandler<ClientSession, T> handler) {
-        return eventEmitter.add(type, handler);
+    public void addHandlerGroup(ClientEventHandlerGroup handlerGroup) {
+        eventDispatcher.add(handlerGroup);
     }
 
-    public <T extends Event> boolean remove(Class<T> type, EventHandler<ClientSession, T> handler) {
-        return eventEmitter.remove(type, handler);
+    public boolean removeHandlerGroup(ClientEventHandlerGroup handlerGroup) {
+        return eventDispatcher.remove(handlerGroup);
     }
 
     @Override
@@ -43,7 +47,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> i
         p.addLast(
                 new ObjectEncoder(),
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                new ClientSession(eventEmitter)
+                new ClientSession(eventDispatcher)
         );
     }
 

@@ -1,6 +1,6 @@
 package server;
 
-import networking.Session;
+import networking.AbstractSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class Channel implements PasswordProtected{
     private final String name;
     private final String password;
     private final List<Message> messages;
-    private final List<Session> viewingUsers;
+    private final List<AbstractSession> viewingUsers;
 
     public Channel(String name, String password) {
         this.name = name;
