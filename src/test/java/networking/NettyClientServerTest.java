@@ -2,7 +2,6 @@ package networking;
 
 import networking.events.ConnectionEvent;
 import networking.events.ConnectionState;
-import networking.messages.serverbound.PasswordLoginMessage;
 import networking.messages.TestMessage;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,7 @@ class NettyClientServerTest {
         Thread clientThread = null;
         Thread serverThread = null;
         try {
-            var server = new NettyServer(testPort);
+            var server = new ServerNetworkingManager(testPort);
             server.on(TestMessage.class, (s, tm) -> System.out.println("Server: " + tm.text));
             server.on(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
             server.on(ConnectionEvent.class, (s, e) -> {
@@ -40,7 +39,7 @@ class NettyClientServerTest {
             serverThread = new Thread(server);
             serverThread.start();
 
-            var client = new NettyClient("localhost", testPort);
+            var client = new ClientNetworkingManager("localhost", testPort);
             client.on(TestMessage.class, (s, tm) -> System.out.println("Client: " + tm.text));
             client.on(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
             client.on(ConnectionEvent.class, (s, e) -> {

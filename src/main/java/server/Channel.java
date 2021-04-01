@@ -1,7 +1,6 @@
 package server;
 
 import networking.Session;
-import networking.messages.serverbound.SendMessageMessage;
 
 import java.util.ArrayList;
 import java.util.List;

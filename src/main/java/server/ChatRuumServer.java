@@ -1,9 +1,9 @@
 package server;
 
-import networking.NettyServer;
 import networking.messages.Response;
 import networking.messages.clientbound.LoginResponseMessage;
 import networking.messages.serverbound.*;
+import networking.ServerNetworkingManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,13 +11,13 @@ import java.util.Map;
 public class ChatRuumServer {
     private final Map<String, Channel> channels;
     private final Map<String, User> users;
-    private final NettyServer server;
+    private final ServerNetworkingManager server;
     private Thread serverThread;
 
-    public ChatRuumServer() {
+    public ChatRuumServer(int port) {
         channels = new HashMap<>();
         users = new HashMap<>();
-        server = new NettyServer();
+        server = new ServerNetworkingManager(port);
         setupServer();
     }
 
@@ -34,7 +34,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.on(JoinChannelMessage.class, (session,msg) -> {
+        server.on(JoinChannelMessage.class, (session, msg) -> {
             System.out.println("Joining channel: " + msg.channelName);
             final Channel channel = channels.get(msg.channelName);
             if (channel != null && channel.checkPassword(msg.channelPassword)) {

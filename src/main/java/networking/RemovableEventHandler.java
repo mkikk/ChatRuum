@@ -5,7 +5,7 @@ package networking;
  */
 @Deprecated
 @FunctionalInterface
-public interface RemovableEventHandler<S extends Session, T> {
+public interface RemovableEventHandler<S, T> {
     /**
      * Called when an event of type T occurs. Handler can be removed by returning true.
      * @param session Active session which the event is tied to
