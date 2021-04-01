@@ -15,6 +15,8 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
  * Provides a convenient interface for networked communication on the server side.
  * Uses netty and java built in serialization internally.
  * TODO: Need new name to better reflect its intended use
+ *
+ * Netty code based on https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/objectecho/ObjectEchoServer.java
  */
 public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> implements Runnable {
     protected final MultiTypeEventEmitter<ServerSession> eventEmitter;

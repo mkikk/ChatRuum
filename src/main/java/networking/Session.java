@@ -8,7 +8,7 @@ import networking.events.ConnectionState;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
-abstract class Session extends ChannelInboundHandlerAdapter {
+public abstract class Session extends ChannelInboundHandlerAdapter {
     protected ChannelHandlerContext ctx;
 
     protected abstract <T extends Event> void callEventHandlers(T event);
