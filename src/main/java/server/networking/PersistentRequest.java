@@ -1,22 +1,23 @@
 package server.networking;
 
-import networking.EventDispatcher;
-import networking.EventHandler;
 import networking.PersistentRequestData;
+import java.util.function.Consumer;
 
-public class PersistentRequest<T extends PersistentRequestData> extends Request<T> {
-    protected final EventDispatcher<ServerSession, PersistentRequest<T>> closeHandlers;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class PersistentRequest<T extends PersistentRequestData> extends AbstractRequest<T> {
+    protected final ConcurrentLinkedQueue<Consumer<PersistentRequest<T>>> closeHandlers;
 
     public PersistentRequest(int id, ServerSession session, T data) {
         super(id, session, data);
-        closeHandlers = new EventDispatcher<>();
+        closeHandlers = new ConcurrentLinkedQueue<>();
     }
 
-    protected void onClose(EventHandler<ServerSession, PersistentRequest<T>> handler) {
+    public void onClose(Consumer<PersistentRequest<T>> handler) {
         closeHandlers.add(handler);
     }
 
     protected void callCloseHandlers() {
-        closeHandlers.call(session, this);
+        closeHandlers.forEach(h -> h.accept(this));
     }
 }

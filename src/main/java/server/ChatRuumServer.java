@@ -8,15 +8,15 @@ import server.networking.ServerNetworkingManager;
 import server.networking.ServerSession;
 import server.networking.PersistentRequest;
 
+import javax.swing.text.View;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ChatRuumServer {
-    private final Map<String, Channel> channels;
-    private final Map<String, User> users;
+    protected final Map<String, Channel> channels;
+    protected final Map<String, User> users;
     private final ServerNetworkingManager server;
-    private Thread serverThread;
 
     public ChatRuumServer(int port) {
         channels = new HashMap<>();
@@ -56,9 +56,9 @@ public class ChatRuumServer {
             final User user = users.get(req.data.username);
             if (user != null && user.checkPassword(req.data.password)) {
                 session.setUser(user);
-                session.sendMessage(new LoginResponseMessage(Response.OK));
+                req.sendResponse(new GenericResponse(Response.OK));
             } else {
-                session.sendMessage(new LoginResponseMessage(Response.FORBIDDEN));
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
         server.onRequest(CreateChannelRequest.class, (session,req) -> {
@@ -107,8 +107,10 @@ public class ChatRuumServer {
     }
 
     public void startServer() {
-        if (serverThread != null) return; // Server already running
-        serverThread = new Thread(server);
-        serverThread.start();
+        server.start();
+    }
+
+    public synchronized void stopServer() throws InterruptedException {
+        server.stop();
     }
 }

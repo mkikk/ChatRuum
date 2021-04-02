@@ -26,6 +26,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> i
     private final MultiHandlerEventEmitter<ClientSession, Event> eventHandlers;
     protected final String host;
     protected final int port;
+    protected Thread clientThread;
 
     public ClientNetworkingManager(String host, int port) {
         this.host = host;
@@ -53,6 +54,21 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> i
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                 new ClientSession(this)
         );
+    }
+
+    public synchronized void start() {
+        if (clientThread != null) return; // Server already running
+
+        clientThread = new Thread(this);
+        clientThread.start();
+    }
+
+    public synchronized void stop() throws InterruptedException {
+        if (clientThread == null) return; // Server not running
+
+        clientThread.interrupt();
+        clientThread.join();
+        clientThread = null;
     }
 
     @Override

@@ -13,15 +13,6 @@ public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
 
     protected abstract void callEventHandlers(Event event);
 
-    /**
-     * Sends the message over the network session as soon as possible.
-     * Note that a send may still fail, as the actual sending may occur after this method has run in a different thread.
-     * @param message
-     */
-    public void sendMessage(Message message) {
-        if (ctx != null) ctx.writeAndFlush(message).addListener(FIRE_EXCEPTION_ON_FAILURE);
-    }
-
     // @Override
     // public boolean isActive() {
     //    return curCtx != null;

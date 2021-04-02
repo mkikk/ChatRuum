@@ -2,7 +2,7 @@ package networking;
 
 import java.io.Serializable;
 
-public class ResponseWrapper implements Serializable {
+public final class ResponseWrapper implements Serializable {
     public final int id;
     public final ResponseData data;
 

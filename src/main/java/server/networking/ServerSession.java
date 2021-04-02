@@ -2,6 +2,8 @@ package server.networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;
+import networking.events.ConnectionEvent;
+import networking.events.ConnectionState;
 import server.User;
 
 import java.util.Objects;
@@ -53,12 +55,18 @@ public class ServerSession extends AbstractSession {
             persistentRequests.put(wrapper.id, request);
             eventEmitter.callPersistentRequestHandlers(this, request);
         } else {
-            // Persistent request sent. Call appropriate handlers.
+            // Normal request sent. Call appropriate handlers.
 
-            var request = new Request<>(wrapper.id, this, wrapper.data);
+            var request = new Request<>(wrapper.id, this, (RequestData) wrapper.data);
             eventEmitter.callRequestHandlers(this, request);
         }
 
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        persistentRequests.forEach((k, v) -> v.callCloseHandlers());
+        super.channelInactive(ctx);
     }
 
     @Override

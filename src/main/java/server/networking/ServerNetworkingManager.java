@@ -24,6 +24,7 @@ public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> i
     private final SingleHandlerEventEmitter<ServerSession, Request<?>> requestHandlers;
     private final SingleHandlerEventEmitter<ServerSession, PersistentRequest<?>> persistentRequestHandlers;
     protected final int port;
+    private Thread serverThread;
 
     public ServerNetworkingManager(int port) {
         this.port = port;
@@ -64,6 +65,21 @@ public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> i
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                 new ServerSession(this)
         );
+    }
+
+    public synchronized void start() {
+        if (serverThread != null) return; // Server already running
+
+        serverThread = new Thread(this);
+        serverThread.start();
+    }
+
+    public synchronized void stop() throws InterruptedException {
+        if (serverThread == null) return; // Server not running
+
+        serverThread.interrupt();
+        serverThread.join();
+        serverThread = null;
     }
 
     public void run() {

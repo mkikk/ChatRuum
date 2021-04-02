@@ -1,4 +1,6 @@
 package networking;
 
-public interface PersistentRequestData extends RequestData {
+import java.io.Serializable;
+
+public interface PersistentRequestData extends Serializable {
 }
