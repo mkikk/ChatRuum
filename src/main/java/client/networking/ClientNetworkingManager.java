@@ -10,9 +10,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import networking.Event;
-import networking.EventHandler;
-import networking.MultiHandlerEventEmitter;
+import networking.*;
+import server.networking.PersistentRequest;
+import server.networking.Request;
+import server.networking.ServerSession;
 
 /**
  * Provides a convenient interface for networked communication on the client side.

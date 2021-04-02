@@ -1,8 +1,15 @@
 package server;
 
+import networking.events.ConnectionEvent;
+import networking.requests.*;
+import networking.persistentrequests.ViewChannelRequest;
+import networking.responses.*;
 import server.networking.ServerNetworkingManager;
+import server.networking.ServerSession;
+import server.networking.PersistentRequest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ChatRuumServer {
@@ -19,7 +26,31 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        /*server.onRequest(PasswordLoginMessage.class, (session, req) -> {
+        server.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
+
+        server.onRequest(RegisterRequest.class, (session, req) -> {
+            System.out.println("Registering...");
+            final User user = users.get(req.data.username);
+            if (user == null) {
+                final User newUser = new User(req.data.username, req.data.password);
+                users.put(req.data.username, newUser);
+                req.sendResponse(new GenericResponse(Response.OK));
+            } else {
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+            }
+        });
+        server.onRequest(CheckUsernameRequest.class, (session, req) -> {
+            System.out.println("User logging in: " + req.data.username);
+
+            final User user = users.get(req.data.username);
+            if (user != null) {
+                req.sendResponse(new CheckUsernameResponse(CheckUsernameResponse.Result.NAME_IN_USE));
+            } else {
+                req.sendResponse(new CheckUsernameResponse(CheckUsernameResponse.Result.NAME_FREE));
+            }
+        });
+
+        server.onRequest(PasswordLoginRequest.class, (session, req) -> {
             System.out.println("User logging in: " + req.data.username);
 
             final User user = users.get(req.data.username);
@@ -30,28 +61,49 @@ public class ChatRuumServer {
                 session.sendMessage(new LoginResponseMessage(Response.FORBIDDEN));
             }
         });
+        server.onRequest(CreateChannelRequest.class, (session,req) -> {
+            System.out.println("Trying to create channel: " + req.data.channelName);
+            final Channel channel = channels.get(req.data.channelName);
+            if (channel == null) {
+                final Channel newChannel = new Channel(req.data.channelName, req.data.channelPassword);
+                channels.put(newChannel.getName(), newChannel);
+                req.sendResponse(new GenericResponse(Response.OK));
+            } else {
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+            }
+        });
+        server.onRequest(JoinChannelRequest.class, (session, req) -> {
+            System.out.println("Joining channel: " + req.data.channelName);
 
-        server.onRequest(JoinChannelMessage.class, (session, msg) -> {
-            System.out.println("Joining channel: " + msg.channelName);
-            final Channel channel = channels.get(msg.channelName);
-            if (channel != null && channel.checkPassword(msg.channelPassword)) {
-                session.setActiveChannel(channel);
+            final Channel channel = channels.get(req.data.channelName);
+            if (channel != null && channel.checkPassword(req.data.channelPassword)) {
+                final User user = session.getUser();
+                channel.join(user);
+                req.sendResponse(new GenericResponse(Response.OK));
+            } else {
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
 
-        server.onRequest(ViewChannelMessage.class, (session, msg) -> {
-            System.out.println("Viewing channel: " + msg.channelName);
-            session.setActiveChannel(channels.get(msg.channelName));
+        server.onPersistentRequest(ViewChannelRequest.class, (ServerSession session, PersistentRequest<ViewChannelRequest> req) -> {
+            System.out.println("Viewing channel: " + req.data.channelName);
+
+            final Channel channel = channels.get(req.data.channelName);
+            final User user = session.getUser();
+            if (channel != null && channel.isJoined(user)) {
+                channel.addViewingRequest(req);
+                req.sendResponse(new GenericResponse(Response.OK));
+            } else {
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+            }
         });
-        server.onRequest(SendMessageMessage.class, (session, msg) -> {
-            Channel channel = session.getActiveChannel();
-            channel.sendMessage(new Message(msg.text, session.getUser()));
+
+        server.onRequest(SendMessageRequest.class, (session, req) -> {
+            final Channel channel = channels.get(req.data.channelName);
+            channel.sendMessage(new Message(req.data.channelName, session.getUser())); //for inactive users
+            channel.sendToViewers(new NewMessageResponse(req.data.text));
 
         });
-        server.onRequest(ExitChannelMessage.class, (session, msg) -> {
-            System.out.println("Exiting channel: " + msg.channelName);
-            session.setActiveChannel(null);
-        });*/
     }
 
     public void startServer() {

@@ -31,6 +31,10 @@ public class Channel implements PasswordProtected{
         return name;
     }
 
+    public List<PersistentRequest<?>> getViewingRequests() {
+        return viewingRequests;
+    }
+
     @Override
     public boolean checkPassword(String givenPassword) {
         return givenPassword.equals(password);
