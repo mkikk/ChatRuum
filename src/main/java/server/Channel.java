@@ -31,11 +31,18 @@ public class Channel implements PasswordProtected{
 
     public void sendMessage(Message message) {
         messages.add(message);
+        sendToViewers(new NewMessageResponse(message.getText()));
     }
-    public void sendToViewers(NewMessageResponse response) {
+
+    protected void sendToViewers(NewMessageResponse response) {
         for (PersistentRequest<?> listener : viewingRequests) {
             listener.sendResponse(response);
         }
+    }
+
+    public void addViewingRequest(PersistentRequest<?> request) {
+        viewingRequests.add(request);
+        request.onClose(viewingRequests::remove);
     }
 
     public void join(User user) {
@@ -46,17 +53,8 @@ public class Channel implements PasswordProtected{
         return users.contains(user);
     }
 
-    public void addViewingRequest(PersistentRequest<?> request) {
-        viewingRequests.add(request);
-        request.onClose(viewingRequests::remove);
-    }
-
     public String getName() {
         return name;
-    }
-
-    public List<PersistentRequest<?>> getViewingRequests() {
-        return viewingRequests;
     }
 
     @Override

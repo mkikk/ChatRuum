@@ -1,8 +1,7 @@
 package networking;
 
 import client.networking.ClientNetworkingManager;
-import networking.events.ConnectionEvent;
-import networking.events.ConnectionState;
+import networking.events.ConnectedEvent;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ class NettyClientServerTest {
         try {
             var server = new ServerNetworkingManager(testPort);
 
-            server.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
+            server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Server connected"));
             server.onRequest(DebugRequest.class, (s, r) -> {
                 System.out.println("Server received request: " + r.data.message);
                 r.sendResponse(new DebugResponse("Server siin!"));
@@ -39,15 +38,13 @@ class NettyClientServerTest {
 
             var client = new ClientNetworkingManager("localhost", testPort);
 
-            client.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
-            client.onEvent(ConnectionEvent.class, (s, e) -> {
-                if (e.state == ConnectionState.CONNECTED) {
-                    var req = s.sendRequest(new DebugRequest("Klient siin!"));
-                    req.onResponse(DebugResponse.class, (ss, r) -> {
-                        System.out.println("Client received response: " + r.message);
-                        clientCheck.set(true);
-                    });
-                }
+            client.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected"));
+            client.onEvent(ConnectedEvent.class, (s, e) -> {
+                var req = s.sendRequest(new DebugRequest("Klient siin!"));
+                req.onResponse(DebugResponse.class, (ss, r) -> {
+                    System.out.println("Client received response: " + r.message);
+                    clientCheck.set(true);
+                });
             });
 
             clientThread = new Thread(client);

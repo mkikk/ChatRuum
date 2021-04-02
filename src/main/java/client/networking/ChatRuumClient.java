@@ -1,6 +1,6 @@
 package client.networking;
 
-import networking.events.ConnectionEvent;
+import networking.events.ConnectedEvent;
 import networking.events.ConnectionState;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;
@@ -17,7 +17,7 @@ public class ChatRuumClient {
     }
 
     private void setupClient() {
-        client.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
+        client.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected"));
 
     }
 

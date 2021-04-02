@@ -3,8 +3,9 @@ package networking;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import networking.events.ConnectionEvent;
-import networking.events.ConnectionState;
+import networking.events.ConnectedEvent;
+import networking.events.DisconnectedEvent;
+import networking.events.ErrorEvent;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
@@ -29,12 +30,12 @@ public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        callEventHandlers(new ConnectionEvent(ConnectionState.CONNECTED));
+        callEventHandlers(new ConnectedEvent());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        callEventHandlers(new ConnectionEvent(ConnectionState.DISCONNECTED));
+        callEventHandlers(new DisconnectedEvent());
     }
 
     @Override
@@ -42,6 +43,6 @@ public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
         // TODO: Is this appropriate error handling?
         cause.printStackTrace();
         ctx.close();
-        callEventHandlers(new ConnectionEvent(ConnectionState.ERROR));
+        callEventHandlers(new ErrorEvent(cause));
     }
 }

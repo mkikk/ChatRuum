@@ -2,8 +2,6 @@ package server.networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;
-import networking.events.ConnectionEvent;
-import networking.events.ConnectionState;
 import server.User;
 
 import java.util.Objects;

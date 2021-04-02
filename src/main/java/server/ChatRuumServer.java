@@ -1,6 +1,6 @@
 package server;
 
-import networking.events.ConnectionEvent;
+import networking.events.ConnectedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
@@ -26,7 +26,7 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        server.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
+        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("New client: " + s.getInternalChannel().remoteAddress()));
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
             System.out.println("Registering...");
@@ -100,9 +100,13 @@ public class ChatRuumServer {
 
         server.onRequest(SendMessageRequest.class, (session, req) -> {
             final Channel channel = channels.get(req.data.channelName);
-            channel.sendMessage(new Message(req.data.channelName, session.getUser())); //for inactive users
-            channel.sendToViewers(new NewMessageResponse(req.data.text));
+            if (channel == null) {
+                req.sendResponse(new GenericResponse(Response.ERROR));
+                return;
+            }
 
+            channel.sendMessage(new Message(req.data.text, session.getUser()));
+            req.sendResponse(new GenericResponse(Response.OK));
         });
     }
 
