@@ -15,7 +15,7 @@ public class EventDispatcher<S, T> {
         handlers.add(handler);
     }
 
-    public boolean remove(EventHandler<S, ?> handler) {
+    public boolean remove(EventHandler<?, ?> handler) {
         return handlers.remove(handler);
     }
 

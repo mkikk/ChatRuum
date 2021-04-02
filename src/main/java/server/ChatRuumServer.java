@@ -1,8 +1,5 @@
 package server;
 
-import networking.messages.Response;
-import networking.messages.clientbound.LoginResponseMessage;
-import networking.messages.serverbound.*;
 import server.networking.ServerNetworkingManager;
 
 import java.util.HashMap;
@@ -22,11 +19,11 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        server.on(PasswordLoginMessage.class, (session, msg) -> {
-            System.out.println("User logging in: " + msg.username);
+        /*server.onRequest(PasswordLoginMessage.class, (session, req) -> {
+            System.out.println("User logging in: " + req.data.username);
 
-            final User user = users.get(msg.username);
-            if (user != null && user.checkPassword(msg.password)) {
+            final User user = users.get(req.data.username);
+            if (user != null && user.checkPassword(req.data.password)) {
                 session.setUser(user);
                 session.sendMessage(new LoginResponseMessage(Response.OK));
             } else {
@@ -34,7 +31,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.on(JoinChannelMessage.class, (session, msg) -> {
+        server.onRequest(JoinChannelMessage.class, (session, msg) -> {
             System.out.println("Joining channel: " + msg.channelName);
             final Channel channel = channels.get(msg.channelName);
             if (channel != null && channel.checkPassword(msg.channelPassword)) {
@@ -42,19 +39,19 @@ public class ChatRuumServer {
             }
         });
 
-        server.on(ViewChannelMessage.class, (session, msg) -> {
+        server.onRequest(ViewChannelMessage.class, (session, msg) -> {
             System.out.println("Viewing channel: " + msg.channelName);
             session.setActiveChannel(channels.get(msg.channelName));
         });
-        server.on(SendMessageMessage.class, (session, msg) -> {
+        server.onRequest(SendMessageMessage.class, (session, msg) -> {
             Channel channel = session.getActiveChannel();
             channel.sendMessage(new Message(msg.text, session.getUser()));
 
         });
-        server.on(ExitChannelMessage.class, (session, msg) -> {
+        server.onRequest(ExitChannelMessage.class, (session, msg) -> {
             System.out.println("Exiting channel: " + msg.channelName);
             session.setActiveChannel(null);
-        });
+        });*/
     }
 
     public void startServer() {

@@ -47,11 +47,6 @@ public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        callEventHandlers((Message) msg);
-    }
-
-    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // TODO: Is this appropriate error handling?
         cause.printStackTrace();
