@@ -4,24 +4,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import client.networking.ClientNetworkingManager;
 import client.networking.ClientSession;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import networking.events.ConnectionEvent;
-import networking.events.ConnectionState;
+import client.networking.Request;
+import networking.ResponseData;
+import networking.events.ConnectedEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
 import networking.responses.CheckUsernameResponse;
 import networking.responses.GenericResponse;
+import networking.responses.NewMessageResponse;
 import networking.responses.Response;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.*;
+import server.networking.ServerSession;
 
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.sql.Time;
+import java.util.concurrent.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ChatRuumServerTest {
     private static final int testPort = 5430;
     private static ChatRuumServer server;
@@ -29,21 +27,20 @@ class ChatRuumServerTest {
     private static ClientSession session;
 
     @BeforeAll
-    public static void setupServer() throws InterruptedException, ExecutionException {
+    public static void setupServer() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Setting up test");
 
         server = new ChatRuumServer(testPort);
-        server.users.put("albert1", new User("albert1", "parool"));
+        server.users.put("roobert", new User("roobert", "jfkdsfjkdkjfa"));
         server.channels.put("yldine", new Channel("yldine", "321"));
         server.startServer();
         System.out.println("Server started");
 
         client = new ClientNetworkingManager("localhost", testPort);
-        var clientStartTask = new CompletableFuture<ClientSession>();
-        client.onEvent(ConnectionEvent.class, (s, e) -> {
-            clientStartTask.complete(session);
-        });
-        session = clientStartTask.get();
+        var clientStartFuture = new CompletableFuture<ClientSession>();
+        client.onEvent(ConnectedEvent.class, (s, e) -> clientStartFuture.complete(s));
+        client.start();
+        session = clientStartFuture.get(2, TimeUnit.SECONDS);
         System.out.println("Client started");
     }
 
@@ -53,8 +50,65 @@ class ChatRuumServerTest {
         client.stop();
     }
 
+    /**
+     * Helper method to wait for a completable future to complete.
+     * Provides custom error message and default timeout.
+     * @return result of given future
+     */
+    public <T> T await(CompletableFuture<T> future) {
+        try {
+            return future.get(2, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            return fail("Timeout while waiting for result", e);
+        } catch (Exception e) {
+            return fail("Error while waiting for result", e);
+        }
+    }
+
     @Test
-    public void testLogin() {
+    @Order(0)
+    public void testCheckUsername() {
+        var result = new CompletableFuture<CheckUsernameResponse.Result>();
+
+        String username = "albert";
+        session.sendRequest(new CheckUsernameRequest(username))
+                .onResponse(CheckUsernameResponse.class, (ss, r) -> {
+                    System.out.println(r.result);
+                    if (r.result == CheckUsernameResponse.Result.NAME_FREE) {
+                        System.out.println("The name " + username + " is free");
+                    } else if (r.result == CheckUsernameResponse.Result.NAME_IN_USE){
+                        System.out.println("The name " + username + " is already used");
+                    }
+                    result.complete(r.result);
+                });
+
+        assertEquals(CheckUsernameResponse.Result.NAME_FREE, await(result));
+    }
+
+    @Test
+    @Order(1)
+    public void testRegister() {
+        var response = new CompletableFuture<Response>();
+
+        session.sendRequest(new RegisterRequest("albert1", "parool"))
+                .onResponse(GenericResponse.class, (ss, r) -> {
+                    System.out.println(r.response);
+                    if (r.response == Response.OK) {
+                        System.out.println("New user registered");
+                    } else if (r.response == Response.FORBIDDEN){
+                        System.out.println("Failed to register");
+                    }
+                    response.complete(r.response);
+                });
+
+        assertEquals(Response.OK, await(response));
+    }
+
+    @Test
+    @Order(2)
+    public void testLoginWrongPassword() {
+        var response = new CompletableFuture<Response>();
+
         String username = "albert1";
         String userPassword = "valeparool";
         session.sendRequest(new PasswordLoginRequest(username, userPassword))
@@ -65,81 +119,125 @@ class ChatRuumServerTest {
                     } else if (r.response == Response.FORBIDDEN){
                         System.out.println("Failed to login");
                     }
+                    response.complete(r.response);
                 });
+
+        assertEquals(Response.FORBIDDEN, await(response));
     }
+
     @Test
-    public void testRegister() {
-        String username = "albert";
-        String userPassword = "321";
-        session.sendRequest(new RegisterRequest(username, userPassword))
+    @Order(3)
+    public void testLoginCorrectPassword() {
+        var response = new CompletableFuture<Response>();
+
+        String username = "albert1";
+        String userPassword = "parool";
+        session.sendRequest(new PasswordLoginRequest(username, userPassword))
                 .onResponse(GenericResponse.class, (ss, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
-                        System.out.println("New user registered: " + username);
+                        System.out.println("Login successful. Hello, " + username);
                     } else if (r.response == Response.FORBIDDEN){
-                        System.out.println("Failed to register");
+                        System.out.println("Failed to login");
                     }
+                    response.complete(r.response);
                 });
+
+        assertEquals(Response.OK, await(response));
     }
+
     @Test
-    public void testCheckUsername() {
-        String username = "albert";
-        session.sendRequest(new CheckUsernameRequest(username))
-                .onResponse(CheckUsernameResponse.class, (ss, r) -> {
-                    System.out.println(r.result);
-                    if (r.result == CheckUsernameResponse.Result.NAME_FREE) {
-                        System.out.println("The name " + username + " is free");
-                    } else if (r.result == CheckUsernameResponse.Result.NAME_IN_USE){
-                        System.out.println("The name " + username + " is already used");
-                    }
-                });
-    }
-    @Test
+    @Order(4)
     public void testJoinChannel() {
+        var response = new CompletableFuture<Response>();
+
         String channelName = "yldine";
         String channelPassword = "321";
         session.sendRequest(new JoinChannelRequest(channelName, channelPassword))
-                .onResponse(GenericResponse.class, (ss, r) -> {
+                .onResponse(GenericResponse.class, (s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Joined channel: " + channelName);
                     } else if (r.response == Response.FORBIDDEN){
                         System.out.println("Failed to join channel");
                     }
+                    response.complete(r.response);
                 });
+
+        assertEquals(Response.OK, await(response));
     }
+
     @Test
+    @Order(5)
     public void testViewChannel() {
+        var response = new CompletableFuture<Response>();
+
         String channelName = "yldine";
-        session.sendPersistentRequest(new ViewChannelRequest(channelName))
-                .onResponse(GenericResponse.class, (ss, r) -> {
-                    System.out.println(r.response.name());
-                    if (r.response == Response.OK) {
-                        System.out.println("Viewing channel: " + channelName);
-                    } else if (r.response == Response.FORBIDDEN){
-                        System.out.println("Failed to view channel");
-                    }
-                });
+        var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
+        view.onResponse(GenericResponse.class, (s, r) -> {
+            System.out.println(r.response.name());
+            if (r.response == Response.OK) {
+                System.out.println("Viewing channel: " + channelName);
+            } else if (r.response == Response.FORBIDDEN){
+                System.out.println("Failed to view channel");
+            }
+            view.close();
+            response.complete(r.response);
+        });
+
+        assertEquals(Response.OK, await(response));
     }
+
     @Test
+    @Order(6)
     public void testSendMessage() {
+        var message = new CompletableFuture<String>();
+        var sendResponse = new CompletableFuture<Response>();
+
         String channelName = "yldine";
         String text = "Tere, maailm";
+
+        var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
+        view.onResponse(GenericResponse.class, (s, r) -> {
+            System.out.println(r.response.name());
+            if (r.response == Response.OK) {
+                System.out.println("Viewing channel: " + channelName);
+            } else if (r.response == Response.FORBIDDEN){
+                System.out.println("Failed to view channel");
+            }
+        });
+        view.onResponse(NewMessageResponse.class, (s, r) -> {
+            System.out.println("Received message: " + r.message);
+            message.complete(r.message);
+        });
+
         session.sendRequest(new SendMessageRequest(channelName, text))
-                .onResponse(GenericResponse.class, (ss, r) -> {
+                .onResponse(GenericResponse.class, (s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Sent message: " + text + " to " + channelName);
-                    } else if (r.response == Response.FORBIDDEN){
+                    } else if (r.response == Response.FORBIDDEN) {
                         System.out.println("Failed to send message");
                     }
+                    sendResponse.complete(r.response);
                 });
+
+        try {
+            assertEquals(Response.OK, await(sendResponse));
+            assertEquals(text, await(message));
+        } finally {
+            view.close();
+        }
     }
+
     @Test
+    @Order(7)
     public void testCreateChannel() {
+        var response = new CompletableFuture<Response>();
+
         String channelName = "abi";
         String channelPassword = "iba";
-        session.sendRequest(new SendMessageRequest(channelName, channelPassword))
+        session.sendRequest(new CreateChannelRequest(channelName, channelPassword))
                 .onResponse(GenericResponse.class, (ss, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
@@ -147,7 +245,10 @@ class ChatRuumServerTest {
                     } else if (r.response == Response.FORBIDDEN){
                         System.out.println("Failed to create channel");
                     }
+                    response.complete(r.response);
                 });
+
+        assertEquals(Response.OK, await(response));
     }
 
 }
