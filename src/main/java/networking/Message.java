@@ -2,5 +2,6 @@ package networking;
 
 import java.io.Serializable;
 
-public interface Message extends Serializable, Event {
+@Deprecated
+public interface Message extends Serializable {
 }

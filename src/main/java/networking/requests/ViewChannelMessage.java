@@ -1,4 +1,4 @@
-package networking.messages.serverbound;
+package networking.requests;
 
 import networking.Message;
 

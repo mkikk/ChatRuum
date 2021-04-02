@@ -1,9 +1,12 @@
 package networking;
 
+import client.networking.ClientNetworkingManager;
 import networking.events.ConnectionEvent;
 import networking.events.ConnectionState;
-import networking.messages.TestMessage;
+import networking.requests.DebugRequest;
+import networking.responses.DebugResponse;
 import org.junit.jupiter.api.Test;
+import server.networking.ServerNetworkingManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -22,35 +25,31 @@ class NettyClientServerTest {
         Thread serverThread = null;
         try {
             var server = new ServerNetworkingManager(testPort);
-            server.on(TestMessage.class, (s, tm) -> System.out.println("Server: " + tm.text));
-            server.on(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
-            server.on(ConnectionEvent.class, (s, e) -> {
-                if (e.state == ConnectionState.CONNECTED) {
-                    s.sendMessage(new TestMessage("server siin 1"));
-                    s.sendMessage(new TestMessage("server siin 2"));
-                    s.sendMessage(new TestMessage("server siin 3"));
-                    s.sendMessage(new TestMessage("server siin 4"));
-                }
-            });
-            server.on(TestMessage.class, (s, tm) -> {
-                assertEquals(tm.text, "klient siin");
+
+            server.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Server: " + e.state.name()));
+            server.onRequest(DebugRequest.class, (s, r) -> {
+                System.out.println("Server received request: " + r.data.message);
+                r.sendResponse(new DebugResponse("Server siin!"));
                 serverCheck.set(true);
             });
+
             serverThread = new Thread(server);
             serverThread.start();
 
+
             var client = new ClientNetworkingManager("localhost", testPort);
-            client.on(TestMessage.class, (s, tm) -> System.out.println("Client: " + tm.text));
-            client.on(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
-            client.on(ConnectionEvent.class, (s, e) -> {
+
+            client.onEvent(ConnectionEvent.class, (s, e) -> System.out.println("Client: " + e.state.name()));
+            client.onEvent(ConnectionEvent.class, (s, e) -> {
                 if (e.state == ConnectionState.CONNECTED) {
-                    s.sendMessage(new TestMessage("klient siin"));
+                    var req = s.sendRequest(new DebugRequest("Klient siin!"));
+                    req.onResponse(DebugResponse.class, (ss, r) -> {
+                        System.out.println("Client received response: " + r.message);
+                        clientCheck.set(true);
+                    });
                 }
             });
-            client.on(TestMessage.class, (s, tm) -> {
-                assertTrue(tm.text.startsWith("server siin"));
-                clientCheck.set(true);
-            });
+
             clientThread = new Thread(client);
             clientThread.start();
 

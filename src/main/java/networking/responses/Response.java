@@ -1,4 +1,4 @@
-package networking.messages;
+package networking.responses;
 
 public enum Response {
     OK,

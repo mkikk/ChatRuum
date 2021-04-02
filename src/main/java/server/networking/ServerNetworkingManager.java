@@ -1,4 +1,4 @@
-package networking;
+package server.networking;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import networking.*;
 
 /**
  * Provides a convenient interface for networked communication on the server side.
@@ -19,20 +20,40 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
  * Netty code based on https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/objectecho/ObjectEchoServer.java
  */
 public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> implements Runnable {
-    protected final MultiTypeEventEmitter<ServerSession> eventEmitter;
+    private final MultiHandlerEventEmitter<ServerSession, Event> eventHandlers;
+    private final SingleHandlerEventEmitter<ServerSession, Request<?>> requestHandlers;
+    private final SingleHandlerEventEmitter<ServerSession, PersistentRequest<?>> persistentRequestHandlers;
     protected final int port;
 
     public ServerNetworkingManager(int port) {
-        this.eventEmitter = new MultiTypeEventEmitter<>();
         this.port = port;
+        eventHandlers = new MultiHandlerEventEmitter<>();
+        requestHandlers = new SingleHandlerEventEmitter<>();
+        persistentRequestHandlers = new SingleHandlerEventEmitter<>();
     }
 
-    public <T extends Event> EventHandler<ServerSession, T> on(Class<T> type, EventHandler<ServerSession, T> handler) {
-        return eventEmitter.add(type, handler);
+    public <T extends Event> EventHandler<ServerSession, T> onEvent(Class<T> type, EventHandler<ServerSession, T> handler) {
+        return eventHandlers.add(type, handler);
     }
 
-    public <T extends Event> boolean remove(Class<T> type, EventHandler<ServerSession, T> handler) {
-        return eventEmitter.remove(type, handler);
+    public <T extends RequestData> EventHandler<ServerSession, Request<T>> onRequest(Class<T> type, EventHandler<ServerSession, Request<T>> handler) {
+        return requestHandlers.set(type, handler);
+    }
+
+    public <T extends PersistentRequestData> EventHandler<ServerSession, PersistentRequest<T>> onPersistentRequest(Class<T> type, EventHandler<ServerSession, PersistentRequest<T>> handler) {
+        return persistentRequestHandlers.set(type, handler);
+    }
+
+    protected void callEventHandlers(ServerSession session, Event event) {
+        eventHandlers.call(event.getClass(), session, event);
+    }
+
+    protected void callRequestHandlers(ServerSession session, Request<RequestData> request) {
+        requestHandlers.call(request.data.getClass(), session, request);
+    }
+
+    protected void callPersistentRequestHandlers(ServerSession session, PersistentRequest<PersistentRequestData> request) {
+        persistentRequestHandlers.call(request.data.getClass(), session, request);
     }
 
     @Override
@@ -41,7 +62,7 @@ public class ServerNetworkingManager extends ChannelInitializer<SocketChannel> i
         p.addLast(
                 new ObjectEncoder(),
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                new ServerSession(eventEmitter)
+                new ServerSession(this)
         );
     }
 
