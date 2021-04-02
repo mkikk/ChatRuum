@@ -8,9 +8,7 @@ import server.networking.ServerNetworkingManager;
 import server.networking.ServerSession;
 import server.networking.PersistentRequest;
 
-import javax.swing.text.View;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ChatRuumServer {

@@ -11,9 +11,6 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.*;
-import server.networking.PersistentRequest;
-import server.networking.Request;
-import server.networking.ServerSession;
 
 /**
  * Provides a convenient interface for networked communication on the client side.
@@ -47,7 +44,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> i
     }
 
     @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    protected void initChannel(SocketChannel ch) {
         ChannelPipeline p = ch.pipeline();
         p.addLast(
                 new ObjectEncoder(),

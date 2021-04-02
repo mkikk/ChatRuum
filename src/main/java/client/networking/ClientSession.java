@@ -2,7 +2,6 @@ package client.networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +46,14 @@ public class ClientSession extends AbstractSession {
         return request;
     }
 
+    public void closeAllRequests() {
+        requests.forEach((k, v) -> {
+            // Have to explicitly close persistent requests
+            if (v.isPersistent()) closePersistentRequest(k);
+        });
+        requests.clear();
+    }
+
     protected void closePersistentRequest(int id) {
         if (requests.remove(id) != null) {
             ctx.writeAndFlush(new RequestWrapper(id, null)).addListener(FIRE_EXCEPTION_ON_FAILURE);
@@ -56,11 +63,15 @@ public class ClientSession extends AbstractSession {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         var wrapper = (ResponseWrapper) msg;
+
         var request = requests.getOrDefault(wrapper.id, null);
-        if (request != null) {
-            if (!request.isPersistent()) requests.remove(wrapper.id);
-            request.receiveResponse(wrapper.data);
+        if (request == null) {
+            System.out.println("Warning: Received response with no request: " + wrapper.data);
+            return;
         }
+
+        if (!request.isPersistent()) requests.remove(wrapper.id);
+        request.receiveResponse(wrapper.data);
     }
 
     @Override
