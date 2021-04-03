@@ -16,4 +16,13 @@ public class MessageData implements Serializable {
         this.senderName = senderName;
         this.sendTime = sendTime;
     }
+
+    @Override
+    public String toString() {
+        return "MessageData{" +
+                "text='" + text + '\'' +
+                ", senderName='" + senderName + '\'' +
+                ", sendTime=" + sendTime +
+                '}';
+    }
 }

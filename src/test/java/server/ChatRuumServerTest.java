@@ -9,14 +9,11 @@ import networking.ResponseData;
 import networking.events.ConnectedEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
-import networking.responses.CheckUsernameResponse;
-import networking.responses.GenericResponse;
-import networking.responses.NewMessageResponse;
-import networking.responses.Response;
+import networking.responses.*;
 import org.junit.jupiter.api.*;
 import server.networking.ServerSession;
 
-import java.sql.Time;
+import java.util.Arrays;
 import java.util.concurrent.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -31,10 +28,13 @@ class ChatRuumServerTest {
         System.out.println("Setting up test");
 
         server = new ChatRuumServer(testPort);
-        server.users.put("roobert", new User("roobert", "jfkdsfjkdkjfa"));
-        server.channels.put("yldine", new Channel("yldine", "321"));
+        final User robert = new User("roobert", "jfkdsfjkdkjfa");
+        server.users.put("roobert", robert);
+        final Channel yldine = new Channel("yldine", "321");
+        server.channels.put("yldine", yldine);
         server.startServer();
         System.out.println("Server started");
+
 
         client = new ClientNetworkingManager("localhost", testPort);
         var clientStartFuture = new CompletableFuture<ClientSession>();
@@ -168,16 +168,18 @@ class ChatRuumServerTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testViewChannel() {
         var response = new CompletableFuture<Response>();
 
+
         String channelName = "yldine";
         var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
-        view.onResponse(GenericResponse.class, (s, r) -> {
+        view.onResponse(ChannelMessagesResponse.class, (s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel: " + channelName);
+                System.out.println("Channel messages: " + r.messages.toString());
             } else if (r.response == Response.FORBIDDEN){
                 System.out.println("Failed to view channel");
             }
@@ -189,7 +191,7 @@ class ChatRuumServerTest {
     }
 
     @Test
-    @Order(6)
+    @Order(5)
     public void testSendMessage() {
         var message = new CompletableFuture<String>();
         var sendResponse = new CompletableFuture<Response>();

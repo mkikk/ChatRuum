@@ -90,9 +90,9 @@ public class ChatRuumServer {
             final User user = session.getUser();
             if (channel != null && channel.isJoined(user)) {
                 channel.addViewingRequest(req);
-                req.sendResponse(new GenericResponse(Response.OK));
+                req.sendResponse(new ChannelMessagesResponse(Response.OK, channel.convertToMessageData()));
             } else {
-                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+                req.sendResponse(new ChannelMessagesResponse(Response.FORBIDDEN, null));
             }
         });
 
