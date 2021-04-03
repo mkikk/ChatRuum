@@ -4,14 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import client.networking.ClientNetworkingManager;
 import client.networking.ClientSession;
-import client.networking.Request;
-import networking.ResponseData;
 import networking.events.ConnectedEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
 import networking.responses.*;
 import org.junit.jupiter.api.*;
-import server.networking.ServerSession;
 
 import java.util.Arrays;
 import java.util.concurrent.*;
@@ -24,7 +21,7 @@ class ChatRuumServerTest {
     private static ClientSession session;
 
     @BeforeAll
-    public static void setupServer() throws InterruptedException, ExecutionException, TimeoutException {
+    public static void setupServer() throws Exception {
         System.out.println("Setting up test");
 
         server = new ChatRuumServer(testPort);
@@ -40,8 +37,7 @@ class ChatRuumServerTest {
         var clientStartFuture = new CompletableFuture<ClientSession>();
         client.onEvent(ConnectedEvent.class, (s, e) -> clientStartFuture.complete(s));
         client.start();
-        session = clientStartFuture.get(2, TimeUnit.SECONDS);
-        System.out.println("Client started");
+        session = clientStartFuture.get();
     }
 
     @AfterAll
