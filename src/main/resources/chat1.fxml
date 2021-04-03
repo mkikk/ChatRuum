@@ -15,7 +15,7 @@
                   <Font name="Segoe UI" size="16.0" />
                </font>
             </TextArea>
-            <Button fx:id="SendButton" maxWidth="115.0" minHeight="50.0" minWidth="115.0" mnemonicParsing="false" onAction="#SendMessage" prefHeight="70.0" prefWidth="115.0" text="SEND" />
+            <Button fx:id="SendButton" maxWidth="115.0" minHeight="50.0" minWidth="115.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="70.0" prefWidth="115.0" text="SEND" />
          </children>
       </HBox>
    </bottom>

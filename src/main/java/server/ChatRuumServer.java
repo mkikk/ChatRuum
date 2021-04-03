@@ -1,6 +1,7 @@
 package server;
 
 import networking.events.ConnectedEvent;
+import networking.events.DisconnectedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
@@ -26,7 +27,8 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("New client: " + s.getInternalChannel().remoteAddress()));
+        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
+        server.onEvent(DisconnectedEvent.class, (s, e) -> System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress()));
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
             System.out.println("Registering...");
@@ -39,8 +41,9 @@ public class ChatRuumServer {
                 req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
+
         server.onRequest(CheckUsernameRequest.class, (session, req) -> {
-            System.out.println("User logging in: " + req.data.username);
+            System.out.println("Checking username: " + req.data.username);
 
             final User user = users.get(req.data.username);
             if (user != null) {
@@ -61,8 +64,10 @@ public class ChatRuumServer {
                 req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
+
         server.onRequest(CreateChannelRequest.class, (session,req) -> {
             System.out.println("Trying to create channel: " + req.data.channelName);
+
             final Channel channel = channels.get(req.data.channelName);
             if (channel == null) {
                 final Channel newChannel = new Channel(req.data.channelName, req.data.channelPassword);
@@ -72,6 +77,7 @@ public class ChatRuumServer {
                 req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
+
         server.onRequest(JoinChannelRequest.class, (session, req) -> {
             System.out.println("Joining channel: " + req.data.channelName);
 

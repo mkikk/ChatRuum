@@ -1,9 +1,6 @@
-package client.networking;
+package GUI.networking;
 
 import networking.*;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class Request {
     protected final int id;

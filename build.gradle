@@ -22,10 +22,6 @@ dependencies {
 
     compile 'io.netty:netty-all:4.1.60.Final'
 }
-application {
-    mainClassName = 'server.ChatRuumServer'
-}
-
 
 
 javafx {
@@ -35,6 +31,11 @@ javafx {
 }
 
 mainClassName = 'GUI.Main'
+
+task runServer(type: JavaExec) {
+    main = "server.ChatRuumServer"
+    classpath = sourceSets.main.runtimeClasspath
+}
 
 test {
     useJUnitPlatform()

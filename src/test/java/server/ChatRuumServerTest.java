@@ -2,15 +2,14 @@ package server;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import client.networking.ClientNetworkingManager;
-import client.networking.ClientSession;
+import GUI.networking.ClientNetworkingManager;
+import GUI.networking.ClientSession;
 import networking.events.ConnectedEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
 import networking.responses.*;
 import org.junit.jupiter.api.*;
 
-import java.util.Arrays;
 import java.util.concurrent.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -31,7 +30,6 @@ class ChatRuumServerTest {
         server.channels.put("yldine", yldine);
         server.startServer();
         System.out.println("Server started");
-
 
         client = new ClientNetworkingManager("localhost", testPort);
         var clientStartFuture = new CompletableFuture<ClientSession>();

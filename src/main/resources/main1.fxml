@@ -24,7 +24,7 @@
             </AnchorPane>
             <AnchorPane mouseTransparent="true" prefHeight="62.0" prefWidth="927.0">
                <children>
-                  <TextField fx:id="enterRoomText" alignment="CENTER" maxHeight="70.0" maxWidth="800.0" minHeight="70.0" minWidth="600.0" mouseTransparent="true" onAction="#setRoomName" pickOnBounds="false" prefHeight="70.0" prefWidth="800.0" promptText="Enter room name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TextField fx:id="enterRoomText" alignment="CENTER" maxHeight="70.0" maxWidth="800.0" minHeight="70.0" minWidth="600.0" mouseTransparent="true" pickOnBounds="false" prefHeight="70.0" prefWidth="800.0" promptText="Enter room name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <padding>
                         <Insets bottom="20.0" top="20.0" />
                      </padding>
@@ -60,7 +60,7 @@
                               <Font size="30.0" />
                            </font>
                         </Button>
-                        <Button fx:id="SettingsButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToSettings" style="-fx-background-color: #a49a9a;" text="Settings" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                        <Button fx:id="SettingsButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToSettings" style="-fx-background-color: #a49a9a;" text="Settings" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" disable="true">
                            <font>
                               <Font size="30.0" />
                            </font>

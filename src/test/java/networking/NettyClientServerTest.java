@@ -1,6 +1,6 @@
 package networking;
 
-import client.networking.ClientNetworkingManager;
+import GUI.networking.ClientNetworkingManager;
 import networking.events.ConnectedEvent;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;

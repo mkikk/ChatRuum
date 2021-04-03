@@ -63,6 +63,6 @@ public class Channel implements PasswordProtected{
 
     @Override
     public boolean checkPassword(String givenPassword) {
-        return givenPassword.equals(password);
+        return password == null || password.equals(givenPassword);
     }
 }

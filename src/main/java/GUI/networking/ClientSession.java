@@ -1,4 +1,4 @@
-package client.networking;
+package GUI.networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;

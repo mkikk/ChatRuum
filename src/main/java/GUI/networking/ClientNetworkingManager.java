@@ -1,4 +1,4 @@
-package client.networking;
+package GUI.networking;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -57,6 +57,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> i
         if (clientThread != null) return; // Server already running
 
         clientThread = new Thread(this);
+        clientThread.setName("ClientNetworkingManager");
         clientThread.start();
     }
 
