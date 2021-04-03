@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatRuumServer {
+    protected static final int DEFAULT_PORT = 5050;
+
     protected final Map<String, Channel> channels;
     protected final Map<String, User> users;
     private final ServerNetworkingManager server;
@@ -114,5 +116,10 @@ public class ChatRuumServer {
 
     public synchronized void stopServer() throws InterruptedException {
         server.stop();
+    }
+
+    public static void main(String[] args) {
+        var server = new ChatRuumServer(DEFAULT_PORT);
+        server.startServer();
     }
 }
