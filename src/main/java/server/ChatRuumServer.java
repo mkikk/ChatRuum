@@ -47,9 +47,20 @@ public class ChatRuumServer {
 
             final User user = users.get(req.data.username);
             if (user != null) {
-                req.sendResponse(new CheckUsernameResponse(CheckUsernameResponse.Result.NAME_IN_USE));
+                req.sendResponse(new CheckNameResponse(Result.NAME_IN_USE));
             } else {
-                req.sendResponse(new CheckUsernameResponse(CheckUsernameResponse.Result.NAME_FREE));
+                req.sendResponse(new CheckNameResponse(Result.NAME_FREE));
+            }
+        });
+
+        server.onRequest(CheckChannelNameRequest.class, (session, req) -> {
+            System.out.println("Checking channel: " + req.data.channelName);
+
+            final Channel channel = channels.get(req.data.channelName);
+            if (channel != null) {
+                req.sendResponse(new CheckNameResponse(Result.NAME_IN_USE));
+            } else {
+                req.sendResponse(new CheckNameResponse(Result.NAME_FREE));
             }
         });
 
@@ -98,9 +109,9 @@ public class ChatRuumServer {
             final User user = session.getUser();
             if (channel != null && channel.isJoined(user)) {
                 channel.addViewingRequest(req);
-                req.sendResponse(new ChannelMessagesResponse(Response.OK, channel.convertToMessageData()));
+                req.sendResponse(new ViewChannelResponse(Response.OK, channel.convertToMessageData()));
             } else {
-                req.sendResponse(new ChannelMessagesResponse(Response.FORBIDDEN, null));
+                req.sendResponse(new ViewChannelResponse(Response.FORBIDDEN, null));
             }
         });
 

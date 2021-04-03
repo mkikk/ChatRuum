@@ -10,18 +10,26 @@ import java.util.concurrent.ConcurrentMap;
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
 public class ClientSession extends AbstractSession {
-    protected final ClientNetworkingManager eventEmitter;
+    private final MultiHandlerEventEmitter<ClientSession, Event> eventHandlers;
     protected final ConcurrentMap<Integer, Request> requests;
 
     private int previousId = 0;
 
-    public ClientSession(ClientNetworkingManager eventEmitter) {
-        this.eventEmitter = eventEmitter;
+    public ClientSession() {
+        eventHandlers = new MultiHandlerEventEmitter<>();
         requests = new ConcurrentHashMap<>();
     }
 
     protected int getNextId() {
         return ++previousId;
+    }
+
+    public <T extends Event> EventHandler<ClientSession, T> onEvent(Class<T> type, EventHandler<ClientSession, T> handler) {
+        return eventHandlers.add(type, handler);
+    }
+
+    public <T extends Event> boolean removeEventHandler(Class<T> type, EventHandler<ClientSession, T> handler) {
+        return eventHandlers.remove(type, handler);
     }
 
     public Request sendRequest(RequestData requestData) {
@@ -60,6 +68,13 @@ public class ClientSession extends AbstractSession {
         }
     }
 
+    /**
+     * Closes the session
+     */
+    public void close() {
+        ctx.channel().close();
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         var wrapper = (ResponseWrapper) msg;
@@ -76,6 +91,6 @@ public class ClientSession extends AbstractSession {
 
     @Override
     protected void callEventHandlers(Event event) {
-        eventEmitter.callEventHandlers(this, event);
+        eventHandlers.call(event.getClass(), this, event);
     }
 }

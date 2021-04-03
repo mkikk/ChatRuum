@@ -1,6 +1,5 @@
 package networking.requests;
 
-import networking.Message;
 import networking.RequestData;
 
 /**

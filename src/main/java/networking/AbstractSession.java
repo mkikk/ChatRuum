@@ -29,11 +29,6 @@ public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        callEventHandlers(new ConnectedEvent());
-    }
-
-    @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         callEventHandlers(new DisconnectedEvent());
     }

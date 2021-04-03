@@ -5,10 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.InputMethodEvent;
 import networking.persistentrequests.ViewChannelRequest;
-import networking.requests.CreateChannelRequest;
-import networking.requests.JoinChannelRequest;
 import networking.requests.SendMessageRequest;
-import networking.responses.ChannelMessagesResponse;
+import networking.responses.ViewChannelResponse;
 import networking.responses.GenericResponse;
 import networking.responses.Response;
 
@@ -33,7 +31,7 @@ public class ChatController {
 
     public void viewChannel(ActionEvent actionEvent) {
         var view = Main.getSession().sendPersistentRequest(new ViewChannelRequest(channelNameText.getText()));
-        view.onResponse(ChannelMessagesResponse.class, (s, r) -> {
+        view.onResponse(ViewChannelResponse.class, (s, r) -> {
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel");
                 System.out.println("Channel messages: " + r.messages.toString());

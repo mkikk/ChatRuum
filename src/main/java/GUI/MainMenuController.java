@@ -9,8 +9,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import networking.requests.CreateChannelRequest;
 import networking.requests.JoinChannelRequest;
+import networking.requests.CheckChannelNameRequest;
+import networking.responses.CheckNameResponse;
 import networking.responses.GenericResponse;
 import networking.responses.Response;
+import networking.responses.Result;
 
 public class MainMenuController {
     @FXML
@@ -38,6 +41,19 @@ public class MainMenuController {
                 System.out.println("Joined channel:");
             } else if (r.response == Response.FORBIDDEN){
                 System.out.println("Failed to join channel");
+            }
+        });
+    }
+    public void checkRoomName(ActionEvent actionEvent) {
+        var req = Main.getSession().sendRequest(new CheckChannelNameRequest(channelNameText.getText()));
+        req.onResponse(CheckNameResponse.class, (s, r) -> {
+            System.out.println(r.result.name());
+            if (r.result == Result.NAME_FREE) {
+                System.out.println("Room name free");
+            } else if (r.result == Result.NAME_IN_USE){
+                System.out.println("Room name exists");
+            } else if (r.result == Result.NAME_INVALID) {
+                System.out.println("Room name not allowed");
             }
         });
     }

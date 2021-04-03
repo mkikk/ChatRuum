@@ -16,7 +16,6 @@ import java.util.concurrent.*;
 class ChatRuumServerTest {
     private static final int testPort = 5430;
     private static ChatRuumServer server;
-    private static ClientNetworkingManager client;
     private static ClientSession session;
 
     @BeforeAll
@@ -31,17 +30,16 @@ class ChatRuumServerTest {
         server.startServer();
         System.out.println("Server started");
 
-        client = new ClientNetworkingManager("localhost", testPort);
-        var clientStartFuture = new CompletableFuture<ClientSession>();
-        client.onEvent(ConnectedEvent.class, (s, e) -> clientStartFuture.complete(s));
-        client.start();
-        session = clientStartFuture.get();
+        var connectFuture = new CompletableFuture<Void>();
+        session = new ClientNetworkingManager().connect("localhost", testPort);
+        session.onEvent(ConnectedEvent.class, (s, e) -> connectFuture.complete(null));
+        connectFuture.get(2, TimeUnit.SECONDS);
     }
 
     @AfterAll
     public static void stopServer() throws InterruptedException {
         server.stopServer();
-        client.stop();
+        session.close();
     }
 
     /**
@@ -62,21 +60,21 @@ class ChatRuumServerTest {
     @Test
     @Order(0)
     public void testCheckUsername() {
-        var result = new CompletableFuture<CheckUsernameResponse.Result>();
+        var result = new CompletableFuture<Result>();
 
         String username = "albert";
         session.sendRequest(new CheckUsernameRequest(username))
-                .onResponse(CheckUsernameResponse.class, (ss, r) -> {
+                .onResponse(CheckNameResponse.class, (ss, r) -> {
                     System.out.println(r.result);
-                    if (r.result == CheckUsernameResponse.Result.NAME_FREE) {
+                    if (r.result == Result.NAME_FREE) {
                         System.out.println("The name " + username + " is free");
-                    } else if (r.result == CheckUsernameResponse.Result.NAME_IN_USE){
+                    } else if (r.result == Result.NAME_IN_USE){
                         System.out.println("The name " + username + " is already used");
                     }
                     result.complete(r.result);
                 });
 
-        assertEquals(CheckUsernameResponse.Result.NAME_FREE, await(result));
+        assertEquals(Result.NAME_FREE, await(result));
     }
 
     @Test
@@ -169,7 +167,7 @@ class ChatRuumServerTest {
 
         String channelName = "yldine";
         var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
-        view.onResponse(ChannelMessagesResponse.class, (s, r) -> {
+        view.onResponse(ViewChannelResponse.class, (s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel: " + channelName);

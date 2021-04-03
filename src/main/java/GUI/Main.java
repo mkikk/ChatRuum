@@ -6,10 +6,18 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Labeled;
 import javafx.stage.Stage;
 import networking.events.ConnectedEvent;
+import networking.events.DisconnectedEvent;
+import networking.events.ErrorEvent;
+import networking.events.NotConnectedEvent;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -23,47 +31,60 @@ public class Main extends Application {
     public static String getUsername(){
         return username;
     }
-    public static void setUsername(String username){
+    public static void setUsername(String username) {
         Main.username = username;
     }
 
-    Stage window;
-    Scene login, mainMenu, chatRoom;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL url = new File("src/main/resources/Login2.fxml").toURI().toURL();
+        URL url = new File("src/main/resources/EnterServerIP.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
-
         primaryStage.setTitle("Chatruum");
-        primaryStage.setScene(new Scene(root, 1080, 600));
+        primaryStage.setScene(new Scene(root, 900, 400));
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
-    public static void startClient(String address) {
-        if (client != null) return;
-        client = new ClientNetworkingManager(address, DEFAULT_PORT);
-        client.onEvent(ConnectedEvent.class, (s, e) -> session = s);
-        client.start();
+    public static ClientSession connectClient(String address) {
+        if (client == null) {
+            client = new ClientNetworkingManager();
+        }
+
+        session = client.connect(address, DEFAULT_PORT);
+        return session;
     }
 
-    public static void stopClient() throws InterruptedException {
-        if (client == null) return;
-        client.stop();
-    }
-
-    public static ClientNetworkingManager getClient() {
-        return client;
+    public static void stopSession() {
+        if (session == null) return;
+        session.close();
     }
 
     public static ClientSession getSession() {
         return session;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        startClient("localhost");
-        launch();
-        stopClient();
+    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) {
+        URL url = null;
+        Parent root = null;
+        try {
+            url = new File("src/main/resources/" + fxmlName + ".fxml").toURI().toURL();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            root = FXMLLoader.load(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Stage window = (Stage) referableComponent.getScene().getWindow();
+        window.setScene(new Scene(root, width, height));
     }
+
+    public static void main(String[] args) throws Exception {
+        //connectClient("localhost");
+        launch();
+        stopSession();
+    }
+
 }

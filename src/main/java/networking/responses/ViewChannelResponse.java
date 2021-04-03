@@ -6,11 +6,11 @@ import server.Message;
 
 import java.util.List;
 
-public class ChannelMessagesResponse implements ResponseData {
+public class ViewChannelResponse implements ResponseData {
     public final Response response;
     public final List<MessageData> messages;
 
-    public ChannelMessagesResponse(Response response, List<MessageData> messages) {
+    public ViewChannelResponse(Response response, List<MessageData> messages) {
         this.response = response;
         this.messages = messages;
     }

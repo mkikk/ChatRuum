@@ -14,10 +14,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import networking.requests.CheckUsernameRequest;
 import networking.requests.RegisterRequest;
-import networking.responses.CheckUsernameResponse;
+import networking.responses.CheckNameResponse;
 import networking.requests.PasswordLoginRequest;
 import networking.responses.GenericResponse;
 import networking.responses.Response;
+import networking.responses.Result;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,8 +63,8 @@ public class LoginController {
         //if (currentScene.getFocusOwner() == usernameText.getStyleableNode())
         System.out.println("Checking user exists");
         var req = Main.getSession().sendRequest(new CheckUsernameRequest(usernameText.getText()));
-        req.onResponse(CheckUsernameResponse.class, (s, r) -> {
-            if (r.result == CheckUsernameResponse.Result.NAME_FREE) {
+        req.onResponse(CheckNameResponse.class, (s, r) -> {
+            if (r.result == Result.NAME_FREE) {
                 Platform.runLater(() -> {
                     passwordConfirmation.setVisible(true);
                     loginButton.setText("Register");
@@ -71,14 +72,14 @@ public class LoginController {
                     isLogin = false;
 
                 });
-            } else if (r.result == CheckUsernameResponse.Result.NAME_IN_USE) {
+            } else if (r.result == Result.NAME_IN_USE) {
                 Platform.runLater(() -> {
                     passwordConfirmation.setVisible(false);
                     loginButton.setText("Login");
                     loginButton.setDisable(false);
                     isLogin = true;
                 });
-            } else if (r.result == CheckUsernameResponse.Result.NAME_INVALID) {
+            } else if (r.result == Result.NAME_INVALID) {
                 Platform.runLater(() -> {
                     noMatch.setText("Invalid username");
                     loginButton.setDisable(true);
@@ -123,23 +124,6 @@ public class LoginController {
     private void changeToMainMenu() {
         // If current scene is not active, do not change scene
         if (loginButton.getScene().getWindow() == null) return;
-
-        URL url = null;
-        Parent root = null;
-
-        try {
-            url = new File("src/main/resources/main1.fxml").toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            root = FXMLLoader.load(url);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Stage window = (Stage) loginButton.getScene().getWindow();
-        window.setScene(new Scene(root, 1080, 600));
+        Main.switchSceneTo("main1", loginButton, 1080,800);
     }
 }

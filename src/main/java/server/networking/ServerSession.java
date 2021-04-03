@@ -2,6 +2,7 @@ package server.networking;
 
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;
+import networking.events.ConnectedEvent;
 import server.User;
 
 import java.util.Objects;
@@ -59,6 +60,11 @@ public class ServerSession extends AbstractSession {
             eventEmitter.callRequestHandlers(this, request);
         }
 
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) {
+        callEventHandlers(new ConnectedEvent());
     }
 
     @Override
