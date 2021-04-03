@@ -1,5 +1,6 @@
 package GUI;
 
+import client.networking.ClientNetworkingManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,9 +11,16 @@ import java.io.File;
 import java.net.URL;
 
 
-public class Main extends Application {
-    Stage window;
-    Scene login, mainMenu, chatRoom;
+public class OpenGUI extends Application {
+    private ClientNetworkingManager UserId;
+
+    public ClientNetworkingManager getUserId() {
+        return UserId;
+    }
+    public void setUserId(ClientNetworkingManager UserId) {
+        this.UserId = UserId;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 

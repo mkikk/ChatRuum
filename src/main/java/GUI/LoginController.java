@@ -1,5 +1,6 @@
 package GUI;
 
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,14 +17,14 @@ import java.io.IOException;
 import java.net.URL;
 
 
-public class LoginController {
-    @FXML
+public class LoginController{
+        @FXML
     Button loginButton;
     @FXML
     TextField usernameText;
     @FXML
     PasswordField passwordText, passwordConfirmation;
-     @FXML
+    @FXML
     Label noMatch;
 
 
@@ -32,20 +33,21 @@ public class LoginController {
          * If not, then enable confirm password
          *
          */
+
+
+         loginButton.setText("Register");
      }
 
 
-    public void rememberUsername(ActionEvent actionEvent) {
+    public void createUser(ActionEvent actionEvent) {
         //send query to server to store username with password
 
     }
 
-    public void setPassword(ActionEvent actionEvent) {
-        //
-    }
 
     public void setPasswordConfirmation(ActionEvent actionEvent) {
         loginButton.setDisable(!passwordText.getText().equals(passwordConfirmation.getText()));
+        if (loginButton.isDisabled()) noMatch.setText("Passwords don't match!");
     }
 
     public void CheckLogin() throws IOException {
@@ -55,10 +57,13 @@ public class LoginController {
          */
         noMatch.setText("Username and password do not match. Try again!");
 
-        URL url = new File("src/main/resources/main1.fxml").toURI().toURL();
+        // switch to new window
+        URL url = new File("src/main/resources/Main1.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
 
         Stage window = (Stage) loginButton.getScene().getWindow();
         window.setScene(new Scene(root, 1080, 600));
     }
+
+
 }
