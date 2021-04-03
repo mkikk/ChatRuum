@@ -1,5 +1,5 @@
 # ChatRuum
-OOP group work. 
+OOP group work.  
 
 **Rollid:**  
 UI  - Kikkatalo  
@@ -20,12 +20,12 @@ Kasutajanimi, parool
 Sõnumi sisu-  
 Saatja - kuupäev - sisu tüüp - sisu  
 
-Rakenduse avamine -> sisse logimine -> kanaliga liitumine -> vestlus
+Rakenduse avamine -> sisse logimine -> kanaliga liitumine -> vestlus  
 
-Server protokoll - sõnumite tüübite ja sisude vahendamine  
+server protokoll - sõnumite tüübite ja sisude vahendamine  
 Kliendi protokoll - sõnumi tüübi ja sisu saatmine / vastu võtmine  
 
-Kanali sisu- viimased n sõnumit, aktiivsed kasutajad(nimi, arv), saada uut infot
+Kanali sisu- viimased n sõnumit, aktiivsed kasutajad(nimi, arv), saada uut infot  
 
 ___
 
@@ -34,7 +34,7 @@ sisse logimise aken
 main menu (kanaliga liitumine, üldsätted)  
 vestluse menu  
 
-**Server**  
+**server**  
 kanalite loomine  
 saadetud sõnumid  
 kasutajate info  
