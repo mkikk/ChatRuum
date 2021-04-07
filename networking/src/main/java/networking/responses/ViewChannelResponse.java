@@ -2,7 +2,6 @@ package networking.responses;
 
 import networking.ResponseData;
 import networking.data.MessageData;
-import server.Message;
 
 import java.util.List;
 

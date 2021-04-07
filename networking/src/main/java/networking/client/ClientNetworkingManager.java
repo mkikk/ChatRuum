@@ -32,13 +32,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
         );
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-        System.out.println("ERROR BIG BAD");
-    }
-
-    public synchronized ClientSession connect(String host, int port) {
+    public ClientSession connect(String host, int port) {
         setupSession();
 
         Bootstrap b = new Bootstrap();

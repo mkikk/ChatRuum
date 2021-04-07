@@ -1,0 +1,20 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+    id 'java'
+}
+
+apply from: "$rootProject.projectDir/common.gradle"
+
+dependencies {
+    implementation project(':networking')
+}
+
+javafx {
+    version = "15.0.1"
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+application {
+    mainClassName = 'GUI.Main'
+}
