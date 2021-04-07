@@ -1,4 +1,4 @@
-package GUI.networking;
+package networking.client;
 
 import networking.*;
 

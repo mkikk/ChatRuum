@@ -1,4 +1,4 @@
-package server.networking;
+package networking.server;
 
 import networking.PersistentRequestData;
 import java.util.function.Consumer;

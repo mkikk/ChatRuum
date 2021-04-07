@@ -1,10 +1,8 @@
 package server;
 
-import networking.AbstractSession;
 import networking.data.MessageData;
 import networking.responses.NewMessageResponse;
-import server.networking.PersistentRequest;
-import server.networking.ServerSession;
+import networking.server.PersistentRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;

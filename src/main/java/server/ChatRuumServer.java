@@ -5,9 +5,9 @@ import networking.events.DisconnectedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
-import server.networking.ServerNetworkingManager;
-import server.networking.ServerSession;
-import server.networking.PersistentRequest;
+import networking.server.ServerNetworkingManager;
+import networking.server.ServerSession;
+import networking.server.PersistentRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +17,12 @@ public class ChatRuumServer {
 
     protected final Map<String, Channel> channels;
     protected final Map<String, User> users;
-    private final ServerNetworkingManager server;
+    private final ServerNetworkingManager<User> server;
 
     public ChatRuumServer(int port) {
         channels = new HashMap<>();
         users = new HashMap<>();
-        server = new ServerNetworkingManager(port);
+        server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
@@ -102,7 +102,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.onPersistentRequest(ViewChannelRequest.class, (ServerSession session, PersistentRequest<ViewChannelRequest> req) -> {
+        server.onPersistentRequest(ViewChannelRequest.class, (session, req) -> {
             System.out.println("Viewing channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);

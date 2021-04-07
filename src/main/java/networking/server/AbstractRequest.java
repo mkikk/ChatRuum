@@ -1,4 +1,4 @@
-package server.networking;
+package networking.server;
 
 import networking.ResponseData;
 import java.io.Serializable;

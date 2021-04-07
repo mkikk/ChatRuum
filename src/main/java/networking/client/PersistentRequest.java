@@ -1,4 +1,4 @@
-package GUI.networking;
+package networking.client;
 
 public class PersistentRequest extends Request {
     public PersistentRequest(int id, ClientSession session) {

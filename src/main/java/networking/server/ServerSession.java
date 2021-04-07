@@ -1,9 +1,8 @@
-package server.networking;
+package networking.server;
 
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;
 import networking.events.ConnectedEvent;
-import server.User;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,22 +10,26 @@ import java.util.concurrent.ConcurrentMap;
 
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
-public class ServerSession extends AbstractSession {
-    protected final ServerNetworkingManager eventEmitter;
+/**
+ * Class to represent client session on server
+ * @param <U> Type of user data stored on session
+ */
+public class ServerSession<U> extends AbstractSession {
+    protected final ServerNetworkingManager<U> eventEmitter;
     protected final ConcurrentMap<Integer, PersistentRequest<?>> persistentRequests;
 
-    protected User user;
+    protected U user;
 
-    public ServerSession(ServerNetworkingManager eventEmitter) {
+    public ServerSession(ServerNetworkingManager<U> eventEmitter) {
         this.eventEmitter = eventEmitter;
         persistentRequests = new ConcurrentHashMap<>();
     }
 
-    public void setUser(User user) {
+    public void setUser(U user) {
         this.user = user;
     }
 
-    public User getUser() {
+    public U getUser() {
         return user;
     }
 

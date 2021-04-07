@@ -1,18 +1,16 @@
 package networking;
 
-import GUI.networking.ClientNetworkingManager;
-import GUI.networking.ClientSession;
+import networking.client.ClientNetworkingManager;
 import networking.events.ConnectedEvent;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;
 import org.junit.jupiter.api.Test;
-import server.networking.ServerNetworkingManager;
+import networking.server.ServerNetworkingManager;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +27,7 @@ class NettyClientServerTest {
         var serverCheck = new CompletableFuture<Boolean>();
         var clientCheck = new CompletableFuture<Boolean>();
 
-        var server = new ServerNetworkingManager(testPort);
+        var server = new ServerNetworkingManager<Void>(testPort);
 
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Server connected"));
         server.onRequest(DebugRequest.class, (s, r) -> {

@@ -1,22 +1,16 @@
 package GUI;
 
-import GUI.networking.ClientNetworkingManager;
-import GUI.networking.ClientSession;
+import networking.client.ClientNetworkingManager;
+import networking.client.ClientSession;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Labeled;
 import javafx.stage.Stage;
-import networking.events.ConnectedEvent;
-import networking.events.DisconnectedEvent;
-import networking.events.ErrorEvent;
-import networking.events.NotConnectedEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 

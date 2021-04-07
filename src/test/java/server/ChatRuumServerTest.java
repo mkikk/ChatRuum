@@ -2,8 +2,8 @@ package server;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import GUI.networking.ClientNetworkingManager;
-import GUI.networking.ClientSession;
+import networking.client.ClientNetworkingManager;
+import networking.client.ClientSession;
 import networking.events.ConnectedEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
