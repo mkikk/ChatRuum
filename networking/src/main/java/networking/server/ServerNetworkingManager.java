@@ -69,7 +69,7 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
         p.addLast(
                 new ObjectEncoder(),
                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                new ServerSession<>(this)
+                new ServerSession<>(ch.remoteAddress(), this)
         );
     }
 

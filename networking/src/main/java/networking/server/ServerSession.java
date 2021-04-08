@@ -5,6 +5,7 @@ import networking.*;
 import networking.events.ConnectedEvent;
 import networking.events.DisconnectedEvent;
 
+import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -19,7 +20,8 @@ public class ServerSession<U> extends AbstractSession {
 
     protected U user;
 
-    public ServerSession(ServerNetworkingManager<U> eventEmitter) {
+    public ServerSession(SocketAddress targetAddress, ServerNetworkingManager<U> eventEmitter) {
+        super(targetAddress);
         this.eventEmitter = eventEmitter;
         persistentRequests = new ConcurrentHashMap<>();
     }

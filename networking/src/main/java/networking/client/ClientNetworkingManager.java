@@ -11,6 +11,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.events.ConnectedEvent;
 import networking.events.NotConnectedEvent;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 /**
  * Provides a convenient interface for networked communication on the client side.
  * Uses netty and java built in serialization internally.
@@ -33,15 +36,16 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
     }
 
     public ClientSession connect(String host, int port) {
-        setupSession();
+        var targetAddress = new InetSocketAddress(host, port);
+        setupSession(targetAddress);
 
         Bootstrap b = new Bootstrap();
         b.group(group);
         b.channel(NioSocketChannel.class);
         b.handler(this);
 
-        var connectFuture = b.connect(host, port);
-        System.out.println("Client connecting to " + connectFuture.channel().remoteAddress() + "...");
+        var connectFuture = b.connect(targetAddress);
+        System.out.println("Client connecting to " + targetAddress + "...");
         connectFuture.addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 session.callEventHandlers(new ConnectedEvent());
@@ -57,10 +61,10 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
         return session;
     }
 
-    private synchronized void setupSession() {
+    private synchronized void setupSession(SocketAddress targetAddress) {
         if (session != null || group != null) throw new IllegalStateException("Client session already running");
 
-        session = new ClientSession();
+        session = new ClientSession(targetAddress);
         group = new NioEventLoopGroup();
     }
 

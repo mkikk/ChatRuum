@@ -5,6 +5,7 @@ import networking.*;
 import networking.events.ConnectionDroppedEvent;
 import networking.events.DisconnectedEvent;
 
+import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -16,7 +17,8 @@ public class ClientSession extends AbstractSession {
 
     private final AtomicInteger previousId;
 
-    public ClientSession() {
+    public ClientSession(SocketAddress targetAddress) {
+        super(targetAddress);
         eventHandlers = new MultiHandlerEventEmitter<>();
         requests = new ConcurrentHashMap<>();
         previousId = new AtomicInteger(0);
