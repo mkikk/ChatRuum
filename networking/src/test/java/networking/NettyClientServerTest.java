@@ -45,7 +45,7 @@ class NettyClientServerTest {
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected"));
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> {
             var req = s.sendRequest(new DebugRequest("Klient siin!"));
-            req.onResponse(DebugResponse.class, (ss, r) -> {
+            req.onResponse((ss, r) -> {
                 System.out.println("Client received response: " + r.message);
                 clientCheck.complete(true);
                 pingCount.incrementAndGet();

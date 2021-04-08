@@ -5,18 +5,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
 import networking.events.ConnectedEvent;
+import networking.events.ErrorEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
 import networking.responses.*;
 import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ChatRuumServerTest {
     private static final int testPort = 5430;
     private static ChatRuumServer server;
     private static ClientSession session;
+    private static AtomicInteger exceptionCount;
 
     @BeforeAll
     public static void setupServer() throws Exception {
@@ -31,15 +34,27 @@ class ChatRuumServerTest {
         System.out.println("Server started");
 
         var connectFuture = new CompletableFuture<Void>();
+        exceptionCount = new AtomicInteger(0);
         session = new ClientNetworkingManager().connect("localhost", testPort);
         session.onEvent(ConnectedEvent.class, (s, e) -> connectFuture.complete(null));
+        session.onEvent(ErrorEvent.class, (s, e) -> exceptionCount.incrementAndGet());
         connectFuture.get(2, TimeUnit.SECONDS);
     }
 
     @AfterAll
     public static void stopServer() throws InterruptedException {
-        server.stopServer();
         session.close();
+        server.stopServer();
+    }
+
+    @BeforeEach
+    public void resetExceptionCount() {
+        exceptionCount.set(0);
+    }
+
+    @AfterEach
+    public void checkExceptionCount() {
+        assertEquals(0, exceptionCount.get(), "Exception count in simulated client should be 0");
     }
 
     /**
@@ -64,7 +79,7 @@ class ChatRuumServerTest {
 
         String username = "albert";
         session.sendRequest(new CheckUsernameRequest(username))
-                .onResponse(CheckNameResponse.class, (ss, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.result);
                     if (r.result == Result.NAME_FREE) {
                         System.out.println("The name " + username + " is free");
@@ -83,7 +98,7 @@ class ChatRuumServerTest {
         var response = new CompletableFuture<Response>();
 
         session.sendRequest(new RegisterRequest("albert1", "parool"))
-                .onResponse(GenericResponse.class, (ss, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.response);
                     if (r.response == Response.OK) {
                         System.out.println("New user registered");
@@ -104,7 +119,7 @@ class ChatRuumServerTest {
         String username = "albert1";
         String userPassword = "valeparool";
         session.sendRequest(new PasswordLoginRequest(username, userPassword))
-                .onResponse(GenericResponse.class, (ss, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Login successful. Hello, " + username);
@@ -125,7 +140,7 @@ class ChatRuumServerTest {
         String username = "albert1";
         String userPassword = "parool";
         session.sendRequest(new PasswordLoginRequest(username, userPassword))
-                .onResponse(GenericResponse.class, (ss, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Login successful. Hello, " + username);
@@ -146,7 +161,7 @@ class ChatRuumServerTest {
         String channelName = "yldine";
         String channelPassword = "321";
         session.sendRequest(new JoinChannelRequest(channelName, channelPassword))
-                .onResponse(GenericResponse.class, (s, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Joined channel: " + channelName);
@@ -192,7 +207,7 @@ class ChatRuumServerTest {
         String text = "Tere, maailm";
 
         var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
-        view.onResponse(GenericResponse.class, (s, r) -> {
+        view.onResponse(ViewChannelResponse.class, (s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel: " + channelName);
@@ -206,7 +221,7 @@ class ChatRuumServerTest {
         });
 
         session.sendRequest(new SendMessageRequest(channelName, text))
-                .onResponse(GenericResponse.class, (s, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Sent message: " + text + " to " + channelName);
@@ -232,7 +247,7 @@ class ChatRuumServerTest {
         String channelName = "abi";
         String channelPassword = "iba";
         session.sendRequest(new CreateChannelRequest(channelName, channelPassword))
-                .onResponse(GenericResponse.class, (ss, r) -> {
+                .onResponse((s, r) -> {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Created channel: " + channelName);

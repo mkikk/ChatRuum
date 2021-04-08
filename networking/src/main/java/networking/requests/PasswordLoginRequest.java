@@ -1,8 +1,9 @@
 package networking.requests;
 
 import networking.RequestData;
+import networking.responses.GenericResponse;
 
-public class PasswordLoginRequest implements RequestData {
+public class PasswordLoginRequest implements RequestData<GenericResponse> {
     public final String username;
     public final String password;
 

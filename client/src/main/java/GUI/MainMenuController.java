@@ -35,7 +35,7 @@ public class MainMenuController {
 
     public void joinRoom(ActionEvent actionEvent) {
         var req = Main.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Joined channel:");
@@ -46,7 +46,7 @@ public class MainMenuController {
     }
     public void checkRoomName(ActionEvent actionEvent) {
         var req = Main.getSession().sendRequest(new CheckChannelNameRequest(channelNameText.getText()));
-        req.onResponse(CheckNameResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.result.name());
             if (r.result == Result.NAME_FREE) {
                 System.out.println("Room name free");
@@ -65,7 +65,7 @@ public class MainMenuController {
                         channelPasswordText.getText().isEmpty() ? null: channelPasswordText.getText()
                 )
         );
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Created channel");

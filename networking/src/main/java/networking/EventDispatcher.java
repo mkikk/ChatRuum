@@ -2,6 +2,11 @@ package networking;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * Helper class to call multiple event handlers of the same type at the same time
+ * @param <S>
+ * @param <T>
+ */
 public class EventDispatcher<S, T> {
     private final ConcurrentLinkedQueue<EventHandler<S, T>> handlers;
     // private final ConcurrentLinkedQueue<RemovableEventHandler<S, T>> removableHandlers;
@@ -15,11 +20,12 @@ public class EventDispatcher<S, T> {
         handlers.add(handler);
     }
 
-    public boolean remove(EventHandler<?, ?> handler) {
-        return handlers.remove(handler);
+    public void remove(EventHandler<?, ?> handler) {
+        handlers.remove(handler);
     }
 
-    public void call(S session, T event) {
+    public boolean call(S session, T event) {
         handlers.forEach(handler -> handler.handle(session, event));
+        return !handlers.isEmpty(); // TODO: Make this safe against race conditions
     }
 }

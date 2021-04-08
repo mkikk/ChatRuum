@@ -23,7 +23,7 @@ import networking.*;
  */
 public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel> implements Runnable {
     private final MultiHandlerEventEmitter<ServerSession<U>, Event> eventHandlers;
-    private final SingleHandlerEventEmitter<ServerSession<U>, Request<?>> requestHandlers;
+    private final SingleHandlerEventEmitter<ServerSession<U>, Request<?, ?>> requestHandlers;
     private final SingleHandlerEventEmitter<ServerSession<U>, PersistentRequest<?>> persistentRequestHandlers;
     protected final int port;
     private Thread serverThread;
@@ -39,7 +39,7 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
         return eventHandlers.add(type, handler);
     }
 
-    public <T extends RequestData> EventHandler<ServerSession<U>, Request<T>> onRequest(Class<T> type, EventHandler<ServerSession<U>, Request<T>> handler) {
+    public <T extends RequestData<R>, R extends ResponseData> EventHandler<ServerSession<U>, Request<T, R>> onRequest(Class<T> type, EventHandler<ServerSession<U>, Request<T, R>> handler) {
         return requestHandlers.set(type, handler);
     }
 
@@ -51,12 +51,16 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
         eventHandlers.call(event.getClass(), session, event);
     }
 
-    protected void callRequestHandlers(ServerSession<U> session, Request<RequestData> request) {
-        requestHandlers.call(request.data.getClass(), session, request);
+    protected void callRequestHandlers(ServerSession<U> session, Request<?, ?> request) {
+        if (!requestHandlers.call(request.data.getClass(), session, request)) {
+            throw new RuntimeException("No handler for request of type " + request.data.getClass().getName() + " registered");
+        }
     }
 
     protected void callPersistentRequestHandlers(ServerSession<U> session, PersistentRequest<PersistentRequestData> request) {
-        persistentRequestHandlers.call(request.data.getClass(), session, request);
+        if (!persistentRequestHandlers.call(request.data.getClass(), session, request)) {
+            throw new RuntimeException("No handler for persistent request of type " + request.data.getClass().getName() + " registered");
+        }
     }
 
     @Override

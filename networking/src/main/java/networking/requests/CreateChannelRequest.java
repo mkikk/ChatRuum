@@ -1,8 +1,9 @@
 package networking.requests;
 
 import networking.RequestData;
+import networking.responses.GenericResponse;
 
-public class CreateChannelRequest implements RequestData {
+public class CreateChannelRequest implements RequestData<GenericResponse> {
     public final String channelName;
     public final String channelPassword;
 
