@@ -35,7 +35,7 @@ class ChatRuumServerTest {
 
         var connectFuture = new CompletableFuture<Void>();
         exceptionCount = new AtomicInteger(0);
-        session = new ClientNetworkingManager().connect("localhost", testPort);
+        session = new ClientNetworkingManager(testPort).connect("localhost");
         session.onEvent(ConnectedEvent.class, (s, e) -> connectFuture.complete(null));
         session.onEvent(ErrorEvent.class, (s, e) -> exceptionCount.incrementAndGet());
         connectFuture.get(2, TimeUnit.SECONDS);

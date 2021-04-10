@@ -40,7 +40,7 @@ class NettyClientServerTest {
         server.start();
 
 
-        var clientSession = new ClientNetworkingManager().connect("localhost", testPort);
+        var clientSession = new ClientNetworkingManager(testPort).connect("localhost");
 
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected"));
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> {
