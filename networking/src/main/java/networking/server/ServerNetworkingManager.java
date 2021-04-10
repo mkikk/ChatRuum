@@ -12,6 +12,8 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.*;
 
+import java.util.Scanner;
+
 /**
  * Provides a convenient interface for networked communication on the server side.
  * Uses netty and java built in serialization internally.

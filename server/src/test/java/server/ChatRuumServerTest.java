@@ -37,7 +37,7 @@ class ChatRuumServerTest {
     }
 
     @AfterAll
-    public static void stopServer() throws InterruptedException {
+    public static void stopServer() throws Exception {
         server.stopServer();
         session.close();
     }

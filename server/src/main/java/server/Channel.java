@@ -24,6 +24,15 @@ public class Channel implements PasswordProtected{
         users = new HashSet<>();
         viewingRequests = new ArrayList<>();
     }
+
+    public Channel(String name, String password, List<Message> messages, Set<User> users) {
+        this.name = name;
+        this.password = password;
+        this.messages = messages;
+        this.users = users;
+        viewingRequests = new ArrayList<>();
+    }
+
     public List<MessageData> convertToMessageData() {
         return messages.stream().map(Message::getAsData).collect(Collectors.toList());
     }

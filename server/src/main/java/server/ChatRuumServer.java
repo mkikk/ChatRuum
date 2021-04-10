@@ -9,8 +9,10 @@ import networking.server.ServerNetworkingManager;
 import networking.server.ServerSession;
 import networking.server.PersistentRequest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class ChatRuumServer {
     protected static final int DEFAULT_PORT = 5050;
@@ -19,16 +21,25 @@ public class ChatRuumServer {
     protected final Map<String, User> users;
     private final ServerNetworkingManager<User> server;
 
-    public ChatRuumServer(int port) {
-        channels = new HashMap<>();
-        users = new HashMap<>();
+    public ChatRuumServer(int port) throws Exception {
+        channels = ReadWrite.readChannels("channels.json");
+        users = ReadWrite.readUsers("users.json");
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
-    private void setupServer() {
+    private void setupServer()  {
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
-        server.onEvent(DisconnectedEvent.class, (s, e) -> System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress()));
+        server.onEvent(DisconnectedEvent.class, (s, e) -> {
+            try {
+                ReadWrite.writeChannels("channels.json", channels);
+                ReadWrite.writeUsers("users.json", users);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
+
+        });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
             System.out.println("Registering...");
@@ -125,18 +136,25 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                System.out.println("In shutdown hook");
+            }
+        }, "Shutdown-thread"));
     }
 
     public void startServer() {
         server.start();
     }
 
-    public synchronized void stopServer() throws InterruptedException {
+    public synchronized void stopServer() throws Exception {
+        System.out.println("Stopping server...");
         server.stop();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         var server = new ChatRuumServer(DEFAULT_PORT);
+
         server.startServer();
     }
 }
