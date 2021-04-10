@@ -1,5 +1,7 @@
 package server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.data.MessageData;
 import networking.responses.NewMessageResponse;
 import networking.server.PersistentRequest;
@@ -11,10 +13,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Channel implements PasswordProtected{
+    @JsonProperty(value = "name")
     private final String name;
+    @JsonProperty(value = "password")
     private final String password;
+    @JsonProperty(value = "messages")
     private final List<Message> messages;
+    @JsonProperty(value = "users")
     private final Set<User> users;
+    @JsonIgnore
     private final List<PersistentRequest<?>> viewingRequests;
 
     public Channel(String name, String password) {
@@ -32,9 +39,24 @@ public class Channel implements PasswordProtected{
         this.users = users;
         viewingRequests = new ArrayList<>();
     }
+    public Channel(){
+        name = getName();
+        password = getPassword();
+        users = getUsers();
+        messages = getMessages();
+        viewingRequests = new ArrayList<>();
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
 
     public List<MessageData> convertToMessageData() {
-        return messages.stream().map(Message::getAsData).collect(Collectors.toList());
+        return messages.stream().map(Message::convertAsData).collect(Collectors.toList());
     }
     public List<Message> getMessages() {
         return messages;

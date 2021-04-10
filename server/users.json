@@ -1,4 +1,18 @@
 {
-  "name" : "muumi",
-  "password" : "1234"
+  "miilo" : {
+    "name" : "miilo",
+    "password" : "1234"
+  },
+  "jaagup" : {
+    "name" : "jaagup",
+    "password" : "1234"
+  },
+  "pablo" : {
+    "name" : "pablo",
+    "password" : "1234"
+  },
+  "nunnukas" : {
+    "name" : "nunnukas",
+    "password" : "12345"
+  }
 }

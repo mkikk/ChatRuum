@@ -15,83 +15,54 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-
+//https://attacomsian.com/blog/jackson-create-json-object
+//https://stackoverflow.com/questions/16310411/reading-multiple-json-objects-from-a-single-file-into-java-with-jackson
 public class ReadWrite {
     public static void main(String[] args) throws Exception {
 //        final Map<String, User> stringUserMap = readUsers("test.json");
 //        System.out.println(stringUserMap.toString());
         final HashMap<String, Channel> testHashMap = new HashMap<>();
-        testHashMap.put("yldine", new Channel("yldine", ""));
-        testHashMap.put("lamp", new Channel("lamp", "1234"));
-        writeChannels("test.json", testHashMap);
-        //readChannels("test.json");
+        final User jaagup = new User("jaagup", "1234");
+        final User miilo = new User("miilo", "1234");
+        testHashMap.put("yldine", new Channel("yldine", "",
+                new ArrayList<>(){{add(new Message("TERE", jaagup));add(new Message("tere??", miilo));}},
+                new HashSet<User>(new ArrayList<>(){{add(jaagup);add(miilo);}})));
+        testHashMap.put("lamp", new Channel("lamp", "1234",
+                new ArrayList<>(){{add(new Message("Kas kedagi on siin", miilo));}},
+                new HashSet<User>(new ArrayList<>(){{add(jaagup);}})));
+        final HashMap<String, User> userTestHashMap = new HashMap<>();
+        userTestHashMap.put("miilo", new User("miilo", "1234"));
+        userTestHashMap.put("jaagup", new User("jaagup", "1234"));
+        writeUsers("users.json", userTestHashMap);
+        writeChannels("channels.json", testHashMap);
+        final Map<String, User> stringUserMap = readUsers("users.json");
+        System.out.println(stringUserMap.toString());
+        final Map<String, Channel> stringChannelMap = readChannels("channels.json");
+        System.out.println(stringChannelMap.toString());
 
     }
     public static Map<String, User> readUsers(String path) throws IOException {
-        final Map<String, User> users = new HashMap<>();
         final ObjectMapper objectMapper = new ObjectMapper();
         File file = Paths.get(path).toFile();
-        JsonParser parser;
-        try {
-            parser = new JsonFactory().createParser(Paths.get(path).toFile());
-        } catch (FileNotFoundException e) {
-            file.createNewFile();
-            parser = new JsonFactory().createParser(Paths.get(path).toFile());
+        final Map<String, User> stringUserMap = objectMapper.readValue(file, new TypeReference<Map<String, User>>() {
+        });
 
-        }
-        for(Iterator it = objectMapper.readValues(parser, User.class)
-                ;it.hasNext();) {
-            final User next = (User) it.next();
-            users.put(next.getName(), next);
-        }
-        return users;
+        return stringUserMap;
     }
     public static void writeUsers(String path, Map<String, User> users) throws Exception{
         final ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        users.forEach((name, user) -> {
-            try {
-                objectMapper.writerWithDefaultPrettyPrinter().writeValue(Paths.get(path).toFile(), user);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(Paths.get(path).toFile(), users);
     }
     public static Map<String, Channel> readChannels(String path) throws IOException {
-        final Map<String, Channel> channels = new HashMap<>();
         final ObjectMapper objectMapper = new ObjectMapper();
         File file = Paths.get(path).toFile();
-        JsonParser parser;
-        try {
-            parser = new JsonFactory().createParser(Paths.get(path).toFile());
-        } catch (FileNotFoundException e) {
-            file.createNewFile();
-            parser = new JsonFactory().createParser(Paths.get(path).toFile());
-
-        }
-
-        for(Iterator it = objectMapper.readValues(parser, new TypeReference<Channel>(){})
-            ;it.hasNext();) {
-            final Channel next = (Channel) it.next();
-            channels.put(next.getName(), next);
-        }
-        return channels;
+        final Map<String, Channel> stringChannelMap = objectMapper.readValue(file, new TypeReference<Map<String, Channel>>() {
+        });
+        return stringChannelMap;
     }
     public static void writeChannels(String path, Map<String, Channel> channels) throws Exception{
         final ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        ObjectNode rootNode = objectMapper.createObjectNode();
-        channels.forEach((name, channel) -> {
-            try {
-                final String s = objectMapper.writerWithDefaultPrettyPrinter()
-                        .writeValueAsString(channel);
-                rootNode.put(channel.getName(), s);
-                System.out.println(s);
-
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }});
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(Paths.get(path).toFile(), rootNode);
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(Paths.get(path).toFile(), channels);
 
     }
 }
