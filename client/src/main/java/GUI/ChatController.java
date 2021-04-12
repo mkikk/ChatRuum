@@ -19,7 +19,7 @@ public class ChatController {
 
     public void sendMessage(ActionEvent actionEvent) {
         var req = Main.getSession().sendRequest(new SendMessageRequest(channelNameText.getText(), newMessageText.getText()));
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Sent message");

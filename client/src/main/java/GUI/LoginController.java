@@ -63,7 +63,7 @@ public class LoginController {
         //if (currentScene.getFocusOwner() == usernameText.getStyleableNode())
         System.out.println("Checking user exists");
         var req = Main.getSession().sendRequest(new CheckUsernameRequest(usernameText.getText()));
-        req.onResponse(CheckNameResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 Platform.runLater(() -> {
                     passwordConfirmation.setVisible(true);
@@ -92,7 +92,7 @@ public class LoginController {
         if (passwordText.getText().equals(passwordConfirmation.getText())) {
             noMatch.setText("");
             var req = Main.getSession().sendRequest(new RegisterRequest(usernameText.getText(), passwordText.getText()));
-            req.onResponse(GenericResponse.class, (s, r) -> {
+            req.onResponse((s, r) -> {
                 System.out.println(r.response);
                 if (r.response == Response.OK) {
                     noMatch.setText("User registered!");
@@ -112,7 +112,7 @@ public class LoginController {
          * If not, then tell wrong password
          */
         var req = Main.getSession().sendRequest(new PasswordLoginRequest(usernameText.getText(), passwordText.getText()));
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 Platform.runLater(this::changeToMainMenu);
             } else {

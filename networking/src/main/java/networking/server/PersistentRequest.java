@@ -1,6 +1,8 @@
 package networking.server;
 
 import networking.PersistentRequestData;
+import networking.ResponseData;
+
 import java.util.function.Consumer;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -8,9 +10,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PersistentRequest<T extends PersistentRequestData> extends AbstractRequest<T> {
     protected final ConcurrentLinkedQueue<Consumer<PersistentRequest<T>>> closeHandlers;
 
-    public PersistentRequest(int id, ServerSession session, T data) {
+    public PersistentRequest(int id, ServerSession<?> session, T data) {
         super(id, session, data);
         closeHandlers = new ConcurrentLinkedQueue<>();
+    }
+
+    public void sendResponse(ResponseData responseData) {
+        session.sendResponse(id, responseData);
     }
 
     public void onClose(Consumer<PersistentRequest<T>> handler) {

@@ -2,25 +2,35 @@ package networking.client;
 
 import networking.*;
 
-public class Request {
-    protected final int id;
-    protected final ClientSession session;
-    protected final SingleHandlerEventEmitter<ClientSession, ResponseData> handlers;
+/**
+ * Object representing a one-time request
+ * Allows setting a handler to be called when a response is received
+ * @param <R> type of the expected response
+ */
+public class Request<R extends ResponseData> extends AbstractRequest {
+    protected EventHandler<ClientSession, R> handler;
 
     public Request(int id, ClientSession session) {
-        this.id = id;
-        this.session = session;
-        handlers = new SingleHandlerEventEmitter<>();
+        super(id, session);
     }
 
-    public <T extends ResponseData> EventHandler<ClientSession, T> onResponse(Class<T> type, EventHandler<ClientSession, T> handler) {
-        return handlers.set(type, handler);
+    /**
+     * Sets the event handler to be called upon receiving a response. Overrides previously set handler.
+     */
+    public void onResponse(EventHandler<ClientSession, R> handler) {
+        this.handler = handler;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public void receiveResponse(ResponseData data) {
-        handlers.call(data.getClass(), session, data);
+        if (handler == null) {
+            throw new RuntimeException("No handler for response registered");
+        }
+        handler.handle(session, (R) data);
     }
 
+    @Override
     public boolean isPersistent() {
         return false;
     }

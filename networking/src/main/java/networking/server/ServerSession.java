@@ -3,12 +3,12 @@ package networking.server;
 import io.netty.channel.ChannelHandlerContext;
 import networking.*;
 import networking.events.ConnectedEvent;
+import networking.events.DisconnectedEvent;
 
+import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
 /**
  * Class to represent client session on server
@@ -20,7 +20,8 @@ public class ServerSession<U> extends AbstractSession {
 
     protected U user;
 
-    public ServerSession(ServerNetworkingManager<U> eventEmitter) {
+    public ServerSession(SocketAddress targetAddress, ServerNetworkingManager<U> eventEmitter) {
+        super(targetAddress);
         this.eventEmitter = eventEmitter;
         persistentRequests = new ConcurrentHashMap<>();
     }
@@ -36,7 +37,7 @@ public class ServerSession<U> extends AbstractSession {
     public void sendResponse(int id, ResponseData responseData) {
         Objects.requireNonNull(responseData, "Cannot send null response");
 
-        ctx.writeAndFlush(new ResponseWrapper(id, responseData)).addListener(FIRE_EXCEPTION_ON_FAILURE);
+        send(new ResponseWrapper(id, responseData));
     }
 
     @Override
@@ -59,7 +60,7 @@ public class ServerSession<U> extends AbstractSession {
         } else {
             // Normal request sent. Call appropriate handlers.
 
-            var request = new Request<>(wrapper.id, this, (RequestData) wrapper.data);
+            var request = new Request<>(wrapper.id, this, (RequestData<?>) wrapper.data);
             eventEmitter.callRequestHandlers(this, request);
         }
 
@@ -73,7 +74,7 @@ public class ServerSession<U> extends AbstractSession {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         persistentRequests.forEach((k, v) -> v.callCloseHandlers());
-        super.channelInactive(ctx);
+        callEventHandlers(new DisconnectedEvent());
     }
 
     @Override
