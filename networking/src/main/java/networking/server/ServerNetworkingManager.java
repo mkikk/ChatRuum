@@ -9,6 +9,7 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.*;
+import networking.events.ServerStoppedEvent;
 
 /**
  * Provides a convenient interface for networked communication on the server side.
@@ -91,7 +92,9 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
             serverChannel.closeFuture().addListener(closeFuture -> {
                 serverChannel = null;
                 bossGroup.shutdownGracefully();
-                workerGroup.shutdownGracefully();
+                workerGroup.shutdownGracefully().addListener(terminationFuture -> {
+                    callEventHandlers(null, new ServerStoppedEvent());
+                });
                 System.out.println("Server stopping...");
             });
         });
