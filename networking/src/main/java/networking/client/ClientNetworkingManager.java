@@ -60,7 +60,9 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
             }
 
             connectFuture.channel().closeFuture().addListener(closeFuture -> {
-                session = null;
+                synchronized (this) {
+                    session = null;
+                }
                 group.shutdownGracefully();
                 System.out.println("Client closing...");
             });

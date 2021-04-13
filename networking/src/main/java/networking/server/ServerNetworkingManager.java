@@ -90,7 +90,9 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
             System.out.println("Server listening on port " + port + "...");
 
             serverChannel.closeFuture().addListener(closeFuture -> {
-                serverChannel = null;
+                synchronized (this) {
+                    serverChannel = null;
+                }
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully().addListener(terminationFuture -> {
                     callEventHandlers(null, new ServerStoppedEvent());
