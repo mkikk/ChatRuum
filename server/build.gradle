@@ -1,0 +1,14 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+apply from: "$rootProject.projectDir/common.gradle"
+
+dependencies {
+    implementation project(':networking')
+}
+
+application {
+    mainClassName = 'server.ChatRuumServer'
+}

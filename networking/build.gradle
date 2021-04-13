@@ -1,0 +1,9 @@
+plugins {
+    id 'java-library'
+}
+
+apply from: "$rootProject.projectDir/common.gradle"
+
+dependencies {
+    api 'io.netty:netty-all:4.1.60.Final'
+}

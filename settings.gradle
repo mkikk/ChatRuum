@@ -1,1 +1,2 @@
 rootProject.name = 'ChatRuum'
+include 'client', 'server', 'networking'
