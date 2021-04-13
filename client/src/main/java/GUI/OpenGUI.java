@@ -41,11 +41,12 @@ public class OpenGUI extends Application {
 
     public static ClientSession connectClient(String address) {
         if (client == null) {
-            client = new ClientNetworkingManager();
+            client = new ClientNetworkingManager(DEFAULT_PORT);
         }
 
-        session = client.connect(address, DEFAULT_PORT);
+        session = client.connect(address);
         return session;
+
     }
 
     public static void stopSession() {

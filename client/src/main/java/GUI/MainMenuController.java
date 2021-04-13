@@ -34,19 +34,22 @@ public class MainMenuController {
     }
 
     public void joinRoom(ActionEvent actionEvent) {
+
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Joined channel:");
+                Platform.runLater(this::switchToChatRoom);
             } else if (r.response == Response.FORBIDDEN){
                 System.out.println("Failed to join channel");
             }
         });
     }
     public void checkRoomName(ActionEvent actionEvent) {
+
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(channelNameText.getText()));
-        req.onResponse(CheckNameResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.result.name());
             if (r.result == Result.NAME_FREE) {
                 System.out.println("Room name free");
@@ -65,7 +68,7 @@ public class MainMenuController {
                         channelPasswordText.getText().isEmpty() ? null: channelPasswordText.getText()
                 )
         );
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Created channel");
@@ -73,5 +76,10 @@ public class MainMenuController {
                 System.out.println("Failed to create channel");
             }
         });
+    }
+
+    private void switchToChatRoom() {
+        if (JoinRoomButton.getScene().getWindow() == null) return;
+        OpenGUI.switchSceneTo("Chat", JoinRoomButton, 1080, 800);
     }
 }

@@ -53,8 +53,9 @@ public class LoginController {
         Scene currentScene = usernameText.getScene();
         //if (currentScene.getFocusOwner() == usernameText.getStyleableNode())
         System.out.println("Checking user exists");
+
         var req = OpenGUI.getSession().sendRequest(new CheckUsernameRequest(usernameText.getText()));
-        req.onResponse(CheckNameResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 Platform.runLater(() -> {
                     passwordConfirmation.setVisible(true);
@@ -85,9 +86,9 @@ public class LoginController {
             Platform.runLater(() -> {
                         noMatch.setText("");
                     });
-                var req = OpenGUI.getSession().sendRequest(new RegisterRequest(usernameText.getText(), passwordText.getText()));
-                req.onResponse(GenericResponse.class, (s, r) -> {
-                    System.out.println(r.response);
+            var req = OpenGUI.getSession().sendRequest(new RegisterRequest(usernameText.getText(), passwordText.getText()));
+            req.onResponse((s, r) -> {
+                System.out.println(r.response);
                     if (r.response == Response.OK) {
                         Platform.runLater(() -> {
                                     noMatch.setText("User registered!");
@@ -109,8 +110,9 @@ public class LoginController {
          * Check if username and password match
          * If not, then tell wrong password
          */
+
         var req = OpenGUI.getSession().sendRequest(new PasswordLoginRequest(usernameText.getText(), passwordText.getText()));
-        req.onResponse(GenericResponse.class, (s, r) -> {
+        req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 OpenGUI.setUsername(usernameText.getText());
                 Platform.runLater(this::changeToMainMenu);
@@ -123,6 +125,6 @@ public class LoginController {
     private void changeToMainMenu() {
         // If current scene is not active, do not change scene
         if (loginButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("main1", loginButton, 1080, 800);
+        OpenGUI.switchSceneTo("MainMenu", loginButton, 1080, 800);
     }
 }

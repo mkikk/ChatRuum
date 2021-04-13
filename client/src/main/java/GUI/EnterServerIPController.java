@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 import networking.events.ConnectedEvent;
 import networking.events.ErrorEvent;
 import networking.events.NotConnectedEvent;
@@ -18,13 +19,15 @@ public class EnterServerIPController {
 
     public void closeClient(ActionEvent actionEvent) {
         OpenGUI.stopSession();
+        // close window
+        ((Stage)(((Button)actionEvent.getSource()).getScene().getWindow())).close();
     }
 
     public void connectToServer(ActionEvent actionEvent) {
 
         var session = OpenGUI.connectClient(ServerIPTextField.getText());
         session.onEvent(ConnectedEvent.class, (s, e) -> {
-            Platform.runLater(() -> OpenGUI.switchSceneTo("login2", ConnectButton, 900, 400));
+            Platform.runLater(() -> OpenGUI.switchSceneTo("Login", ConnectButton, 900, 400));
         });
         session.onEvent(NotConnectedEvent.class, (s, e) -> {
             Platform.runLater(() -> {

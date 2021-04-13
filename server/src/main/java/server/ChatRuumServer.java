@@ -1,7 +1,9 @@
 package server;
 
 import networking.events.ConnectedEvent;
+import networking.events.ConnectionDroppedEvent;
 import networking.events.DisconnectedEvent;
+import networking.events.ErrorEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
@@ -27,8 +29,8 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
-        server.onEvent(DisconnectedEvent.class, (s, e) -> System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress()));
+        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getTargetAddress()));
+        server.onEvent(DisconnectedEvent.class, (s, e) -> System.out.println("Client disconnected: " + s.getTargetAddress()));
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
             System.out.println("Registering...");

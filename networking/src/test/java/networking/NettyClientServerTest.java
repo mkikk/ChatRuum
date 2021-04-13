@@ -2,6 +2,7 @@ package networking;
 
 import networking.client.ClientNetworkingManager;
 import networking.events.ConnectedEvent;
+import networking.events.ServerStoppedEvent;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;
 import org.junit.jupiter.api.Test;
@@ -40,12 +41,12 @@ class NettyClientServerTest {
         server.start();
 
 
-        var clientSession = new ClientNetworkingManager().connect("localhost", testPort);
+        var clientSession = new ClientNetworkingManager(testPort).connect("localhost");
 
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected"));
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> {
             var req = s.sendRequest(new DebugRequest("Klient siin!"));
-            req.onResponse(DebugResponse.class, (ss, r) -> {
+            req.onResponse((ss, r) -> {
                 System.out.println("Client received response: " + r.message);
                 clientCheck.complete(true);
                 pingCount.incrementAndGet();
@@ -61,10 +62,22 @@ class NettyClientServerTest {
         server.stop();
     }
 
-    private void closeThread(Thread thread) throws InterruptedException {
-        if (thread != null) {
-            thread.interrupt();
-            thread.join();
-        }
+    @Test
+    void testServerStopping() throws InterruptedException, TimeoutException, ExecutionException {
+        var serverStoppedTime = new CompletableFuture<Long>();
+
+        var server = new ServerNetworkingManager<Void>(testPort);
+        server.onEvent(ServerStoppedEvent.class, (s, e) -> {
+            System.out.println("Server stopped");
+            serverStoppedTime.complete(System.currentTimeMillis());
+        });
+        server.start();
+
+        var stopTime = System.currentTimeMillis();
+        server.stop();
+
+        var stoppedTime = serverStoppedTime.get(10, TimeUnit.SECONDS);
+
+        System.out.println("Server stopped in " + (stoppedTime - stopTime) + " ms");
     }
 }

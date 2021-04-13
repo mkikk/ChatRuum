@@ -11,6 +11,8 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.events.ConnectedEvent;
 import networking.events.NotConnectedEvent;
 
+import java.net.InetSocketAddress;
+
 /**
  * Provides a convenient interface for networked communication on the client side.
  * Uses netty and java built in serialization internally.
@@ -19,8 +21,12 @@ import networking.events.NotConnectedEvent;
  * Netty code based on https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/objectecho/ObjectEchoClient.java
  */
 public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
-    private ClientSession session;
-    private EventLoopGroup group;
+    private final int port;
+    private volatile ClientSession session;
+
+    public ClientNetworkingManager(int port) {
+        this.port = port;
+    }
 
     @Override
     protected void initChannel(SocketChannel ch) {
@@ -32,43 +38,34 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
         );
     }
 
-    public ClientSession connect(String host, int port) {
-        setupSession();
+    public synchronized ClientSession connect(String host) {
+        if (session != null) return session;
 
-        Bootstrap b = new Bootstrap();
-        b.group(group);
-        b.channel(NioSocketChannel.class);
-        b.handler(this);
+        var targetAddress = new InetSocketAddress(host, port);
+        session = new ClientSession(targetAddress);
 
-        var connectFuture = b.connect(host, port);
-        System.out.println("Client connecting to " + connectFuture.channel().remoteAddress() + "...");
-        connectFuture.addListener((ChannelFutureListener) future -> {
-            if (future.isSuccess()) {
+        var group = new NioEventLoopGroup();
+
+        var bootstrap = new Bootstrap()
+                .group(group)
+                .channel(NioSocketChannel.class)
+                .handler(this);
+
+        System.out.println("Client connecting to " + targetAddress + "...");
+        bootstrap.connect(targetAddress).addListener((ChannelFutureListener) connectFuture -> {
+            if (connectFuture.isSuccess()) {
                 session.callEventHandlers(new ConnectedEvent());
             } else {
-                session.callEventHandlers(new NotConnectedEvent(future.cause()));
+                session.callEventHandlers(new NotConnectedEvent(connectFuture.cause()));
             }
-        });
-        connectFuture.channel().closeFuture().addListener((ChannelFutureListener) future -> {
-            System.out.println("Client closing...");
-            cleanupSession();
+
+            connectFuture.channel().closeFuture().addListener(closeFuture -> {
+                session = null;
+                group.shutdownGracefully();
+                System.out.println("Client closing...");
+            });
         });
 
         return session;
-    }
-
-    private synchronized void setupSession() {
-        if (session != null || group != null) throw new IllegalStateException("Client session already running");
-
-        session = new ClientSession();
-        group = new NioEventLoopGroup();
-    }
-
-    private synchronized void cleanupSession() {
-        if (group == null || session == null) throw new IllegalStateException("Client session not running");
-
-        group.shutdownGracefully();
-        group = null;
-        session = null;
     }
 }
