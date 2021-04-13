@@ -1,18 +1,16 @@
 package GUI;
 
-import networking.client.ClientNetworkingManager;
-import networking.client.ClientSession;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
 import javafx.stage.Stage;
+import networking.client.ClientNetworkingManager;
+import networking.client.ClientSession;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Objects;
 
 
 public class OpenGUI extends Application {
@@ -22,17 +20,18 @@ public class OpenGUI extends Application {
     private static ClientSession session;
     private static String username;
 
-    public static String getUsername(){
+    public static String getUsername() {
         return username;
     }
+
     public static void setUsername(String username) {
         OpenGUI.username = username;
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL url = new File("client/src/main/resources/EnterServerIP.fxml").toURI().toURL();
-        Parent root = FXMLLoader.load(url);
+
+        Parent root = FXMLLoader.load(getClass().getResource("/EnterServerIP.fxml"));
         primaryStage.setTitle("Chatruum");
         primaryStage.setScene(new Scene(root, 900, 400));
         primaryStage.setResizable(false);
@@ -58,20 +57,8 @@ public class OpenGUI extends Application {
         return session;
     }
 
-    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) {
-        URL url = null;
-        Parent root = null;
-        try {
-            url = new File("client/src/main/resources/" + fxmlName + ".fxml").toURI().toURL();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            root = FXMLLoader.load(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) throws IOException {
+        Parent root = FXMLLoader.load(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
         Stage window = (Stage) referableComponent.getScene().getWindow();
         window.setScene(new Scene(root, width, height));
     }

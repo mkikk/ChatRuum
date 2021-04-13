@@ -11,10 +11,10 @@ import javafx.scene.control.TextField;
 import networking.requests.CheckUsernameRequest;
 import networking.requests.PasswordLoginRequest;
 import networking.requests.RegisterRequest;
-import networking.responses.CheckNameResponse;
-import networking.responses.GenericResponse;
 import networking.responses.Response;
 import networking.responses.Result;
+
+import java.io.IOException;
 
 
 public class LoginController {
@@ -41,6 +41,7 @@ public class LoginController {
     public void onLoginButtonPressed(ActionEvent actionEvent) {
         if (isLogin) {
             loginUser();
+            loginButton.setDisable(true);
         } else {
             registerUser();
         }
@@ -83,25 +84,23 @@ public class LoginController {
 
     public void registerUser() {
         if (passwordText.getText().equals(passwordConfirmation.getText())) {
-            Platform.runLater(() -> {
-                        noMatch.setText("");
-                    });
+            noMatch.setText("");
             var req = OpenGUI.getSession().sendRequest(new RegisterRequest(usernameText.getText(), passwordText.getText()));
             req.onResponse((s, r) -> {
                 System.out.println(r.response);
-                    if (r.response == Response.OK) {
-                        Platform.runLater(() -> {
-                                    noMatch.setText("User registered!");
-                                });
-                        checkUserExists();
-                    } else if (r.response == Response.FORBIDDEN) {
-                        Platform.runLater(() -> {
-                            noMatch.setText("Registration failed!");
-                        });
-                    }
-                });
+                if (r.response == Response.OK) {
+                    Platform.runLater(() -> {
+                        noMatch.setText("User registered!");
+                    });
+                    checkUserExists();
+                } else if (r.response == Response.FORBIDDEN) {
+                    Platform.runLater(() -> {
+                        noMatch.setText("Registration failed!");
+                    });
+                }
+            });
         } else {
-            Platform.runLater(() -> noMatch.setText("Passwords do not match!"));
+            noMatch.setText("Passwords do not match!");
         }
     }
 
@@ -125,6 +124,11 @@ public class LoginController {
     private void changeToMainMenu() {
         // If current scene is not active, do not change scene
         if (loginButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("MainMenu", loginButton, 1080, 800);
+        try {
+            OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
+        } catch (IOException e) {
+            System.out.println("error opening main menu fxml");
+            return;
+        }
     }
 }
