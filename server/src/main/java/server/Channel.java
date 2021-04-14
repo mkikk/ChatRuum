@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Channel implements PasswordProtected{
+public class Channel implements PasswordProtected {
     private final String name;
     private final String password;
     private final List<Message> messages;
@@ -40,9 +40,20 @@ public class Channel implements PasswordProtected{
     }
 
 
+    public String getPassword() {
+        return password;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
 
     public List<MessageData> convertToMessageData() {
         return messages.stream().map(Message::convertAsData).collect(Collectors.toList());
+    }
+
+    public List<Message> getMessages() {
+        return messages;
     }
 
     public void sendMessage(Message message) {

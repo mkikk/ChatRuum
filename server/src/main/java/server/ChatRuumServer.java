@@ -55,7 +55,6 @@ public class ChatRuumServer {
 
         server.onRequest(CheckUsernameRequest.class, (session, req) -> {
             System.out.println("Checking username: " + req.data.username);
-
             final User user = users.get(req.data.username);
             if (user != null) {
                 req.sendResponse(new CheckNameResponse(Result.NAME_IN_USE));
@@ -142,11 +141,11 @@ public class ChatRuumServer {
         server.start();
     }
 
-    public synchronized void stopServer() throws InterruptedException {
+    public synchronized void stopServer() {
         server.stop();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         var server = new ChatRuumServer(DEFAULT_PORT);
         server.startServer();
     }

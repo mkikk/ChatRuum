@@ -8,47 +8,27 @@ import java.io.DataOutputStream;
 import java.nio.file.Path;
 
 public class User implements PasswordProtected {
-    @JsonProperty(value = "name")
     private String name;
-    @JsonProperty(value = "password")
     private String password;
     @JsonIgnore
     private boolean isOnline;
 
-    public User(String name, String password) {
+    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password")String password) {
         this.name = name;
         this.password = password;
         this.isOnline = true;
-    }
-    public User() {
-
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
     public void LogOff(){
         this.isOnline = false;
     }
 
-    private void writeToFile(int id, String name, String password) {
-//        try(final var dataOutputStream = new DataOutputStream(Path)) {
-//            dataOutputStream.writeUTF(name, password);
-//        }
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
