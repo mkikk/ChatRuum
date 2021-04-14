@@ -1,14 +1,6 @@
 {
-  "miilo" : {
-    "name" : "miilo",
+  "taavi" : {
+    "name" : "taavi",
     "password" : "1234"
-  },
-  "jaagup" : {
-    "name" : "jaagup",
-    "password" : "1234"
-  },
-  "mark" : {
-    "name" : "mark",
-    "password" : "zuckerberg"
   }
 }
