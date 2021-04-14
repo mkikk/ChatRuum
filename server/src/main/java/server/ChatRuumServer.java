@@ -136,11 +136,6 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
-//        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-//            public void run() {
-//                System.out.println("In shutdown hook");
-//            }
-//        }, "Shutdown-thread"));
     }
 
     public void startServer() {
