@@ -142,14 +142,12 @@ public class ChatRuumServer {
         server.start();
     }
 
-    public synchronized void stopServer() throws Exception {
-        System.out.println("Stopping server...");
+    public synchronized void stopServer() throws InterruptedException {
         server.stop();
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         var server = new ChatRuumServer(DEFAULT_PORT);
-
         server.startServer();
     }
 }
