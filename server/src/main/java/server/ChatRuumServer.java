@@ -2,17 +2,13 @@ package server;
 
 import networking.events.ConnectedEvent;
 import networking.events.DisconnectedEvent;
+import networking.events.ServerStoppedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
-import networking.server.ServerSession;
-import networking.server.PersistentRequest;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class ChatRuumServer {
     protected static final int DEFAULT_PORT = 5050;
@@ -22,8 +18,8 @@ public class ChatRuumServer {
     private final ServerNetworkingManager<User> server;
 
     public ChatRuumServer(int port) throws Exception {
-        channels = ReadWrite.readChannels("channels.json");
-        users = ReadWrite.readUsers("users.json");
+        channels = ReadWrite.readStringMap("channels.json");
+        users = ReadWrite.readStringMap("users.json");
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
@@ -31,14 +27,17 @@ public class ChatRuumServer {
     private void setupServer()  {
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
+            System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
+
+        });
+        server.onEvent(ServerStoppedEvent.class, (s,e) -> {
+            System.out.println("Server stopping...");
             try {
-                ReadWrite.writeChannels("channels.json", channels);
-                ReadWrite.writeUsers("users.json", users);
+                ReadWrite.writeStringMap("channels.json", channels);
+                ReadWrite.writeStringMap("users.json", users);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-            System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
-
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
