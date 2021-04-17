@@ -1,29 +1,30 @@
 package server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.data.UserData;
 
 import java.io.DataOutputStream;
 import java.nio.file.Path;
 
 public class User implements PasswordProtected {
-    private final String name;
+    private String name;
     private String password;
+    @JsonIgnore
     private boolean isOnline;
 
-    public User(String name, String password) {
+    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password")String password) {
         this.name = name;
         this.password = password;
         this.isOnline = true;
     }
 
-    public void LogOff(){
-        this.isOnline = false;
+    public String getPassword() {
+        return password;
     }
 
-    private void writeToFile(int id, String name, String password) {
-//        try(final var dataOutputStream = new DataOutputStream(Path)) {
-//            dataOutputStream.writeUTF(name, password);
-//        }
+    public void LogOff(){
+        this.isOnline = false;
     }
 
     public String getName() {
@@ -31,11 +32,20 @@ public class User implements PasswordProtected {
     }
 
     @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", isOnline=" + isOnline +
+                '}';
+    }
+
+    @Override
     public boolean checkPassword(String givenPassword) {
         return givenPassword.equals(password);
     }
 
-    public UserData getAsData() {
+    public UserData convertToData() {
         return new UserData(name, isOnline);
     }
 }

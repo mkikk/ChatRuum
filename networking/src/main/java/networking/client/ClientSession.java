@@ -94,7 +94,7 @@ public class ClientSession extends AbstractSession {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         var wrapper = (ResponseWrapper) msg;
 
         var request = requests.getOrDefault(wrapper.id, null);

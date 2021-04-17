@@ -1,0 +1,41 @@
+{
+  "yldine" : {
+    "name" : "yldine",
+    "password" : "",
+    "messages" : [ {
+      "text" : "TERE",
+      "sender" : {
+        "name" : "jaagup",
+        "password" : "1234"
+      }
+    }, {
+      "text" : "tere??",
+      "sender" : {
+        "name" : "miilo",
+        "password" : "1234"
+      }
+    } ],
+    "users" : [ {
+      "name" : "jaagup",
+      "password" : "1234"
+    }, {
+      "name" : "miilo",
+      "password" : "1234"
+    } ]
+  },
+  "lamp" : {
+    "name" : "lamp",
+    "password" : "1234",
+    "messages" : [ {
+      "text" : "Kas kedagi on siin",
+      "sender" : {
+        "name" : "miilo",
+        "password" : "1234"
+      }
+    } ],
+    "users" : [ {
+      "name" : "jaagup",
+      "password" : "1234"
+    } ]
+  }
+}
