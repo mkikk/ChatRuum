@@ -129,11 +129,11 @@ public class ChatRuumServer {
         });
     }
 
-    public void startServer() {
+    public synchronized void startServer() {
         server.start();
     }
 
-    public synchronized void stopServer() throws InterruptedException {
+    public synchronized void stopServer() {
         server.stop();
     }
 
