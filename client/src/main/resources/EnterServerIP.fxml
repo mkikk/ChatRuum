@@ -4,9 +4,10 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-
 
 <AnchorPane maxHeight="400.0" maxWidth="900.0" minHeight="400.0" minWidth="900.0" prefHeight="400.0" prefWidth="900.0" style="-fx-background-color: #236fc3;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.EnterServerIPController">
     <children>
@@ -23,7 +24,14 @@
                 <Font size="18.0" />
             </font>
         </TextField>
-        <Button fx:id="CloseButton" layoutX="566.0" layoutY="266.0" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" onAction="#closeClient" mnemonicParsing="false" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 50;" text="CLOSE" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="240.0" />
-        <Button fx:id="ConnectButton" layoutX="191.0" layoutY="266.0" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" onAction="#connectToServer" mnemonicParsing="false" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 50; -fx-background-color: #5fd4ce;" text="CONNECT" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="240.0" />
+        <Button fx:id="CloseButton" layoutX="566.0" layoutY="266.0" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" mnemonicParsing="false" onAction="#closeClient" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 25;" text="CLOSE" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="240.0" />
+        <Button fx:id="ConnectButton" layoutX="191.0" layoutY="266.0" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" mnemonicParsing="false" onAction="#connectToServer" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 25; -fx-background-color: #5fd4ce;" text="CONNECT" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="240.0">
+         <effect>
+            <DropShadow blurType="TWO_PASS_BOX" height="224.12" radius="119.28" width="255.0">
+               <color>
+                  <Color red="0.37254902720451355" green="0.8313725590705872" blue="0.8078431487083435" />
+               </color>
+            </DropShadow>
+         </effect></Button>
     </children>
 </AnchorPane>

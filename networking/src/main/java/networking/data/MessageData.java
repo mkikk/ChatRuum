@@ -1,7 +1,8 @@
 package networking.data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+
 
 /**
  * Data for a sent message
@@ -9,9 +10,9 @@ import java.util.Date;
 public class MessageData implements Serializable {
     public final String text;
     public final String senderName;
-    public final Date sendTime;
+    public final LocalDate sendTime;
 
-    public MessageData(String text, String senderName, Date sendTime) {
+    public MessageData(String text, String senderName, LocalDate sendTime) {
         this.text = text;
         this.senderName = senderName;
         this.sendTime = sendTime;
