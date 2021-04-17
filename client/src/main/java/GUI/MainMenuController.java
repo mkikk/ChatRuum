@@ -34,6 +34,7 @@ public class MainMenuController {
         checkRoomName(actionEvent);
 
     }
+
     public void joinRoom(ActionEvent actionEvent) {
         joinRoomButton.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));

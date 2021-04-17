@@ -10,7 +10,6 @@ import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
 
 import java.io.IOException;
-import java.util.Objects;
 
 
 public class OpenGUI extends Application {

@@ -20,8 +20,6 @@ import networking.requests.SendMessageRequest;
 import networking.responses.Response;
 import networking.responses.ViewChannelResponse;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 
