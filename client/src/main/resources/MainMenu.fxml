@@ -40,7 +40,7 @@
             </AnchorPane>
             <AnchorPane minHeight="44.0" minWidth="300.0" mouseTransparent="true" prefHeight="134.0" prefWidth="900.0">
                <children>
-                  <TextField fx:id="ChannelNameText" alignment="CENTER" layoutX="214.0" layoutY="-42.0" maxHeight="85.0" maxWidth="500.0" mouseTransparent="true" pickOnBounds="false" prefHeight="85.0" prefWidth="472.0" promptText="Enter room name" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="-42.0">
+                  <TextField fx:id="channelNameText" alignment="CENTER" layoutX="214.0" layoutY="-42.0" maxHeight="85.0" maxWidth="500.0" mouseTransparent="true" pickOnBounds="false" prefHeight="85.0" prefWidth="472.0" promptText="Enter room name" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="-42.0">
                      <padding>
                         <Insets bottom="20.0" top="20.0" />
                      </padding>
@@ -92,7 +92,7 @@
                               <Insets top="10.0" />
                            </GridPane.margin>
                            <children>
-                              <Button fx:id="JoinRoomButton" alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="17.0" mnemonicParsing="false" onAction="#joinRoom" prefHeight="65.0" prefWidth="210.0" style="-fx-background-color: #1e5c9a; -fx-background-radius: 25;" text="JOIN ROOM" textFill="#d6e1d3" AnchorPane.leftAnchor="-100.0" AnchorPane.topAnchor="20.0">
+                              <Button fx:id="joinRoomButton" alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="17.0" mnemonicParsing="false" onAction="#joinButtonClicked" prefHeight="65.0" prefWidth="210.0" style="-fx-background-color: #1e5c9a; -fx-background-radius: 25;" text="JOIN ROOM" textFill="#d6e1d3" AnchorPane.leftAnchor="-100.0" AnchorPane.topAnchor="20.0">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>

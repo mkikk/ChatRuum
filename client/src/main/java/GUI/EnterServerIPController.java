@@ -48,7 +48,7 @@ public class EnterServerIPController {
                 Alert noConnection = new Alert(Alert.AlertType.ERROR);
                 noConnection.setTitle("No connection");
                 noConnection.setContentText("Connecting to server '" + ServerIPTextField.getText() + "' failed.");
-
+                ConnectButton.setDisable(false);
                 noConnection.showAndWait();
             });
         });

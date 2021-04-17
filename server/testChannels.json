@@ -16,10 +16,10 @@
       }
     } ],
     "users" : [ {
-      "name" : "jaagup",
+      "name" : "miilo",
       "password" : "1234"
     }, {
-      "name" : "miilo",
+      "name" : "jaagup",
       "password" : "1234"
     } ]
   },

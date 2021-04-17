@@ -1,1 +1,53 @@
-{ }
+{
+  "test" : {
+    "name" : "test",
+    "password" : "test",
+    "messages" : [ {
+      "text" : "hello",
+      "sender" : {
+        "name" : "ahti",
+        "password" : "ahti"
+      }
+    }, {
+      "text" : "hello",
+      "sender" : {
+        "name" : "ahti",
+        "password" : "ahti"
+      }
+    }, {
+      "text" : "hello",
+      "sender" : {
+        "name" : "ahti",
+        "password" : "ahti"
+      }
+    }, {
+      "text" : "hello",
+      "sender" : {
+        "name" : "ahti",
+        "password" : "ahti"
+      }
+    } ],
+    "users" : [ {
+      "name" : "ahti",
+      "password" : "ahti"
+    }, {
+      "name" : "ahti",
+      "password" : "ahti"
+    } ]
+  },
+  "temp" : {
+    "name" : "temp",
+    "password" : "temp",
+    "messages" : [ {
+      "text" : "hello",
+      "sender" : {
+        "name" : "ahti",
+        "password" : "ahti"
+      }
+    } ],
+    "users" : [ {
+      "name" : "ahti",
+      "password" : "ahti"
+    } ]
+  }
+}

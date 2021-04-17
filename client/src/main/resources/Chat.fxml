@@ -26,12 +26,12 @@
       <AnchorPane maxHeight="150.0" minHeight="50.0" prefHeight="100.0" style="-fx-background-color: #5394db;" BorderPane.alignment="CENTER">
          <children>
             <Region maxHeight="100.0" maxWidth="500.0" minHeight="50.0" minWidth="0.0" prefHeight="100.0" prefWidth="201.0" style="-fx-background-color: #5394db;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
-            <TextArea fx:id="InputText" layoutX="201.0" layoutY="1.0" maxHeight="115.0" minHeight="50.0" minWidth="200.0" prefHeight="99.0" prefWidth="779.0" promptText="Your message..." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="5.0">
+            <TextArea fx:id="inputText" layoutX="201.0" layoutY="1.0" maxHeight="115.0" minHeight="50.0" minWidth="200.0" prefHeight="99.0" prefWidth="779.0" promptText="Your message..." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="5.0">
                <font>
                   <Font name="Segoe UI" size="16.0" />
                </font>
             </TextArea>
-            <Button fx:id="SendButton" layoutX="980.0" maxHeight="100.0" maxWidth="115.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="100.0" prefWidth="100.0" text="SEND" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+            <Button fx:id="sendButton" layoutX="980.0" maxHeight="100.0" maxWidth="115.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="100.0" prefWidth="100.0" text="SEND" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                <effect>
                   <Bloom threshold="0.9">
                      <input>
@@ -52,7 +52,6 @@
         <menus>
           <Menu mnemonicParsing="false" text="Room">
             <items>
-                  <MenuItem fx:id="menuItemJoin" mnemonicParsing="false" onAction="#joinNewRoom" text="Join.." />
                   <CheckMenuItem fx:id="menuItemLeave" mnemonicParsing="false" onAction="#leaveCurrentRoom" text="Leave.." />
               <MenuItem fx:id="menuItemExit" mnemonicParsing="false" onAction="#exitChatruum" text="Exit.." />
             </items>
@@ -74,15 +73,15 @@
    <left>
       <AnchorPane maxWidth="250.0" minWidth="100.0" prefHeight="668.0" prefWidth="200.0" style="-fx-background-color: #5394db;" BorderPane.alignment="CENTER">
          <children>
-            <Label layoutY="30.0" prefHeight="24.0" prefWidth="200.0" text="Currently in room:" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
+            <Label layoutY="30.0" prefHeight="24.0" prefWidth="200.0" text="Currently in room:" textFill="#00102e" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
                <font>
-                  <Font name="Segoe UI" size="20.0" />
+                  <Font name="Segoe UI Bold" size="20.0" />
                </font>
                <padding>
                   <Insets left="15.0" />
                </padding>
             </Label>
-            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="-3.0" layoutY="54.0" prefHeight="30.0" prefWidth="204.0" text="RoomName" textAlignment="CENTER" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0">
+            <Label fx:id="roomName" alignment="CENTER" contentDisplay="CENTER" layoutX="-3.0" layoutY="54.0" prefHeight="30.0" prefWidth="204.0" text="roomName" textAlignment="CENTER" textFill="#00102e" underline="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
@@ -90,17 +89,17 @@
                   <Insets left="15.0" />
                </padding>
             </Label>
-            <Button layoutX="63.0" layoutY="649.0" mnemonicParsing="false" style="-fx-background-radius: 15;" text="JOIN">
+            <Button fx:id="joinNewRoom" layoutX="63.0" layoutY="649.0" mnemonicParsing="false" onAction="#joinNextRoom" style="-fx-background-radius: 15;" text="JOIN">
                <font>
                   <Font size="20.0" />
                </font>
             </Button>
-            <TextField layoutX="10.0" layoutY="608.0" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+            <TextField fx:id="newRoomText" layoutX="10.0" layoutY="608.0" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                <font>
                   <Font name="Segoe UI" size="16.0" />
                </font>
             </TextField>
-            <Label layoutX="10.0" layoutY="574.0" text="Join new room:">
+            <Label layoutX="10.0" layoutY="574.0" text="Join new room:" textFill="#00102e">
                <font>
                   <Font name="Segoe UI" size="20.0" />
                </font>
@@ -114,7 +113,7 @@
    <center>
       <ScrollPane fx:id="Messages" hbarPolicy="NEVER" prefHeight="708.0" prefWidth="882.0" BorderPane.alignment="CENTER">
          <content>
-            <ImageView focusTraversable="true" mouseTransparent="true" opacity="0.7" pickOnBounds="true" preserveRatio="true">
+            <ImageView mouseTransparent="true" opacity="0.7" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@login.jpg" />
                </image>

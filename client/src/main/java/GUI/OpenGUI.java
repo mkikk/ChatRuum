@@ -19,6 +19,15 @@ public class OpenGUI extends Application {
     private static ClientNetworkingManager client;
     private static ClientSession session;
     private static String username;
+    private static String currentChatroom;
+
+    public static String getCurrentChatroom() {
+        return currentChatroom;
+    }
+
+    public static void setCurrentChatroom(String currentChatroom) {
+        OpenGUI.currentChatroom = currentChatroom;
+    }
 
     public static String getUsername() {
         return username;
