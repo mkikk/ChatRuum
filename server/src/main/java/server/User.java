@@ -1,12 +1,16 @@
 package server;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import networking.data.UserData;
 
 import java.io.DataOutputStream;
 import java.nio.file.Path;
-
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name", scope = User.class)
 public class User implements PasswordProtected {
     private String name;
     private String password;

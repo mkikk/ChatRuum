@@ -1,5 +1,7 @@
 package server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.events.ConnectedEvent;
 import networking.events.DisconnectedEvent;
 import networking.events.ServerStoppedEvent;
@@ -8,18 +10,20 @@ import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ChatRuumServer {
     protected static final int DEFAULT_PORT = 5050;
-
-    protected final Map<String, Channel> channels;
-    protected final Map<String, User> users;
+    @JsonProperty(value = "users")
+    protected final Map<String, User> users = new HashMap<>();
+    @JsonProperty(value = "channels")
+    protected final Map<String, Channel> channels = new HashMap<>();
+    @JsonIgnore
     private final ServerNetworkingManager<User> server;
 
     public ChatRuumServer(int port) throws Exception {
-        channels = ReadWrite.readStringMap("channels.json");
-        users = ReadWrite.readStringMap("users.json");
+        ReadWrite.readServer("server\\src\\main\\java\\data\\server.json", this);
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
@@ -27,14 +31,18 @@ public class ChatRuumServer {
     private void setupServer()  {
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
+            try {
+                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
             System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
 
         });
         server.onEvent(ServerStoppedEvent.class, (s,e) -> {
-            System.out.println("Server stopping...");
+            System.out.println("Server stopping.");
             try {
-                ReadWrite.writeStringMap("channels.json", channels);
-                ReadWrite.writeStringMap("users.json", users);
+                ReadWrite.writeServer("server\\src\\main\\java\\data\\channels.json", this);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
