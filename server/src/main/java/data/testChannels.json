@@ -15,7 +15,7 @@
         "password" : "1234"
       }
     } ],
-    "users" : [ "miilo", "jaagup" ]
+    "users" : [ "jaagup", "miilo" ]
   },
   "lamp" : {
     "name" : "lamp",

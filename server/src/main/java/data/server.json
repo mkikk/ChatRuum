@@ -3,6 +3,10 @@
     "miilo" : {
       "name" : "miilo",
       "password" : "1234"
+    },
+    "taavi" : {
+      "name" : "taavi",
+      "password" : "1234"
     }
   },
   "channels" : {
@@ -20,6 +24,24 @@
         "sender" : "miilo"
       } ],
       "users" : [ "jaagup", "miilo" ]
+    },
+    "DnD" : {
+      "name" : "DnD",
+      "password" : null,
+      "messages" : [ {
+        "text" : "Tsau kutid",
+        "sender" : "taavi"
+      }, {
+        "text" : "Mis toimub",
+        "sender" : "taavi"
+      }, {
+        "text" : "Jälle siin, ootamas...",
+        "sender" : "taavi"
+      }, {
+        "text" : "kkk",
+        "sender" : "taavi"
+      } ],
+      "users" : [ "taavi" ]
     }
   }
 }
