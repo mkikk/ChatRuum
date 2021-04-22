@@ -3,6 +3,7 @@ package server;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.data.MessageData;
 
+
 public class Message{
     private final String text;
     private final User sender;
