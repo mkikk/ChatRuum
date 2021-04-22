@@ -10,6 +10,7 @@ import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class ChatRuumServer {
     private final ServerNetworkingManager<User> server;
 
     public ChatRuumServer(int port) throws Exception {
-        ReadWrite.readServer("server\\src\\main\\java\\data\\server.json", this);
+        ReadWrite.readServer("src\\main\\java\\data\\server.json", this);
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
@@ -31,21 +32,13 @@ public class ChatRuumServer {
     private void setupServer()  {
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
-            try {
-                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+//            try {
+//                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
+//            } catch (Exception exception) {
+//                exception.printStackTrace();
+//            }
             System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
 
-        });
-        server.onEvent(ServerStoppedEvent.class, (s,e) -> {
-            System.out.println("Server stopping.");
-            try {
-                ReadWrite.writeServer("server\\src\\main\\java\\data\\channels.json", this);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
@@ -142,6 +135,14 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("In shutdown hook");
+            try {
+                ReadWrite.writeServer("src\\main\\java\\data\\server.json", this);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }, "Shutdown-thread"));
     }
 
     public void startServer() {
