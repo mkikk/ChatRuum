@@ -14,8 +14,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.effect.InnerShadow?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Region?>
@@ -36,7 +34,7 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextArea>
-            <Button fx:id="sendButton" layoutX="980.0" maxHeight="100.0" maxWidth="115.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="100.0" prefWidth="100.0" text="SEND" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+            <Button fx:id="sendButton" defaultButton="true" layoutX="980.0" maxHeight="100.0" maxWidth="115.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="100.0" prefWidth="100.0" text="SEND" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                <effect>
                   <Bloom threshold="0.9">
                      <input>
@@ -51,6 +49,9 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <font>
+                  <Font name="Segoe UI" size="16.0" />
+               </font>
             </Button>
          </children>
       </AnchorPane>
@@ -128,20 +129,9 @@
       </AnchorPane>
    </left>
    <center>
-      <ScrollPane fx:id="messages" hbarPolicy="NEVER" maxWidth="1.7976931348623157E308" prefHeight="708.0" prefWidth="882.0" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="messages" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxWidth="1.7976931348623157E308" prefHeight="708.0" prefWidth="882.0" vvalue="1.0" BorderPane.alignment="CENTER">
          <content>
-            <VBox fx:id="messageField" maxWidth="1.7976931348623157E308">
-               <children>
-                  <ImageView blendMode="MULTIPLY" fitWidth="1080.0" opacity="0.7" preserveRatio="true">
-                     <image>
-                        <Image url="@login.jpg" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                  </ImageView>
-               </children>
-            </VBox>
+            <VBox fx:id="messageField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="675.0" prefWidth="882.0" style="-fx-background-color: #D5DEEFFF;" />
          </content>
          <BorderPane.margin>
             <Insets />

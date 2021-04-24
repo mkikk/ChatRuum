@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
@@ -43,7 +44,9 @@ public class OpenGUI extends Application {
         primaryStage.setTitle("Chatruum");
         primaryStage.setScene(new Scene(root, 900, 400));
         primaryStage.setResizable(false);
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         primaryStage.show();
+
     }
 
     public static ClientSession connectClient(String address) {

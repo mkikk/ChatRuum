@@ -14,12 +14,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import networking.client.PersistentRequest;
 import networking.data.MessageData;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.CheckChannelNameRequest;
 import networking.requests.CreateChannelRequest;
 import networking.requests.JoinChannelRequest;
 import networking.requests.SendMessageRequest;
+import networking.responses.NewMessageResponse;
 import networking.responses.Response;
 import networking.responses.Result;
 import networking.responses.ViewChannelResponse;
@@ -39,16 +41,12 @@ public class ChatController {
     MenuItem menuItemExit, menuItemLeave;
     @FXML
     Label roomName, errorMessage;
-
     @FXML
     Button sendButton, joinNewRoom;
-
     @FXML
     ScrollPane messages;
-
     @FXML
     VBox messageField;
-
 
     @FXML
     public void initialize() {
@@ -57,7 +55,9 @@ public class ChatController {
             viewChannel();
         });
     }
-    // TODO: listener to update MessageField when new message is recieved
+
+    private PersistentRequest view;
+
     public void sendMessage(ActionEvent actionEvent) {
         if (inputText.getText() != null) {
             var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
@@ -67,19 +67,19 @@ public class ChatController {
                 if (r.response == Response.OK) {
                     System.out.println("Sent message");
                     // TODO: send request for other users to recieve new message
-                    openMessage(new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDate.now()));
+                    new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDate.now());
                     Platform.runLater(() -> inputText.setText(""));
                 } else if (r.response == Response.FORBIDDEN) {
                     System.out.println("Failed to send message");
                 }
-
             });
         }
     }
 
     public void viewChannel() {
-        var view = OpenGUI.getSession().sendPersistentRequest(new ViewChannelRequest(roomName.getText()));
+        view = OpenGUI.getSession().sendPersistentRequest(new ViewChannelRequest(roomName.getText()));
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
+
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel");
                 System.out.println("Channel messages: " + r.messages.toString());
@@ -89,20 +89,26 @@ public class ChatController {
             } else if (r.response == Response.FORBIDDEN) {
                 System.out.println("Failed to view channel");
             }
-            //Stop getting messages actively
-            view.close();
+
+        });
+        view.onResponse(NewMessageResponse.class, (s, r) -> {
+            if (r.data != null) {
+                System.out.println("Opening new message");
+                Platform.runLater(() -> openMessage(r.data));
+            } else {
+                System.out.println("Couldn't open new message");
+            }
         });
     }
 
     public void joinNextRoom(ActionEvent actionEvent) {
-        // after clicking on button 'Join' end this session and start new session
-        // TODO: end session in current channel
+        // after clicking on button 'Join', user joins new channel
         checkRoomName(actionEvent);
     }
 
     public void leaveCurrentRoom(ActionEvent actionEvent) throws IOException {
-        // end this room session and switch to main menu screen
-        // TODO: end session in current channel
+        // stop recieving new messages, switch scene
+        view.close();
         OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
     }
 
@@ -119,7 +125,7 @@ public class ChatController {
         field.minHeight(60);
         field.minWidth(240);
         field.maxWidth(messages.getWidth());
-        field.setStyle("-fx-background-color: #b9c9ee;");
+        field.setStyle("-fx-background-color: #d5deef;");
 
         // Area for username and time, when message was sent
         HBox info = new HBox();
@@ -144,22 +150,20 @@ public class ChatController {
 
         info.getChildren().add(messageSender);
 
-        // TODO: display message send time. Currently clash between MessageData and Message classes
-//        // Label for time, when message was sent
-//
-//        Label messageTime = new Label(messageData.sendTime.toString());
-//        messageTime.setAlignment(Pos.BOTTOM_LEFT);
-//        messageTime.maxHeight(30);
-//        messageTime.minHeight(30);
-//        messageTime.setPadding(new Insets(0,0,0,15));
-//        messageTime.setFont(Font.font("Segoe UI", 14));
-//        messageTime.setTextFill(Color.valueOf("#141b2b"));
-//
-//        info.getChildren().add(messageTime);
+        // Label for time, when message was sent
+        Label messageTime = new Label(messageData.sendTime.toString());
+        messageTime.setAlignment(Pos.BOTTOM_LEFT);
+        messageTime.maxHeight(30);
+        messageTime.minHeight(30);
+        messageTime.setPadding(new Insets(0, 0, 0, 15));
+        messageTime.setFont(Font.font("Segoe UI", 14));
+        messageTime.setTextFill(Color.valueOf("#141b2b"));
+
+        info.getChildren().add(messageTime);
 
         // Text area for message text
         Text messageText = new Text(messageData.text);
-        messageText.setWrappingWidth(messages.getWidth());
+        messageText.setWrappingWidth(messages.getWidth() - 50);
         messageText.setFill(Color.valueOf("#141b2b"));
         messageText.setFont(Font.font("Segoe  UI", 16));
 
@@ -170,8 +174,12 @@ public class ChatController {
         AnchorPane.setLeftAnchor(messageText, 10.0);
         AnchorPane.setTopAnchor(messageText, 35.0);
 
-        // add to pane with other messages
-        Platform.runLater(() -> this.messageField.getChildren().add(field));
+        // add to Vbox with other messages and scroll to message
+        Platform.runLater(() -> {
+            this.messageField.getChildren().add(field);
+            this.messages.layout();
+            this.messages.setVvalue(1.0);
+        });
     }
 
     public void displayLatestMessages(List<MessageData> messageData) {
@@ -186,7 +194,6 @@ public class ChatController {
                     openMessage(message);
                 }
             }
-            messages.setVvalue(1.0);
         });
     }
 
@@ -196,6 +203,8 @@ public class ChatController {
         req.onResponse((s, r) -> {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
+                // stop receiving messages
+                view.close();
                 System.out.println("Joined channel:");
                 OpenGUI.setCurrentChatroom(newChannelText.getText());
                 Platform.runLater(() -> {

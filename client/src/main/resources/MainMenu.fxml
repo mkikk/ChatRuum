@@ -123,7 +123,7 @@
                               </Label>
                            </children>
                         </AnchorPane>
-                        <Label alignment="TOP_RIGHT" maxHeight="130.0" minHeight="130.0" prefHeight="130.0" prefWidth="450.0" text="Latest messages:" textFill="#d6e1d3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label alignment="TOP_RIGHT" maxHeight="130.0" minHeight="130.0" prefHeight="130.0" prefWidth="450.0" text="Latest messages:" textFill="#d6e1d3" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <font>
                               <Font name="Segoe UI" size="28.0" />
                            </font>
@@ -134,7 +134,7 @@
                               <Insets right="20.0" top="15.0" />
                            </padding>
                         </Label>
-                        <Label fx:id="LatestMessages" alignment="TOP_LEFT" maxHeight="130.0" minHeight="130.0" prefHeight="130.0" prefWidth="450.0" text="5 messages" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label fx:id="LatestMessages" alignment="TOP_LEFT" maxHeight="130.0" minHeight="130.0" prefHeight="130.0" prefWidth="450.0" text="5 messages" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <font>
                               <Font name="Segoe UI" size="28.0" />
                            </font>
