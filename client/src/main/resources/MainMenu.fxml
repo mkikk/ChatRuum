@@ -15,7 +15,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="649.0" maxWidth="900.0" minHeight="640.0" minWidth="900.0" prefHeight="649.0" prefWidth="906.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.MainMenuController">
+<AnchorPane maxHeight="649.0" maxWidth="902.0" minHeight="640.0" minWidth="900.0" prefHeight="647.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.MainMenuController">
    <children>
       <VBox pickOnBounds="false" style="-fx-background-color: #236fc3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -38,9 +38,9 @@
                   </DropShadow>
                </effect>
             </AnchorPane>
-            <AnchorPane minHeight="44.0" minWidth="300.0" mouseTransparent="true" prefHeight="134.0" prefWidth="900.0">
+            <AnchorPane minHeight="44.0" minWidth="300.0" prefHeight="134.0" prefWidth="900.0">
                <children>
-                  <TextField fx:id="channelNameText" alignment="CENTER" layoutX="214.0" layoutY="-42.0" maxHeight="85.0" maxWidth="500.0" mouseTransparent="true" pickOnBounds="false" prefHeight="85.0" prefWidth="472.0" promptText="Enter room name" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="-42.0">
+                  <TextField fx:id="channelNameText" alignment="CENTER" layoutX="214.0" layoutY="-42.0" maxHeight="85.0" maxWidth="500.0" prefHeight="85.0" prefWidth="472.0" promptText="Enter room name" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="-42.0">
                      <padding>
                         <Insets bottom="20.0" top="20.0" />
                      </padding>
@@ -57,8 +57,11 @@
                            </color>
                         </DropShadow>
                      </effect>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </TextField>
-                  <PasswordField fx:id="channelPasswordText" alignment="CENTER" layoutX="199.0" layoutY="60.0" prefHeight="85.0" prefWidth="491.0" promptText="Enter room password" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="60.0">
+                  <PasswordField fx:id="channelPasswordText" alignment="CENTER" layoutX="198.0" layoutY="71.0" prefHeight="85.0" prefWidth="491.0" promptText="Enter room password" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="71.0">
                      <padding>
                         <Insets bottom="20.0" top="20.0" />
                      </padding>
@@ -72,6 +75,9 @@
                            </color>
                         </DropShadow>
                      </effect>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </PasswordField>
                </children>
             </AnchorPane>
@@ -92,7 +98,7 @@
                               <Insets top="10.0" />
                            </GridPane.margin>
                            <children>
-                              <Button fx:id="joinRoomButton" alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="17.0" mnemonicParsing="false" onAction="#joinButtonClicked" prefHeight="65.0" prefWidth="210.0" style="-fx-background-color: #1e5c9a; -fx-background-radius: 25;" text="JOIN ROOM" textFill="#d6e1d3" AnchorPane.leftAnchor="-100.0" AnchorPane.topAnchor="20.0">
+                              <Button fx:id="joinRoomButton" alignment="CENTER" contentDisplay="CENTER" layoutX="17.0" layoutY="17.0" mnemonicParsing="false" onAction="#joinButtonClicked" prefHeight="65.0" prefWidth="210.0" style="-fx-background-color: #1e5c9a; -fx-background-radius: 25;" text="JOIN ROOM" textFill="#d6e1d3" AnchorPane.leftAnchor="-100.0" AnchorPane.topAnchor="40.0">
                                  <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
@@ -106,6 +112,9 @@
                                        </color>
                                     </DropShadow>
                                  </effect>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Button>
                               <Label fx:id="ClientMessage" alignment="CENTER" layoutX="-9.0" layoutY="117.0" pickOnBounds="false" textFill="#d6e1d3" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="-225.0" AnchorPane.rightAnchor="225.0">
                                  <font>

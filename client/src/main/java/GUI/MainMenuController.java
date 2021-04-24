@@ -27,7 +27,7 @@ public class MainMenuController {
 
     @FXML
     public void initialize() {
-        Platform.runLater(() -> UserWelcome.setText("Hello " + OpenGUI.getUsername()));
+        Platform.runLater(() -> UserWelcome.setText("Hey, " + OpenGUI.getUsername()));
     }
 
     public void joinButtonClicked(ActionEvent actionEvent) {
