@@ -42,7 +42,7 @@ class ChatRuumServerTest {
     }
 
     @AfterAll
-    public static void stopServer() throws InterruptedException {
+    public static void stopServer() {
         session.close();
         server.stopServer();
     }
@@ -60,6 +60,7 @@ class ChatRuumServerTest {
     /**
      * Helper method to wait for a completable future to complete.
      * Provides custom error message and default timeout.
+     *
      * @return result of given future
      */
     public <T> T await(CompletableFuture<T> future) {
@@ -83,7 +84,7 @@ class ChatRuumServerTest {
                     System.out.println(r.result);
                     if (r.result == Result.NAME_FREE) {
                         System.out.println("The name " + username + " is free");
-                    } else if (r.result == Result.NAME_IN_USE){
+                    } else if (r.result == Result.NAME_IN_USE) {
                         System.out.println("The name " + username + " is already used");
                     }
                     result.complete(r.result);
@@ -102,7 +103,7 @@ class ChatRuumServerTest {
                     System.out.println(r.response);
                     if (r.response == Response.OK) {
                         System.out.println("New user registered");
-                    } else if (r.response == Response.FORBIDDEN){
+                    } else if (r.response == Response.FORBIDDEN) {
                         System.out.println("Failed to register");
                     }
                     response.complete(r.response);
@@ -123,7 +124,7 @@ class ChatRuumServerTest {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Login successful. Hello, " + username);
-                    } else if (r.response == Response.FORBIDDEN){
+                    } else if (r.response == Response.FORBIDDEN) {
                         System.out.println("Failed to login");
                     }
                     response.complete(r.response);
@@ -144,7 +145,7 @@ class ChatRuumServerTest {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Login successful. Hello, " + username);
-                    } else if (r.response == Response.FORBIDDEN){
+                    } else if (r.response == Response.FORBIDDEN) {
                         System.out.println("Failed to login");
                     }
                     response.complete(r.response);
@@ -165,7 +166,7 @@ class ChatRuumServerTest {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Joined channel: " + channelName);
-                    } else if (r.response == Response.FORBIDDEN){
+                    } else if (r.response == Response.FORBIDDEN) {
                         System.out.println("Failed to join channel");
                     }
                     response.complete(r.response);
@@ -187,7 +188,7 @@ class ChatRuumServerTest {
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel: " + channelName);
                 System.out.println("Channel messages: " + r.messages.toString());
-            } else if (r.response == Response.FORBIDDEN){
+            } else if (r.response == Response.FORBIDDEN) {
                 System.out.println("Failed to view channel");
             }
             view.close();
@@ -211,7 +212,7 @@ class ChatRuumServerTest {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Viewing channel: " + channelName);
-            } else if (r.response == Response.FORBIDDEN){
+            } else if (r.response == Response.FORBIDDEN) {
                 System.out.println("Failed to view channel");
             }
         });
@@ -251,7 +252,7 @@ class ChatRuumServerTest {
                     System.out.println(r.response.name());
                     if (r.response == Response.OK) {
                         System.out.println("Created channel: " + channelName);
-                    } else if (r.response == Response.FORBIDDEN){
+                    } else if (r.response == Response.FORBIDDEN) {
                         System.out.println("Failed to create channel");
                     }
                     response.complete(r.response);

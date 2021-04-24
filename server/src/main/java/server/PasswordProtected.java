@@ -1,5 +1,5 @@
 package server;
 
 public interface PasswordProtected {
-    boolean checkPassword(String givenPassword);
+    boolean checkPassword(byte[] givenPassword);
 }

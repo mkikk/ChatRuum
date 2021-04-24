@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.events.ConnectedEvent;
 import networking.events.DisconnectedEvent;
-import networking.events.ServerStoppedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,12 +22,12 @@ public class ChatRuumServer {
     private final ServerNetworkingManager<User> server;
 
     public ChatRuumServer(int port) throws Exception {
-        ReadWrite.readServer("src\\main\\java\\data\\server.json", this);
+        ReadWrite.readServer("server.json", this);
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
-    private void setupServer()  {
+    private void setupServer() {
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
 //            try {
@@ -38,7 +36,6 @@ public class ChatRuumServer {
 //                exception.printStackTrace();
 //            }
             System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
-
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
@@ -78,7 +75,7 @@ public class ChatRuumServer {
             System.out.println("User logging in: " + req.data.username);
 
             final User user = users.get(req.data.username);
-            if (user != null && user.checkPassword(req.data.password)) {
+            if (user != null && user.checkPassword(Crypto.encrypt(req.data.password, user.getKey(), user.getIv()))) {
                 session.setUser(user);
                 req.sendResponse(new GenericResponse(Response.OK));
             } else {
@@ -86,7 +83,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.onRequest(CreateChannelRequest.class, (session,req) -> {
+        server.onRequest(CreateChannelRequest.class, (session, req) -> {
             System.out.println("Trying to create channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
@@ -103,7 +100,7 @@ public class ChatRuumServer {
             System.out.println("Joining channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
-            if (channel != null && channel.checkPassword(req.data.channelPassword)) {
+            if (channel != null && channel.checkPassword(Crypto.encrypt(req.data.channelPassword, channel.getKey(), channel.getIv()))) {
                 final User user = session.getUser();
                 channel.join(user);
                 req.sendResponse(new GenericResponse(Response.OK));
@@ -138,7 +135,7 @@ public class ChatRuumServer {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("In shutdown hook");
             try {
-                ReadWrite.writeServer("src\\main\\java\\data\\server.json", this);
+                ReadWrite.writeServer("server.json", this);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
