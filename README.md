@@ -1,6 +1,20 @@
 # ChatRuum
 OOP group work.  
 
+___
+
+## Kuidas rakendust jooksutada:
+
+### Server
+`gradlew server:run` või IDEA-s `server` -> `Tasks` -> `application` -> `run` gradle'i taskide alt  
+Kui server käivitus edukalt, prinditakse konsooli vastav teade.
+
+### Client
+`gradlew client:run` või IDEA-s `client` -> `Tasks` -> `application` -> `run` gradle'i taskide alt  
+Kui server jookseb samas arvutis saab sisestada aadressiks `localhost` ning vajutada connect, et serveriga ühenduda.
+
+___
+
 **Rollid:**  
 UI  - Kikkatalo  
 server - Sulg  

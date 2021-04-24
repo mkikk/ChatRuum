@@ -137,7 +137,7 @@ public class ChatRuumServer {
         });
     }
 
-    public void startServer() {
+    public synchronized void startServer() {
         server.start();
     }
 

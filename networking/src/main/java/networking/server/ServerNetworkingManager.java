@@ -89,14 +89,18 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
         var bindFuture = bootstrap.bind(port);
         serverChannel = bindFuture.channel();
         bindFuture.addListener((ChannelFutureListener) future -> {
-            System.out.println("Server listening on port " + port + "...");
-
+            if (future.isSuccess()) {
+                System.out.println("Server listening on port " + port + "...");
+            } else {
+                System.err.println("Server failed to bind to port " + port);
+                if (future.cause() != null) future.cause().printStackTrace();
+            }
             serverChannel.closeFuture().addListener(closeFuture -> {
-                serverChannel = null;
+                synchronized (this) {
+                    serverChannel = null;
+                }
                 bossGroup.shutdownGracefully();
-                workerGroup.shutdownGracefully().addListener(terminationFuture -> {
-                    callEventHandlers(null, new ServerStoppedEvent());
-                });
+                workerGroup.shutdownGracefully();
                 System.out.println("Server stopping...");
             });
         });
