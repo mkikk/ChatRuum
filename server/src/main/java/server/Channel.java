@@ -58,7 +58,7 @@ public class Channel implements PasswordProtected {
 
     public void sendMessage(Message message) {
         messages.add(message);
-        sendToViewers(new NewMessageResponse(message.getText()));
+        sendToViewers(new NewMessageResponse(message.convertAsData()));
     }
 
     protected void sendToViewers(NewMessageResponse response) {
