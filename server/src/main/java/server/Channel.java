@@ -8,15 +8,12 @@ import networking.data.MessageData;
 import networking.responses.NewMessageResponse;
 import networking.server.PersistentRequest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class Channel implements PasswordProtected {
+public class Channel {
     private final String name;
-    private final String password;
+    private final Password password;
     private final List<Message> messages;
     private final Set<User> users;
     @JsonIgnore
@@ -24,14 +21,14 @@ public class Channel implements PasswordProtected {
 
     public Channel(String name, String password) {
         this.name = name;
-        this.password = password;
+        this.password = new Password(password);
         messages = new ArrayList<>(); // Todo: Load messages from file
         users = new HashSet<>();
         viewingRequests = new ArrayList<>();
     }
 
     public Channel(@JsonProperty(value = "name") String name,
-                   @JsonProperty(value = "password") String password,
+                   @JsonProperty(value = "password") Password password,
                    @JsonProperty(value = "messages") List<Message> messages,
                    @JsonProperty(value = "users") Set<User> users) {
         this.name = name;
@@ -39,11 +36,6 @@ public class Channel implements PasswordProtected {
         this.messages = messages;
         this.users = users;
         viewingRequests = new ArrayList<>();
-    }
-
-
-    public String getPassword() {
-        return password;
     }
 
     public Set<User> getUsers() {
@@ -86,8 +78,7 @@ public class Channel implements PasswordProtected {
         return name;
     }
 
-    @Override
     public boolean checkPassword(String givenPassword) {
-        return password == null || password.equals(givenPassword);
+        return password == null || password.checkPassword(givenPassword);
     }
 }

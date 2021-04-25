@@ -5,30 +5,38 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import networking.data.UserData;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.DataOutputStream;
-import java.nio.file.Path;
+import java.util.Arrays;
+
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "name", scope = User.class)
-public class User implements PasswordProtected {
-    private String name;
-    private String password;
+        property = "name", scope = User.class
+)
+public class User {
+    private final String name;
+    private final Password password;
     @JsonIgnore
     private boolean isOnline;
 
-    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password")String password) {
+    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password) {
         this.name = name;
         this.password = password;
         this.isOnline = true;
     }
 
-    public String getPassword() {
-        return password;
+    public User(String name, String password) {
+        this.name = name;
+        this.password = new Password(password);
+        this.isOnline = true;
     }
 
-    public void LogOff(){
+    public void logOff() {
         this.isOnline = false;
+    }
+
+    public Password getPassword() {
+        return password;
     }
 
     public String getName() {
@@ -39,14 +47,12 @@ public class User implements PasswordProtected {
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
-                ", password='" + password + '\'' +
                 ", isOnline=" + isOnline +
                 '}';
     }
 
-    @Override
     public boolean checkPassword(String givenPassword) {
-        return givenPassword.equals(password);
+        return password.checkPassword(givenPassword);
     }
 
     public UserData convertToData() {

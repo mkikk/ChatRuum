@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.events.ConnectedEvent;
 import networking.events.DisconnectedEvent;
-import networking.events.ServerStoppedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
@@ -22,14 +21,23 @@ public class ChatRuumServer {
     protected final Map<String, Channel> channels = new HashMap<>();
     @JsonIgnore
     private final ServerNetworkingManager<User> server;
+    @JsonIgnore
+    private final String saveFile;
 
-    public ChatRuumServer(int port) throws Exception {
-        ReadWrite.readServer("src\\main\\java\\data\\server.json", this);
+    public ChatRuumServer(int port) {
+        saveFile = null;
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
-    private void setupServer()  {
+    public ChatRuumServer(int port, String saveFile) throws IOException {
+        this.saveFile = saveFile;
+        ReadWrite.readServer(saveFile, this);
+        server = new ServerNetworkingManager<>(port);
+        setupServer();
+    }
+
+    private void setupServer() {
         server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
 //            try {
@@ -38,7 +46,6 @@ public class ChatRuumServer {
 //                exception.printStackTrace();
 //            }
             System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
-
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
@@ -86,7 +93,7 @@ public class ChatRuumServer {
             }
         });
 
-        server.onRequest(CreateChannelRequest.class, (session,req) -> {
+        server.onRequest(CreateChannelRequest.class, (session, req) -> {
             System.out.println("Trying to create channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
@@ -135,14 +142,17 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("In shutdown hook");
-            try {
-                ReadWrite.writeServer("src\\main\\java\\data\\server.json", this);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }, "Shutdown-thread"));
+
+        if (saveFile != null) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("In shutdown hook");
+                try {
+                    ReadWrite.writeServer(saveFile, this);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }, "Shutdown-thread"));
+        }
     }
 
     public synchronized void startServer() {
@@ -153,8 +163,8 @@ public class ChatRuumServer {
         server.stop();
     }
 
-    public static void main(String[] args) throws Exception {
-        var server = new ChatRuumServer(DEFAULT_PORT);
+    public static void main(String[] args) throws IOException {
+        var server = new ChatRuumServer(DEFAULT_PORT, "server.json");
         server.startServer();
     }
 }
