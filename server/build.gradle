@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+import java.nio.file.Paths
 plugins {
     id 'application'
     id 'java'
@@ -7,8 +9,31 @@ apply from: "$rootProject.projectDir/common.gradle"
 
 dependencies {
     implementation project(':networking')
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
 }
 
 application {
     mainClassName = 'server.ChatRuumServer'
 }
+// TEMPORARY FIX
+// Run server with this if you need to have shutdown hooks work.
+// Builds server as a jar and executes it in a separate command line.
+// This ensures that shutdown hooks work.
+// NB: Does not support debugging.
+task runJar(type: Exec) {
+    doFirst {
+        println "Starting server in: $projectDir"
+    }
+    workingDir projectDir
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        // Opens the server in a new command line
+        commandLine "cmd", "/k", "start", Paths.get("build" ,"install", "server", "bin", "server.bat").toString()
+    } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+        // Untested
+        commandLine "sh", "-c", Paths.get("build" ,"install", "server", "bin", "server").toString()
+    } else {
+        throw new RuntimeException("Unknown operating system: " + Os.getName())
+    }
+}
+
+runJar.dependsOn(':server:installDist')

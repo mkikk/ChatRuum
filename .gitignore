@@ -124,4 +124,7 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
+# ignore json changes
+*.json
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,gradle

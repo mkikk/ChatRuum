@@ -1,36 +1,45 @@
 package server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.events.ConnectedEvent;
-import networking.events.ConnectionDroppedEvent;
 import networking.events.DisconnectedEvent;
-import networking.events.ErrorEvent;
+import networking.events.ServerStoppedEvent;
 import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
-import networking.server.ServerSession;
-import networking.server.PersistentRequest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ChatRuumServer {
     protected static final int DEFAULT_PORT = 5050;
-
-    protected final Map<String, Channel> channels;
-    protected final Map<String, User> users;
+    @JsonProperty(value = "users")
+    protected final Map<String, User> users = new HashMap<>();
+    @JsonProperty(value = "channels")
+    protected final Map<String, Channel> channels = new HashMap<>();
+    @JsonIgnore
     private final ServerNetworkingManager<User> server;
 
-    public ChatRuumServer(int port) {
-        channels = new HashMap<>();
-        users = new HashMap<>();
+    public ChatRuumServer(int port) throws Exception {
+        ReadWrite.readServer("src\\main\\java\\data\\server.json", this);
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
-    private void setupServer() {
-        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getTargetAddress()));
-        server.onEvent(DisconnectedEvent.class, (s, e) -> System.out.println("Client disconnected: " + s.getTargetAddress()));
+    private void setupServer()  {
+        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
+        server.onEvent(DisconnectedEvent.class, (s, e) -> {
+//            try {
+//                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
+//            } catch (Exception exception) {
+//                exception.printStackTrace();
+//            }
+            System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
+
+        });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
             System.out.println("Registering...");
@@ -46,7 +55,6 @@ public class ChatRuumServer {
 
         server.onRequest(CheckUsernameRequest.class, (session, req) -> {
             System.out.println("Checking username: " + req.data.username);
-
             final User user = users.get(req.data.username);
             if (user != null) {
                 req.sendResponse(new CheckNameResponse(Result.NAME_IN_USE));
@@ -127,6 +135,14 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("In shutdown hook");
+            try {
+                ReadWrite.writeServer("src\\main\\java\\data\\server.json", this);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }, "Shutdown-thread"));
     }
 
     public synchronized void startServer() {
@@ -137,7 +153,7 @@ public class ChatRuumServer {
         server.stop();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         var server = new ChatRuumServer(DEFAULT_PORT);
         server.startServer();
     }

@@ -1,29 +1,20 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import networking.requests.CheckUsernameRequest;
-import networking.requests.RegisterRequest;
-import networking.responses.CheckNameResponse;
 import networking.requests.PasswordLoginRequest;
-import networking.responses.GenericResponse;
+import networking.requests.RegisterRequest;
 import networking.responses.Response;
 import networking.responses.Result;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 
 public class LoginController {
@@ -50,6 +41,7 @@ public class LoginController {
     public void onLoginButtonPressed(ActionEvent actionEvent) {
         if (isLogin) {
             loginUser();
+            loginButton.setDisable(true);
         } else {
             registerUser();
         }
@@ -62,12 +54,14 @@ public class LoginController {
         Scene currentScene = usernameText.getScene();
         //if (currentScene.getFocusOwner() == usernameText.getStyleableNode())
         System.out.println("Checking user exists");
-        var req = Main.getSession().sendRequest(new CheckUsernameRequest(usernameText.getText()));
+
+        var req = OpenGUI.getSession().sendRequest(new CheckUsernameRequest(usernameText.getText()));
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 Platform.runLater(() -> {
                     passwordConfirmation.setVisible(true);
                     loginButton.setText("Register");
+
                     loginButton.setDisable(false);
                     isLogin = false;
 
@@ -91,14 +85,18 @@ public class LoginController {
     public void registerUser() {
         if (passwordText.getText().equals(passwordConfirmation.getText())) {
             noMatch.setText("");
-            var req = Main.getSession().sendRequest(new RegisterRequest(usernameText.getText(), passwordText.getText()));
+            var req = OpenGUI.getSession().sendRequest(new RegisterRequest(usernameText.getText(), passwordText.getText()));
             req.onResponse((s, r) -> {
                 System.out.println(r.response);
                 if (r.response == Response.OK) {
-                    noMatch.setText("User registered!");
+                    Platform.runLater(() -> {
+                        noMatch.setText("User registered!");
+                    });
                     checkUserExists();
                 } else if (r.response == Response.FORBIDDEN) {
-                    noMatch.setText("Registration failed!");
+                    Platform.runLater(() -> {
+                        noMatch.setText("Registration failed!");
+                    });
                 }
             });
         } else {
@@ -111,9 +109,11 @@ public class LoginController {
          * Check if username and password match
          * If not, then tell wrong password
          */
-        var req = Main.getSession().sendRequest(new PasswordLoginRequest(usernameText.getText(), passwordText.getText()));
+
+        var req = OpenGUI.getSession().sendRequest(new PasswordLoginRequest(usernameText.getText(), passwordText.getText()));
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
+                OpenGUI.setUsername(usernameText.getText());
                 Platform.runLater(this::changeToMainMenu);
             } else {
                 Platform.runLater(() -> noMatch.setText("Username and password do not match. Try again!"));
@@ -124,6 +124,11 @@ public class LoginController {
     private void changeToMainMenu() {
         // If current scene is not active, do not change scene
         if (loginButton.getScene().getWindow() == null) return;
-        Main.switchSceneTo("main1", loginButton, 1080,800);
+        try {
+            OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
+        } catch (IOException e) {
+            System.out.println("error opening main menu fxml");
+            return;
+        }
     }
 }
