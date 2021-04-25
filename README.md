@@ -6,7 +6,8 @@ ___
 ## Kuidas rakendust jooksutada:
 
 ### Server
-`gradlew server:run` või IDEA-s `server` -> `Tasks` -> `application` -> `run` gradle'i taskide alt  
+`gradlew server:runJar` või IDEA-s `server` -> `Tasks` -> `other` -> `runJar` gradle'i taskide alt  
+NB: See käivitab server eraldi cmd aknas. See on vajalik selleks, et Java shutdown hookid jookseksid.  
 Kui server käivitus edukalt, prinditakse konsooli vastav teade.
 
 ### Client
