@@ -11,11 +11,9 @@ import networking.server.PersistentRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Channel implements PasswordProtected {
+public class Channel {
     private final String name;
-    private final byte[] password;
-    private byte[] iv;
-    private byte[] key;
+    private final Password password;
     private final List<Message> messages;
     private final Set<User> users;
     @JsonIgnore
@@ -23,32 +21,21 @@ public class Channel implements PasswordProtected {
 
     public Channel(String name, String password) {
         this.name = name;
-        this.key = Crypto.generateKey(password);
-        this.iv = Crypto.generateIV();
-        this.password = Crypto.encrypt(password, key, iv);
+        this.password = new Password(password);
         messages = new ArrayList<>(); // Todo: Load messages from file
         users = new HashSet<>();
         viewingRequests = new ArrayList<>();
     }
 
     public Channel(@JsonProperty(value = "name") String name,
-                   @JsonProperty(value = "password") byte[] password,
+                   @JsonProperty(value = "password") Password password,
                    @JsonProperty(value = "messages") List<Message> messages,
-                   @JsonProperty(value = "users") Set<User> users,
-                   @JsonProperty(value = "key") byte[] key,
-                   @JsonProperty(value = "iv") byte[] iv) {
+                   @JsonProperty(value = "users") Set<User> users) {
         this.name = name;
         this.password = password;
-        this.iv = iv;
-        this.key = key;
         this.messages = messages;
         this.users = users;
         viewingRequests = new ArrayList<>();
-    }
-
-
-    public byte[] getPassword() {
-        return password;
     }
 
     public Set<User> getUsers() {
@@ -61,14 +48,6 @@ public class Channel implements PasswordProtected {
 
     public List<Message> getMessages() {
         return messages;
-    }
-
-    public byte[] getIv() {
-        return iv;
-    }
-
-    public byte[] getKey() {
-        return key;
     }
 
     public void sendMessage(Message message) {
@@ -99,8 +78,7 @@ public class Channel implements PasswordProtected {
         return name;
     }
 
-    @Override
-    public boolean checkPassword(byte[] givenPassword) {
-        return password == null || Arrays.equals(password, givenPassword);
+    public boolean checkPassword(String givenPassword) {
+        return password == null || password.checkPassword(givenPassword);
     }
 }

@@ -9,6 +9,7 @@ import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,9 +21,18 @@ public class ChatRuumServer {
     protected final Map<String, Channel> channels = new HashMap<>();
     @JsonIgnore
     private final ServerNetworkingManager<User> server;
+    @JsonIgnore
+    private final String saveFile;
 
-    public ChatRuumServer(int port) throws Exception {
-        ReadWrite.readServer("server.json", this);
+    public ChatRuumServer(int port) {
+        saveFile = null;
+        server = new ServerNetworkingManager<>(port);
+        setupServer();
+    }
+
+    public ChatRuumServer(int port, String saveFile) throws IOException {
+        this.saveFile = saveFile;
+        ReadWrite.readServer(saveFile, this);
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
@@ -75,7 +85,7 @@ public class ChatRuumServer {
             System.out.println("User logging in: " + req.data.username);
 
             final User user = users.get(req.data.username);
-            if (user != null && user.checkPassword(Crypto.encrypt(req.data.password, user.getKey(), user.getIv()))) {
+            if (user != null && user.checkPassword(req.data.password)) {
                 session.setUser(user);
                 req.sendResponse(new GenericResponse(Response.OK));
             } else {
@@ -100,7 +110,7 @@ public class ChatRuumServer {
             System.out.println("Joining channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
-            if (channel != null && channel.checkPassword(Crypto.encrypt(req.data.channelPassword, channel.getKey(), channel.getIv()))) {
+            if (channel != null && channel.checkPassword(req.data.channelPassword)) {
                 final User user = session.getUser();
                 channel.join(user);
                 req.sendResponse(new GenericResponse(Response.OK));
@@ -132,14 +142,17 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("In shutdown hook");
-            try {
-                ReadWrite.writeServer("server.json", this);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }, "Shutdown-thread"));
+
+        if (saveFile != null) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("In shutdown hook");
+                try {
+                    ReadWrite.writeServer(saveFile, this);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }, "Shutdown-thread"));
+        }
     }
 
     public void startServer() {
@@ -150,8 +163,8 @@ public class ChatRuumServer {
         server.stop();
     }
 
-    public static void main(String[] args) throws Exception {
-        var server = new ChatRuumServer(DEFAULT_PORT);
+    public static void main(String[] args) throws IOException {
+        var server = new ChatRuumServer(DEFAULT_PORT, "server.json");
         server.startServer();
     }
 }

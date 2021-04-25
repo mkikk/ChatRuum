@@ -9,14 +9,10 @@ import java.util.Arrays;
 public class CryptoTest {
     @Test
     public void testEncrypt() {
-        String password = "1234";
-        byte[] key = Crypto.generateKey("1234");
-        byte[] iv = Crypto.generateIV();
-        byte[] encrypted1 = Crypto.encrypt(password, key, iv);
-        byte[] encrypted2 = Crypto.encrypt(password, key, iv);
-        System.out.println("1. " + password + " --> " + Arrays.toString(encrypted1));
-        System.out.println("1. " + password + " --> " + Arrays.toString(encrypted2));
-        assertArrayEquals(encrypted1, encrypted2);
+        var password = new Password("1234");
+        assertTrue(password.checkPassword("1234"));
 
+        var password2 = new Password("pikktekst1234---------?=========LÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ");
+        assertTrue(password2.checkPassword("pikktekst1234---------?=========LÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖÖ"));
     }
 }

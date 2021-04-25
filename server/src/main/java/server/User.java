@@ -5,70 +5,54 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import networking.data.UserData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "name", scope = User.class)
-public class User implements PasswordProtected {
-    private String name;
-    private byte[] password;
-    private byte[] iv;
-    private byte[] key;
+        property = "name", scope = User.class
+)
+public class User {
+    private final String name;
+    private final Password password;
     @JsonIgnore
     private boolean isOnline;
 
-    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") byte[] password,
-                @JsonProperty(value = "key") byte[] key, @JsonProperty(value = "iv") byte[] iv) {
+    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password) {
         this.name = name;
         this.password = password;
-        this.iv = iv;
-        this.key = key;
         this.isOnline = true;
     }
 
     public User(String name, String password) {
         this.name = name;
-        this.key = Crypto.generateKey(password);
-        this.iv = Crypto.generateIV();
-        this.password = Crypto.encrypt(password, key, iv);
+        this.password = new Password(password);
         this.isOnline = true;
     }
 
-    public byte[] getPassword() {
-        return password;
+    public void logOff() {
+        this.isOnline = false;
     }
 
-    public void LogOff() {
-        this.isOnline = false;
+    public Password getPassword() {
+        return password;
     }
 
     public String getName() {
         return name;
     }
 
-    public byte[] getIv() {
-        return iv;
-    }
-
-    public byte[] getKey() {
-        return key;
-    }
-
     @Override
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
-                ", password='" + Arrays.toString(password) + '\'' +
                 ", isOnline=" + isOnline +
                 '}';
     }
 
-    @Override
-    public boolean checkPassword(byte[] givenPassword) {
-        System.out.println(Arrays.toString(password) + "==" + Arrays.toString(givenPassword));
-        return Arrays.equals(givenPassword, password);
+    public boolean checkPassword(String givenPassword) {
+        return password.checkPassword(givenPassword);
     }
 
     public UserData convertToData() {
