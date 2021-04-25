@@ -17,11 +17,13 @@ public class ReadWriteTest {
             final User jaagup = new User("jaagup", "1234");
             final User miilo = new User("miilo", "1234");
             final ChatRuumServer chatRuumServer = new ChatRuumServer(5055);
-            chatRuumServer.channels.put("yldine", new Channel("yldine", new Password(""),
+            chatRuumServer.channels.put("yldine", new Channel("yldine", null,
                     Arrays.asList(new Message("TERE", jaagup), new Message("tere??", miilo)),
                     new HashSet<>(Arrays.asList(jaagup, miilo)))
             );
+            chatRuumServer.channels.put("teine", new Channel("teine", "2312"));
             chatRuumServer.users.put("miilo", miilo);
+            chatRuumServer.users.put("jaagup", jaagup);
 
             writeServer("testServer.json", chatRuumServer);
         }
@@ -35,17 +37,15 @@ public class ReadWriteTest {
             User next = it.next();
             while (it.hasNext()) {
                 if (next.getName().equals("miilo")) {
-                    System.out.println("nice");
                     break;
                 }
-                it.remove();
                 next = it.next();
             }
             User miilo1 = chatRuumServer2.channels.get("yldine").getMessages().get(1).getSender();
             User miilo2 = chatRuumServer2.users.get("miilo");
             System.out.println(miilo1.hashCode() + " " + miilo2.hashCode() + " " + next.hashCode());
-            assertEquals(miilo1, miilo2);
-            assertEquals(next, miilo2);
+            assertSame(miilo1, miilo2);
+            assertSame(next, miilo2);
 
             var stringUserMap = chatRuumServer2.users;
             var stringChannelMap = chatRuumServer2.channels;
@@ -55,6 +55,11 @@ public class ReadWriteTest {
             assertTrue(stringChannelMap.get("yldine").checkPassword(""));
             assertEquals(stringChannelMap.get("yldine").getMessages().get(0).getText(), "TERE");
             assertEquals(stringChannelMap.get("yldine").getUsers().size(), 2);
+
+            assertTrue(stringChannelMap.get("yldine").checkPassword(null));
+            assertTrue(stringChannelMap.get("yldine").checkPassword("fasdfads"));
+            assertTrue(stringChannelMap.get("teine").checkPassword("2312"));
+            assertFalse(stringChannelMap.get("teine").checkPassword("2313"));
         }
     }
 }

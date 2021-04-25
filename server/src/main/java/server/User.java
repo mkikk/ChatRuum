@@ -15,7 +15,7 @@ import java.util.Arrays;
 )
 public class User {
     private final String name;
-    private final Password password;
+    @NotNull private final Password password;
     @JsonIgnore
     private boolean isOnline;
 
@@ -25,7 +25,7 @@ public class User {
         this.isOnline = true;
     }
 
-    public User(String name, String password) {
+    public User(String name, @NotNull String password) {
         this.name = name;
         this.password = new Password(password);
         this.isOnline = true;
@@ -35,7 +35,7 @@ public class User {
         this.isOnline = false;
     }
 
-    public Password getPassword() {
+    public @NotNull Password getPassword() {
         return password;
     }
 

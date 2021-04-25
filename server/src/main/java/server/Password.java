@@ -2,6 +2,7 @@ package server;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
@@ -18,7 +19,7 @@ public class Password {
     private final byte[] key;
     private final byte[] iv;
 
-    public Password(String password) {
+    public Password(@NotNull String password) {
         try {
             this.key = generateKey(password);
             this.iv = generateIV();
@@ -38,7 +39,7 @@ public class Password {
         this.iv = iv;
     }
 
-    public boolean checkPassword(String givenPassword) {
+    public boolean checkPassword(@NotNull String givenPassword) {
         try {
             var checkPassword = encrypt(givenPassword);
             return Arrays.equals(password, checkPassword);

@@ -7,28 +7,29 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import networking.data.MessageData;
 import networking.responses.NewMessageResponse;
 import networking.server.PersistentRequest;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Channel {
     private final String name;
-    private final Password password;
+    @Nullable private final Password password;
     private final List<Message> messages;
     private final Set<User> users;
     @JsonIgnore
     private final List<PersistentRequest<?>> viewingRequests;
 
-    public Channel(String name, String password) {
+    public Channel(String name, @Nullable String password) {
         this.name = name;
-        this.password = new Password(password);
-        messages = new ArrayList<>(); // Todo: Load messages from file
+        this.password = password == null ? null : new Password(password);
+        messages = new ArrayList<>();
         users = new HashSet<>();
         viewingRequests = new ArrayList<>();
     }
 
     public Channel(@JsonProperty(value = "name") String name,
-                   @JsonProperty(value = "password") Password password,
+                   @JsonProperty(value = "password") @Nullable Password password,
                    @JsonProperty(value = "messages") List<Message> messages,
                    @JsonProperty(value = "users") Set<User> users) {
         this.name = name;
@@ -40,6 +41,10 @@ public class Channel {
 
     public Set<User> getUsers() {
         return users;
+    }
+
+    public @Nullable Password getPassword() {
+        return password;
     }
 
     public List<MessageData> convertToMessageData() {
