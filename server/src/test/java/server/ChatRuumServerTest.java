@@ -180,7 +180,6 @@ class ChatRuumServerTest {
     public void testViewChannel() {
         var response = new CompletableFuture<Response>();
 
-
         String channelName = "yldine";
         var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
@@ -217,8 +216,8 @@ class ChatRuumServerTest {
             }
         });
         view.onResponse(NewMessageResponse.class, (s, r) -> {
-            System.out.println("Received message: " + r.message);
-            message.complete(r.message);
+            System.out.println("Received message: " + r.data.text + " from " + r.data.senderName);
+            message.complete(r.data.text);
         });
 
         session.sendRequest(new SendMessageRequest(channelName, text))

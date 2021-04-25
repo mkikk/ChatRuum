@@ -2,7 +2,6 @@ package networking;
 
 import networking.client.ClientNetworkingManager;
 import networking.events.ConnectedEvent;
-import networking.events.ServerStoppedEvent;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;
 import org.junit.jupiter.api.Test;
@@ -60,24 +59,5 @@ class NettyClientServerTest {
 
         clientSession.close();
         server.stop();
-    }
-
-    @Test
-    void testServerStopping() throws InterruptedException, TimeoutException, ExecutionException {
-        var serverStoppedTime = new CompletableFuture<Long>();
-
-        var server = new ServerNetworkingManager<Void>(testPort);
-        server.onEvent(ServerStoppedEvent.class, (s, e) -> {
-            System.out.println("Server stopped");
-            serverStoppedTime.complete(System.currentTimeMillis());
-        });
-        server.start();
-
-        var stopTime = System.currentTimeMillis();
-        server.stop();
-
-        var stoppedTime = serverStoppedTime.get(10, TimeUnit.SECONDS);
-
-        System.out.println("Server stopped in " + (stoppedTime - stopTime) + " ms");
     }
 }
