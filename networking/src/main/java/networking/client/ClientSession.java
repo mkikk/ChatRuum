@@ -4,6 +4,8 @@ import io.netty.channel.ChannelHandlerContext;
 import networking.*;
 import networking.events.ConnectionDroppedEvent;
 import networking.events.DisconnectedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.SocketAddress;
 import java.util.Objects;
@@ -12,6 +14,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientSession extends AbstractSession {
+    private static final Logger logger = LogManager.getLogger();
+
     protected final MultiHandlerEventEmitter<ClientSession, Event> eventHandlers;
     protected final ConcurrentMap<Integer, AbstractRequest> requests;
 
@@ -99,7 +103,7 @@ public class ClientSession extends AbstractSession {
 
         var request = requests.getOrDefault(wrapper.id, null);
         if (request == null) {
-            System.out.println("Warning: Received response with no request: " + wrapper.data);
+            logger.warn("Received response with no request: " + wrapper.data);
             return;
         }
 

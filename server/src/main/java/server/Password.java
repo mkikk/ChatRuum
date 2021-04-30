@@ -2,6 +2,8 @@ package server;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.*;
@@ -15,6 +17,8 @@ import java.util.Arrays;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Password {
+    private static final Logger logger = LogManager.getLogger();
+
     private final byte[] password;
     private final byte[] key;
     private final byte[] iv;
@@ -44,8 +48,7 @@ public class Password {
             var checkPassword = encrypt(givenPassword);
             return Arrays.equals(password, checkPassword);
         } catch (GeneralSecurityException e) {
-            System.err.println("Password encrypting failed while checking password '" + givenPassword + "'");
-            e.printStackTrace();
+            logger.error("Password encrypting failed while checking password '" + givenPassword + "':", e);
             return false;
         }
     }

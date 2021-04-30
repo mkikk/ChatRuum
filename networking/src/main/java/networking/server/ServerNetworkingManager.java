@@ -9,6 +9,8 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
 
@@ -22,6 +24,8 @@ import java.util.Scanner;
  * @param <U> Type of user data stored on session
  */
 public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel> {
+    private static final Logger logger = LogManager.getLogger();
+
     private final MultiHandlerEventEmitter<ServerSession<U>, Event> eventHandlers;
     private final SingleHandlerEventEmitter<ServerSession<U>, Request<?, ?>> requestHandlers;
     private final SingleHandlerEventEmitter<ServerSession<U>, PersistentRequest<?>> persistentRequestHandlers;
@@ -53,13 +57,13 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
 
     protected void callRequestHandlers(ServerSession<U> session, Request<?, ?> request) {
         if (!requestHandlers.call(request.data.getClass(), session, request)) {
-            throw new RuntimeException("No handler for request of type " + request.data.getClass().getName() + " registered");
+            logger.warn("No handler for request of type " + request.data.getClass().getName() + " registered");
         }
     }
 
     protected void callPersistentRequestHandlers(ServerSession<U> session, PersistentRequest<PersistentRequestData> request) {
         if (!persistentRequestHandlers.call(request.data.getClass(), session, request)) {
-            throw new RuntimeException("No handler for persistent request of type " + request.data.getClass().getName() + " registered");
+            logger.warn("No handler for persistent request of type " + request.data.getClass().getName() + " registered");
         }
     }
 
@@ -89,10 +93,9 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
         serverChannel = bindFuture.channel();
         bindFuture.addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                System.out.println("Server listening on port " + port + "...");
+                logger.info("Server listening on port " + port + "...");
             } else {
-                System.err.println("Server failed to bind to port " + port);
-                if (future.cause() != null) future.cause().printStackTrace();
+                logger.error("Server failed to bind to port " + port, future.cause());
             }
             serverChannel.closeFuture().addListener(closeFuture -> {
                 synchronized (this) {
@@ -100,7 +103,7 @@ public class ServerNetworkingManager<U> extends ChannelInitializer<SocketChannel
                 }
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully();
-                System.out.println("Server stopping...");
+                logger.info("Server stopping...");
             });
         });
     }

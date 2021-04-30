@@ -12,10 +12,12 @@ import networking.requests.CreateChannelRequest;
 import networking.requests.JoinChannelRequest;
 import networking.responses.Response;
 import networking.responses.Result;
-
-import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MainMenuController {
+    private static final Logger logger = LogManager.getLogger();
+
     @FXML
     Label UserWelcome, ClientMessage, LatestMessages;
     @FXML
@@ -32,20 +34,18 @@ public class MainMenuController {
 
     public void joinButtonClicked(ActionEvent actionEvent) {
         checkRoomName(actionEvent);
-
     }
 
     public void joinRoom(ActionEvent actionEvent) {
         joinRoomButton.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
         req.onResponse((s, r) -> {
-            System.out.println(r.response.name());
             if (r.response == Response.OK) {
-                System.out.println("Joined channel:");
+                logger.debug("Joined channel:");
                 OpenGUI.setCurrentChatroom(channelNameText.getText());
-                Platform.runLater(() -> switchToChatRoom());
+                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800));
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to join channel");
+                logger.debug("Failed to join channel");
                 Platform.runLater(() -> {
                     joinRoomButton.setDisable(false);
                     ClientMessage.setText("Couldn't join to channel.");
@@ -58,15 +58,14 @@ public class MainMenuController {
 
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(channelNameText.getText()));
         req.onResponse((s, r) -> {
-            System.out.println(r.result.name());
             if (r.result == Result.NAME_FREE) {
-                System.out.println("Room name free");
+                logger.debug("Room name free");
                 createRoom(actionEvent);
             } else if (r.result == Result.NAME_IN_USE) {
-                System.out.println("Room name exists");
+                logger.debug("Room name exists");
                 joinRoom(actionEvent);
             } else if (r.result == Result.NAME_INVALID) {
-                System.out.println("Room name not allowed");
+                logger.debug("Room name not allowed");
                 Platform.runLater(() -> ClientMessage.setText("Invalid room name"));
             }
         });
@@ -80,24 +79,13 @@ public class MainMenuController {
                 )
         );
         req.onResponse((s, r) -> {
-            System.out.println(r.response.name());
             if (r.response == Response.OK) {
-                System.out.println("Created channel");
+                logger.debug("Created channel");
                 joinRoom(actionEvent);
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to create channel");
+                logger.debug("Failed to create channel");
                 Platform.runLater(() -> ClientMessage.setText("Couldn't create channel. Try again!"));
             }
         });
-    }
-
-    private void switchToChatRoom() {
-        if (joinRoomButton.getScene().getWindow() == null) return;
-        try {
-            OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800);
-        } catch (IOException e) {
-            System.out.println("error opening chat.fxml");
-            return;
-        }
     }
 }

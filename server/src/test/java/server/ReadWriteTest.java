@@ -1,5 +1,7 @@
 package server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,10 +11,12 @@ import static server.ReadWrite.*;
 import java.util.*;
 
 public class ReadWriteTest {
+    private static final Logger logger = LogManager.getLogger();
+
     @Test
     public void testReadWriteServer() throws Exception {
         {
-            System.out.println("Writing server to JSON");
+            logger.info("Writing server to JSON");
 
             final User jaagup = new User("jaagup", "1234");
             final User miilo = new User("miilo", "1234");
@@ -43,7 +47,7 @@ public class ReadWriteTest {
             }
             User miilo1 = chatRuumServer2.channels.get("yldine").getMessages().get(1).getSender();
             User miilo2 = chatRuumServer2.users.get("miilo");
-            System.out.println(miilo1.hashCode() + " " + miilo2.hashCode() + " " + next.hashCode());
+            logger.info(miilo1.hashCode() + " " + miilo2.hashCode() + " " + next.hashCode());
             assertSame(miilo1, miilo2);
             assertSame(next, miilo2);
 

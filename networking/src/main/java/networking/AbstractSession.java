@@ -7,6 +7,8 @@ import networking.events.ConnectedEvent;
 import networking.events.ConnectionDroppedEvent;
 import networking.events.DisconnectedEvent;
 import networking.events.ErrorEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.net.SocketAddress;
@@ -14,8 +16,10 @@ import java.net.SocketAddress;
 import static io.netty.channel.ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE;
 
 public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
+    private static final Logger logger = LogManager.getLogger();
+
     private ChannelHandlerContext ctx;
-    private SocketAddress targetAddress;
+    private final SocketAddress targetAddress;
     protected volatile boolean closedLocally;
     private final ExceptionForwarder exceptionForwarder;
 
@@ -77,13 +81,12 @@ public abstract class AbstractSession extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        System.err.println("Exception occurred in networked session with " + getTargetAddress() + ":");
-        cause.printStackTrace();
+        logger.error("Exception occurred in networked session with " + getTargetAddress() + ":", cause);
         callEventHandlers(new ErrorEvent(cause));
         if (ctx.channel().isOpen()) {
-            System.err.println("Session may be in an invalid state and will be closed automatically to avoid unexpected behaviour");
+            logger.error("Session may be in an invalid state and will be closed automatically to avoid unexpected behaviour");
         } else {
-            System.err.println("Session is already closed and should be discarded");
+            logger.error("Session is already closed and should be discarded");
         }
         ctx.close();
     }

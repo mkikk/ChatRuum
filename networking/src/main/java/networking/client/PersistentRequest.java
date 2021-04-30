@@ -3,12 +3,16 @@ package networking.client;
 import networking.EventHandler;
 import networking.ResponseData;
 import networking.SingleHandlerEventEmitter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Object representing a persistent request, which can receive multiple responses
  * Allows setting a handler to be called when a specific type of response is received
  */
 public class PersistentRequest extends AbstractRequest {
+    private static final Logger logger = LogManager.getLogger();
+
     protected final SingleHandlerEventEmitter<ClientSession, ResponseData> handlers;
 
     public PersistentRequest(int id, ClientSession session) {
@@ -35,7 +39,7 @@ public class PersistentRequest extends AbstractRequest {
     @Override
     public void receiveResponse(ResponseData data) {
         if (!handlers.call(data.getClass(), session, data)) {
-            throw new RuntimeException("No handler for response of type " + data.getClass().getName() + " registered");
+            logger.warn("No handler for response of type " + data.getClass().getName() + " registered");
         }
     }
 

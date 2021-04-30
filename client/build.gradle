@@ -17,5 +17,5 @@ javafx {
 }
 
 application {
-    mainClassName = 'GUI.Main'
+    mainClassName = 'GUI.OpenGUI'
 }
