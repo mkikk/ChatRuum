@@ -15,7 +15,7 @@ import networking.responses.Result;
 
 import java.io.IOException;
 
-public class MainMenuController {
+public class MainMenuController implements Contoller{
     @FXML
     Label UserWelcome, ClientMessage, LatestMessages;
     @FXML
@@ -30,12 +30,12 @@ public class MainMenuController {
         Platform.runLater(() -> UserWelcome.setText("Hey, " + OpenGUI.getUsername()));
     }
 
-    public void joinButtonClicked(ActionEvent actionEvent) {
-        checkRoomName(actionEvent);
+    public void joinButtonClicked() {
+        checkRoomName();
 
     }
 
-    public void joinRoom(ActionEvent actionEvent) {
+    public void joinRoom() {
         joinRoomButton.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
         req.onResponse((s, r) -> {
@@ -54,17 +54,17 @@ public class MainMenuController {
         });
     }
 
-    public void checkRoomName(ActionEvent actionEvent) {
+    public void checkRoomName() {
 
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(channelNameText.getText()));
         req.onResponse((s, r) -> {
             System.out.println(r.result.name());
             if (r.result == Result.NAME_FREE) {
                 System.out.println("Room name free");
-                createRoom(actionEvent);
+                createRoom();
             } else if (r.result == Result.NAME_IN_USE) {
                 System.out.println("Room name exists");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.result == Result.NAME_INVALID) {
                 System.out.println("Room name not allowed");
                 Platform.runLater(() -> ClientMessage.setText("Invalid room name"));
@@ -72,7 +72,7 @@ public class MainMenuController {
         });
     }
 
-    public void createRoom(ActionEvent actionEvent) {
+    public void createRoom() {
         var req = OpenGUI.getSession().sendRequest(
                 new CreateChannelRequest(
                         channelNameText.getText(),
@@ -83,7 +83,7 @@ public class MainMenuController {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Created channel");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.response == Response.FORBIDDEN) {
                 System.out.println("Failed to create channel");
                 Platform.runLater(() -> ClientMessage.setText("Couldn't create channel. Try again!"));
@@ -99,5 +99,10 @@ public class MainMenuController {
             System.out.println("error opening chat.fxml");
             return;
         }
+    }
+
+    @Override
+    public void PrimaryAction() {
+        joinButtonClicked();
     }
 }

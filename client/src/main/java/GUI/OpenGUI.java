@@ -1,16 +1,20 @@
 package GUI;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
 
 import java.io.IOException;
+import java.util.logging.Handler;
 
 
 public class OpenGUI extends Application {
@@ -40,11 +44,22 @@ public class OpenGUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("/EnterServerIP.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/EnterServerIP.fxml"));
+        Parent root = loader.load();
+        Scene mainScene = new Scene(root, 900, 400);
         primaryStage.setTitle("Chatruum");
-        primaryStage.setScene(new Scene(root, 900, 400));
+        primaryStage.setScene(mainScene);
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+        EnterServerIPController controller = loader.getController();
+        mainScene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.ENTER) {
+                    controller.connectToServer();
+                }
+            }
+        });
         primaryStage.show();
 
     }
@@ -69,9 +84,24 @@ public class OpenGUI extends Application {
     }
 
     public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) throws IOException {
-        Parent root = FXMLLoader.load(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
+        FXMLLoader loader = new FXMLLoader(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
+        Parent root = loader.load();
         Stage window = (Stage) referableComponent.getScene().getWindow();
-        window.setScene(new Scene(root, width, height));
+        final Scene newScene = new Scene(root, width, height);
+        Contoller contoller = loader.getController();
+        newScene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.ENTER) {
+                    contoller.PrimaryAction();
+                } else if(event.getCode() == KeyCode.UP) {
+
+                } else if(event.getCode() == KeyCode.DOWN) {
+
+                }
+            }
+        });
+        window.setScene(newScene);
     }
 
     public static void main(String[] args) throws Exception {

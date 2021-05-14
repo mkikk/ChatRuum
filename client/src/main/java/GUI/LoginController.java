@@ -14,10 +14,11 @@ import networking.requests.RegisterRequest;
 import networking.responses.Response;
 import networking.responses.Result;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 
-public class LoginController {
+public class LoginController implements Contoller{
     @FXML
     Button loginButton;
     @FXML
@@ -38,7 +39,7 @@ public class LoginController {
         });
     }
 
-    public void onLoginButtonPressed(ActionEvent actionEvent) {
+    public void onLoginButtonPressed() {
         if (isLogin) {
             loginUser();
             loginButton.setDisable(true);
@@ -130,5 +131,10 @@ public class LoginController {
             System.out.println("error opening main menu fxml");
             return;
         }
+    }
+
+    @Override
+    public void PrimaryAction() {
+        onLoginButtonPressed();
     }
 }

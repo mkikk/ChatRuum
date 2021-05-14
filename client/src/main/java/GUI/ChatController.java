@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ChatController {
+public class ChatController implements Contoller{
     @FXML
     TextField newChannelText;
     @FXML
@@ -58,7 +58,7 @@ public class ChatController {
 
     private PersistentRequest view;
 
-    public void sendMessage(ActionEvent actionEvent) {
+    public void sendMessage() {
         if (inputText.getText() != null) {
             var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
             req.onResponse((s, r) -> {
@@ -101,18 +101,18 @@ public class ChatController {
         });
     }
 
-    public void joinNextRoom(ActionEvent actionEvent) {
+    public void joinNextRoom() {
         // after clicking on button 'Join', user joins new channel
-        checkRoomName(actionEvent);
+        checkRoomName();
     }
 
-    public void leaveCurrentRoom(ActionEvent actionEvent) throws IOException {
+    public void leaveCurrentRoom() throws IOException {
         // stop recieving new messages, switch scene
         view.close();
         OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
     }
 
-    public void exitChatruum(ActionEvent actionEvent) {
+    public void exitChatruum() {
         // close application
         OpenGUI.stopSession();
         ((Stage) ((roomName.getScene().getWindow()))).close();
@@ -197,7 +197,7 @@ public class ChatController {
         });
     }
 
-    public void joinRoom(ActionEvent actionEvent) {
+    public void joinRoom() {
         joinNewRoom.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
         req.onResponse((s, r) -> {
@@ -224,17 +224,17 @@ public class ChatController {
         });
     }
 
-    public void checkRoomName(ActionEvent actionEvent) {
+    public void checkRoomName() {
 
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(newChannelText.getText()));
         req.onResponse((s, r) -> {
             System.out.println(r.result.name());
             if (r.result == Result.NAME_FREE) {
                 System.out.println("Room name free");
-                createRoom(actionEvent);
+                createRoom();
             } else if (r.result == Result.NAME_IN_USE) {
                 System.out.println("Room name exists");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.result == Result.NAME_INVALID) {
                 System.out.println("Room name not allowed");
                 Platform.runLater(() -> errorMessage.setText("Invalid room name"));
@@ -242,7 +242,7 @@ public class ChatController {
         });
     }
 
-    public void createRoom(ActionEvent actionEvent) {
+    public void createRoom() {
         var req = OpenGUI.getSession().sendRequest(
                 new CreateChannelRequest(
                         newChannelText.getText(),
@@ -253,11 +253,16 @@ public class ChatController {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 System.out.println("Created channel");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.response == Response.FORBIDDEN) {
                 System.out.println("Failed to create channel");
                 Platform.runLater(() -> errorMessage.setText("Couldn't create channel. Try again!"));
             }
         });
+    }
+
+    @Override
+    public void PrimaryAction() {
+        sendMessage();
     }
 }
