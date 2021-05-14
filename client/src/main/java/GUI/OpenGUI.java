@@ -16,7 +16,6 @@ import networking.client.ClientSession;
 import java.io.IOException;
 import java.util.logging.Handler;
 
-
 public class OpenGUI extends Application {
     private static final int DEFAULT_PORT = 5050;
 
@@ -41,6 +40,8 @@ public class OpenGUI extends Application {
         OpenGUI.username = username;
     }
 
+    // Used sources for keyevent implementation:
+    // https://stackoverflow.com/questions/42512513/adding-event-listener-to-mainscene-in-javafx-using-fxml
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -52,12 +53,9 @@ public class OpenGUI extends Application {
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         EnterServerIPController controller = loader.getController();
-        mainScene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER) {
-                    controller.connectToServer();
-                }
+        mainScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if(event.getCode() == KeyCode.ENTER) {
+                controller.connectToServer();
             }
         });
         primaryStage.show();
@@ -89,16 +87,13 @@ public class OpenGUI extends Application {
         Stage window = (Stage) referableComponent.getScene().getWindow();
         final Scene newScene = new Scene(root, width, height);
         Contoller contoller = loader.getController();
-        newScene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER) {
-                    contoller.PrimaryAction();
-                } else if(event.getCode() == KeyCode.UP) {
+        newScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if(event.getCode() == KeyCode.ENTER) {
+                contoller.PrimaryAction();
+            } else if(event.getCode() == KeyCode.UP) {
 
-                } else if(event.getCode() == KeyCode.DOWN) {
+            } else if(event.getCode() == KeyCode.DOWN) {
 
-                }
             }
         });
         window.setScene(newScene);
