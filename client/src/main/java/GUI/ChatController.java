@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ChatController implements Contoller{
+public class ChatController extends Contoller {
     @FXML
     TextField newChannelText;
     @FXML
@@ -262,26 +262,22 @@ public class ChatController implements Contoller{
 
     @Override
     public void PrimaryAction() {
-        if(!inputText.isFocused())
+        if (!inputText.isFocused())
             sendMessage();
     }
 
     @Override
     public void selectLowerField() {
-        if(newChannelText.isFocused()){
-            newChannelPassword.requestFocus();
-            newChannelPassword.deselect();
-            newChannelPassword.end();
-        }
+        if (newChannelText.isFocused())
+            selectField(newChannelPassword);
+
     }
 
     @Override
     public void selectUpperField() {
-        if(newChannelPassword.isFocused()) {
-            newChannelText.requestFocus();
-            newChannelText.deselect();
-            newChannelText.end();
-        }
+        if (newChannelPassword.isFocused())
+            selectField(newChannelText);
+
     }
 
 }

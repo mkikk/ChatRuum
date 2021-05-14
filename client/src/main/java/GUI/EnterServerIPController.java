@@ -13,7 +13,7 @@ import networking.events.NotConnectedEvent;
 
 import java.io.IOException;
 
-public class EnterServerIPController implements Contoller{
+public class EnterServerIPController extends Contoller {
     @FXML
     TextField ServerIPTextField;
     @FXML

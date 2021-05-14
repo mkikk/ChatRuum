@@ -55,10 +55,10 @@ public class OpenGUI extends Application {
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         EnterServerIPController controller = loader.getController();
-        mainScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if(event.getCode() == KeyCode.ENTER) {
+        mainScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+            if(event.getCode() == KeyCode.ENTER)
                 controller.connectToServer();
-            }
+
         });
         primaryStage.show();
 
@@ -90,14 +90,12 @@ public class OpenGUI extends Application {
         final Scene newScene = new Scene(root, width, height);
         Contoller controller = loader.getController();
         newScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-            if(event.getCode() == KeyCode.ENTER) {
+            if(event.getCode() == KeyCode.ENTER)
                 controller.PrimaryAction();
-            } else if(event.getCode() == KeyCode.DOWN) {
+            else if(event.getCode() == KeyCode.DOWN)
                 controller.selectLowerField();
-            } else if(event.getCode() == KeyCode.UP) {
+             else if(event.getCode() == KeyCode.UP)
                 controller.selectUpperField();
-
-            }
         });
         window.setScene(newScene);
     }

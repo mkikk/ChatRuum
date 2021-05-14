@@ -15,7 +15,7 @@ import networking.responses.Result;
 
 import java.io.IOException;
 
-public class MainMenuController implements Contoller{
+public class MainMenuController extends Contoller {
     @FXML
     Label UserWelcome, ClientMessage, LatestMessages;
     @FXML
@@ -108,19 +108,15 @@ public class MainMenuController implements Contoller{
 
     @Override
     public void selectLowerField() {
-        if(channelNameText.isFocused()) {
-            channelPasswordText.requestFocus();
-            channelPasswordText.deselect();
-            channelPasswordText.end();
-        }
+        if (channelNameText.isFocused())
+            selectField(channelPasswordText);
+
     }
 
     @Override
     public void selectUpperField() {
-        if(channelPasswordText.isFocused()) {
-            channelNameText.requestFocus();
-            channelNameText.deselect();
-            channelNameText.end();
-        }
+        if (channelPasswordText.isFocused())
+            selectField(channelNameText);
+
     }
 }

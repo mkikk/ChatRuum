@@ -16,7 +16,7 @@ import networking.responses.Result;
 import java.io.IOException;
 
 
-public class LoginController implements Contoller{
+public class LoginController extends Contoller {
     @FXML
     Button loginButton;
     @FXML
@@ -138,27 +138,19 @@ public class LoginController implements Contoller{
 
     @Override
     public void selectLowerField() {
-        if(usernameText.isFocused()) {
-            passwordText.requestFocus();
-            passwordText.deselect();
-            passwordText.end();
-        } else if(passwordConfirmation.isVisible() && passwordText.isFocused()) {
-            passwordConfirmation.requestFocus();
-            passwordConfirmation.deselect();
-            passwordConfirmation.end();
-        }
+        if (usernameText.isFocused())
+            selectField(passwordText);
+        else if (passwordConfirmation.isVisible() && passwordText.isFocused())
+            selectField(passwordConfirmation);
+
     }
 
     @Override
     public void selectUpperField() {
-        if(passwordText.isFocused()) {
-            usernameText.requestFocus();
-            usernameText.deselect();
-            usernameText.end();
-        } else if (passwordConfirmation.isVisible() && passwordConfirmation.isFocused()) {
-            passwordText.requestFocus();
-            passwordText.deselect();
-            passwordText.end();
-        }
+        if (passwordText.isFocused())
+            selectField(usernameText);
+        else if (passwordConfirmation.isVisible() && passwordConfirmation.isFocused())
+            selectField(passwordText);
+
     }
 }
