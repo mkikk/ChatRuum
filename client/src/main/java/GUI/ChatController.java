@@ -1,7 +1,6 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -263,6 +262,26 @@ public class ChatController implements Contoller{
 
     @Override
     public void PrimaryAction() {
-        sendMessage();
+        if(!inputText.isFocused())
+            sendMessage();
     }
+
+    @Override
+    public void selectLowerField() {
+        if(newChannelText.isFocused()){
+            newChannelPassword.requestFocus();
+            newChannelPassword.deselect();
+            newChannelPassword.end();
+        }
+    }
+
+    @Override
+    public void selectUpperField() {
+        if(newChannelPassword.isFocused()) {
+            newChannelText.requestFocus();
+            newChannelText.deselect();
+            newChannelText.end();
+        }
+    }
+
 }

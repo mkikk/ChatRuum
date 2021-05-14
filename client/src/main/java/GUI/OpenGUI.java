@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -86,13 +88,14 @@ public class OpenGUI extends Application {
         Parent root = loader.load();
         Stage window = (Stage) referableComponent.getScene().getWindow();
         final Scene newScene = new Scene(root, width, height);
-        Contoller contoller = loader.getController();
-        newScene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+        Contoller controller = loader.getController();
+        newScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             if(event.getCode() == KeyCode.ENTER) {
-                contoller.PrimaryAction();
-            } else if(event.getCode() == KeyCode.UP) {
-
+                controller.PrimaryAction();
             } else if(event.getCode() == KeyCode.DOWN) {
+                controller.selectLowerField();
+            } else if(event.getCode() == KeyCode.UP) {
+                controller.selectUpperField();
 
             }
         });

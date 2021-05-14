@@ -105,4 +105,22 @@ public class MainMenuController implements Contoller{
     public void PrimaryAction() {
         joinButtonClicked();
     }
+
+    @Override
+    public void selectLowerField() {
+        if(channelNameText.isFocused()) {
+            channelPasswordText.requestFocus();
+            channelPasswordText.deselect();
+            channelPasswordText.end();
+        }
+    }
+
+    @Override
+    public void selectUpperField() {
+        if(channelPasswordText.isFocused()) {
+            channelNameText.requestFocus();
+            channelNameText.deselect();
+            channelNameText.end();
+        }
+    }
 }

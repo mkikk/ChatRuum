@@ -1,7 +1,6 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,7 +13,6 @@ import networking.requests.RegisterRequest;
 import networking.responses.Response;
 import networking.responses.Result;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 
@@ -136,5 +134,31 @@ public class LoginController implements Contoller{
     @Override
     public void PrimaryAction() {
         onLoginButtonPressed();
+    }
+
+    @Override
+    public void selectLowerField() {
+        if(usernameText.isFocused()) {
+            passwordText.requestFocus();
+            passwordText.deselect();
+            passwordText.end();
+        } else if(passwordConfirmation.isVisible() && passwordText.isFocused()) {
+            passwordConfirmation.requestFocus();
+            passwordConfirmation.deselect();
+            passwordConfirmation.end();
+        }
+    }
+
+    @Override
+    public void selectUpperField() {
+        if(passwordText.isFocused()) {
+            usernameText.requestFocus();
+            usernameText.deselect();
+            usernameText.end();
+        } else if (passwordConfirmation.isVisible() && passwordConfirmation.isFocused()) {
+            passwordText.requestFocus();
+            passwordText.deselect();
+            passwordText.end();
+        }
     }
 }
