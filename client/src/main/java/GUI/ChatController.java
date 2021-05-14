@@ -58,7 +58,7 @@ public class ChatController extends Contoller {
     private PersistentRequest view;
 
     public void sendMessage() {
-        if (inputText.getText() != null) {
+        if (!inputText.getText().isEmpty()) {
             var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
             req.onResponse((s, r) -> {
 
