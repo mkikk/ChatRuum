@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="DefaultConsole" target="SYSTEM_ERR">
+            <PatternLayout pattern="%d{HH:mm:ss} %-5level %logger (UNCONFIGURED) - %msg%n"/>
+        </Console>
+        <Console name="OutConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss} %-5level %logger{1} - %msg%n"/>
+            <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+        </Console>
+        <Console name="ErrConsole" target="SYSTEM_ERR">
+            <PatternLayout pattern="%d{HH:mm:ss} %-5level %logger{1} - %msg%n"/>
+            <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="GUI" level="debug" additivity="false">
+            <AppenderRef ref="OutConsole"/>
+            <AppenderRef ref="ErrConsole"/>
+        </Logger>
+        <Logger name="server" level="debug" additivity="false">
+            <AppenderRef ref="OutConsole"/>
+            <AppenderRef ref="ErrConsole"/>
+        </Logger>
+        <Logger name="networking" level="debug" additivity="false">
+            <AppenderRef ref="OutConsole"/>
+            <AppenderRef ref="ErrConsole"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="DefaultConsole"/>
+        </Root>
+    </Loggers>
+</Configuration>

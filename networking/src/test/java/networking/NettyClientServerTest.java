@@ -4,6 +4,8 @@ import networking.client.ClientNetworkingManager;
 import networking.events.ConnectedEvent;
 import networking.requests.DebugRequest;
 import networking.responses.DebugResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import networking.server.ServerNetworkingManager;
 
@@ -16,6 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NettyClientServerTest {
+    private static final Logger logger = LogManager.getLogger();
+
     private static final int testPort = 5432;
 
     @Test
@@ -29,9 +33,9 @@ class NettyClientServerTest {
 
         var server = new ServerNetworkingManager<Void>(testPort);
 
-        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Server connected"));
+        server.onEvent(ConnectedEvent.class, (s, e) -> logger.info("Server connected"));
         server.onRequest(DebugRequest.class, (s, r) -> {
-            System.out.println("Server received request: " + r.data.message);
+            logger.info("Server received request: " + r.data.message);
             r.sendResponse(new DebugResponse("Server siin!"));
             serverCheck.complete(true);
             pongCount.incrementAndGet();
@@ -39,14 +43,13 @@ class NettyClientServerTest {
 
         server.start();
 
-
         var clientSession = new ClientNetworkingManager(testPort).connect("localhost");
 
-        clientSession.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected"));
+        clientSession.onEvent(ConnectedEvent.class, (s, e) -> logger.info("Client connected"));
         clientSession.onEvent(ConnectedEvent.class, (s, e) -> {
             var req = s.sendRequest(new DebugRequest("Klient siin!"));
             req.onResponse((ss, r) -> {
-                System.out.println("Client received response: " + r.message);
+                logger.info("Client received response: " + r.message);
                 clientCheck.complete(true);
                 pingCount.incrementAndGet();
             });

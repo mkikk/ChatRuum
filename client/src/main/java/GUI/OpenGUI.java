@@ -9,11 +9,14 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-
 public class OpenGUI extends Application {
+    private static final Logger logger = LogManager.getLogger();
+
     private static final int DEFAULT_PORT = 5050;
 
     private static ClientNetworkingManager client;
@@ -38,15 +41,13 @@ public class OpenGUI extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-
+    public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/EnterServerIP.fxml"));
         primaryStage.setTitle("Chatruum");
         primaryStage.setScene(new Scene(root, 900, 400));
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         primaryStage.show();
-
     }
 
     public static ClientSession connectClient(String address) {
@@ -68,13 +69,23 @@ public class OpenGUI extends Application {
         return session;
     }
 
-    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) throws IOException {
-        Parent root = FXMLLoader.load(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
+    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) {
         Stage window = (Stage) referableComponent.getScene().getWindow();
-        window.setScene(new Scene(root, width, height));
+        if (window == null) {
+            // If scene is not active, do not change scene, probably a duplicate result due to networking delays
+            logger.warn("Attempt to change to scene " + fxmlName + " from inactive scene");
+            return;
+        }
+        try {
+            Parent root = FXMLLoader.load(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
+            window.setScene(new Scene(root, width, height));
+        } catch (IOException e) {
+            throw new RuntimeException("Loading scene failed", e);
+        }
+
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         //connectClient("localhost");
         launch();
         stopSession();

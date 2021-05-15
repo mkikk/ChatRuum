@@ -10,6 +10,8 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import networking.events.ConnectedEvent;
 import networking.events.NotConnectedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 
@@ -21,6 +23,8 @@ import java.net.InetSocketAddress;
  * Netty code based on https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/objectecho/ObjectEchoClient.java
  */
 public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
+    private static final Logger logger = LogManager.getLogger();
+
     private final int port;
     private volatile ClientSession session;
 
@@ -51,7 +55,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
                 .channel(NioSocketChannel.class)
                 .handler(this);
 
-        System.out.println("Client connecting to " + targetAddress + "...");
+        logger.info("Client connecting to " + targetAddress + "...");
         bootstrap.connect(targetAddress).addListener((ChannelFutureListener) connectFuture -> {
             if (connectFuture.isSuccess()) {
                 session.callEventHandlers(new ConnectedEvent());
@@ -64,7 +68,7 @@ public class ClientNetworkingManager extends ChannelInitializer<SocketChannel> {
                     session = null;
                 }
                 group.shutdownGracefully();
-                System.out.println("Client closing...");
+                logger.info("Client closing...");
             });
         });
 

@@ -25,12 +25,15 @@ import networking.responses.NewMessageResponse;
 import networking.responses.Response;
 import networking.responses.Result;
 import networking.responses.ViewChannelResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ChatController {
+    private static final Logger logger = LogManager.getLogger();
+
     @FXML
     TextField newChannelText;
     @FXML
@@ -62,15 +65,13 @@ public class ChatController {
         if (inputText.getText() != null) {
             var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
             req.onResponse((s, r) -> {
-
-                System.out.println(r.response.name());
                 if (r.response == Response.OK) {
-                    System.out.println("Sent message");
+                    logger.debug("Sent message");
                     // TODO: send request for other users to recieve new message
                     new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDate.now());
                     Platform.runLater(() -> inputText.setText(""));
                 } else if (r.response == Response.FORBIDDEN) {
-                    System.out.println("Failed to send message");
+                    logger.debug("Failed to send message");
                 }
             });
         }
@@ -81,23 +82,18 @@ public class ChatController {
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
 
             if (r.response == Response.OK) {
-                System.out.println("Viewing channel");
-                System.out.println("Channel messages: " + r.messages.toString());
+                logger.debug("Viewing channel");
+                logger.debug("Channel messages: " + r.messages.toString());
                 // Display up to last 50 messages to user
                 displayLatestMessages(r.messages);
-
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to view channel");
+                logger.debug("Failed to view channel");
             }
 
         });
         view.onResponse(NewMessageResponse.class, (s, r) -> {
-            if (r.data != null) {
-                System.out.println("Opening new message");
-                Platform.runLater(() -> openMessage(r.data));
-            } else {
-                System.out.println("Couldn't open new message");
-            }
+            logger.debug("Received new message");
+            Platform.runLater(() -> openMessage(r.data));
         });
     }
 
@@ -106,8 +102,8 @@ public class ChatController {
         checkRoomName(actionEvent);
     }
 
-    public void leaveCurrentRoom(ActionEvent actionEvent) throws IOException {
-        // stop recieving new messages, switch scene
+    public void leaveCurrentRoom(ActionEvent actionEvent) {
+        // stop receiving new messages, switch scene
         view.close();
         OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
     }
@@ -115,7 +111,7 @@ public class ChatController {
     public void exitChatruum(ActionEvent actionEvent) {
         // close application
         OpenGUI.stopSession();
-        ((Stage) ((roomName.getScene().getWindow()))).close();
+        ((Stage) (roomName.getScene().getWindow())).close();
     }
 
     // Opens messages sent by user
@@ -201,21 +197,16 @@ public class ChatController {
         joinNewRoom.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
         req.onResponse((s, r) -> {
-            System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 // stop receiving messages
                 view.close();
-                System.out.println("Joined channel:");
+                logger.debug("Joined channel:");
                 OpenGUI.setCurrentChatroom(newChannelText.getText());
                 Platform.runLater(() -> {
-                    try {
-                        OpenGUI.switchSceneTo("Chat", joinNewRoom, 1080, 800);
-                    } catch (IOException e) {
-                        System.out.println("error opening Chat.fxml");
-                    }
+                    OpenGUI.switchSceneTo("Chat", joinNewRoom, 1080, 800);
                 });
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to join channel");
+                logger.debug("Failed to join channel");
                 Platform.runLater(() -> {
                     joinNewRoom.setDisable(false);
                     errorMessage.setText("Couldn't join to channel.");
@@ -228,15 +219,14 @@ public class ChatController {
 
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(newChannelText.getText()));
         req.onResponse((s, r) -> {
-            System.out.println(r.result.name());
             if (r.result == Result.NAME_FREE) {
-                System.out.println("Room name free");
+                logger.debug("Room name free");
                 createRoom(actionEvent);
             } else if (r.result == Result.NAME_IN_USE) {
-                System.out.println("Room name exists");
+                logger.debug("Room name exists");
                 joinRoom(actionEvent);
             } else if (r.result == Result.NAME_INVALID) {
-                System.out.println("Room name not allowed");
+                logger.debug("Room name not allowed");
                 Platform.runLater(() -> errorMessage.setText("Invalid room name"));
             }
         });
@@ -250,12 +240,11 @@ public class ChatController {
                 )
         );
         req.onResponse((s, r) -> {
-            System.out.println(r.response.name());
             if (r.response == Response.OK) {
-                System.out.println("Created channel");
+                logger.debug("Created channel");
                 joinRoom(actionEvent);
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to create channel");
+                logger.debug("Failed to create channel");
                 Platform.runLater(() -> errorMessage.setText("Couldn't create channel. Try again!"));
             }
         });
