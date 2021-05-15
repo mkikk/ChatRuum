@@ -81,7 +81,6 @@ public class MainMenuController extends Contoller {
                 )
         );
         req.onResponse((s, r) -> {
-            System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 logger.debug("Created channel");
                 joinRoom();

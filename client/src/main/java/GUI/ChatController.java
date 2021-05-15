@@ -199,7 +199,6 @@ public class ChatController extends Contoller {
         joinNewRoom.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
         req.onResponse((s, r) -> {
-            System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 // stop receiving messages
                 view.close();
