@@ -8,6 +8,9 @@ import networking.data.UserData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -18,17 +21,21 @@ public class User {
     @NotNull private final Password password;
     @JsonIgnore
     private boolean isOnline;
+    private Map<String, Integer> favoriteChannels;
 
-    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password) {
+    public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password,
+                @JsonProperty(value = "favoriteChannels") Map<String, Integer> favoriteChannels) {
         this.name = name;
         this.password = password;
         this.isOnline = true;
+        this.favoriteChannels = favoriteChannels;
     }
 
     public User(String name, @NotNull String password) {
         this.name = name;
         this.password = new Password(password);
         this.isOnline = true;
+        this.favoriteChannels = new HashMap<>();
     }
 
     public void logOff() {
@@ -41,6 +48,16 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, Integer> getFavoriteChannels() {
+        return favoriteChannels;
+    }
+
+    public void addVisitChannel(String channelName){
+        final Integer visits = this.favoriteChannels.getOrDefault(channelName, 0);
+        this.favoriteChannels.put(channelName, visits+1);
+        System.out.println(favoriteChannels.toString());
     }
 
     @Override

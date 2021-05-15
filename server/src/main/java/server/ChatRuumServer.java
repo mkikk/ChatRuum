@@ -91,9 +91,9 @@ public class ChatRuumServer {
             final User user = users.get(req.data.username);
             if (user != null && user.checkPassword(req.data.password)) {
                 session.setUser(user);
-                req.sendResponse(new GenericResponse(Response.OK));
+                req.sendResponse(new LoginResponse(Response.OK, user.getFavoriteChannels()));
             } else {
-                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+                req.sendResponse(new LoginResponse(Response.FORBIDDEN, null));
             }
         });
 
@@ -130,6 +130,7 @@ public class ChatRuumServer {
             final User user = session.getUser();
             if (channel != null && channel.isJoined(user)) {
                 channel.addViewingRequest(req);
+                user.addVisitChannel(channel.getName());
                 req.sendResponse(new ViewChannelResponse(Response.OK, channel.convertToMessageData()));
             } else {
                 req.sendResponse(new ViewChannelResponse(Response.FORBIDDEN, null));
