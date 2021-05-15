@@ -28,22 +28,14 @@ public class EnterServerIPController extends Contoller {
     public void connectToServer() {
         Platform.runLater(() -> ConnectButton.setDisable(true));
         var session = OpenGUI.connectClient(ServerIPTextField.getText());
+
         session.onEvent(ConnectedEvent.class, (s, e) -> {
             Platform.runLater(() -> {
-                try {
-                    OpenGUI.switchSceneTo("Login", ConnectButton, 900, 400);
-                } catch (IOException ioException) {
-                    System.out.println("Failed switching scene..");
-                    Platform.runLater(() -> ConnectButton.setDisable(false));
-                    return;
-                }
+                OpenGUI.switchSceneTo("Login", ConnectButton, 900, 400);
             });
-
-
         });
-        session.onEvent(NotConnectedEvent.class, (s, e) ->
 
-        {
+        session.onEvent(NotConnectedEvent.class, (s, e) -> {
             Platform.runLater(() -> {
                 Alert noConnection = new Alert(Alert.AlertType.ERROR);
                 noConnection.setTitle("No connection");
@@ -52,9 +44,8 @@ public class EnterServerIPController extends Contoller {
                 noConnection.showAndWait();
             });
         });
-        session.onEvent(ConnectionDroppedEvent.class, (s, e) ->
 
-        {
+        session.onEvent(ConnectionDroppedEvent.class, (s, e) -> {
             Platform.runLater(() -> {
                 Alert networkingError = new Alert(Alert.AlertType.ERROR);
                 networkingError.setTitle("Connection to server has been lost");

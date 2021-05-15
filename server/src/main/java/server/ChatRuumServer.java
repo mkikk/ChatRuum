@@ -8,12 +8,16 @@ import networking.requests.*;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.responses.*;
 import networking.server.ServerNetworkingManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ChatRuumServer {
+    private static final Logger logger = LogManager.getLogger();
+
     protected static final int DEFAULT_PORT = 5050;
     @JsonProperty(value = "users")
     protected final Map<String, User> users = new HashMap<>();
@@ -38,18 +42,18 @@ public class ChatRuumServer {
     }
 
     private void setupServer() {
-        server.onEvent(ConnectedEvent.class, (s, e) -> System.out.println("Client connected: " + s.getInternalChannel().remoteAddress()));
+        server.onEvent(ConnectedEvent.class, (s, e) -> logger.info("Client connected: " + s.getTargetAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
 //            try {
 //                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
 //            } catch (Exception exception) {
-//                exception.printStackTrace();
+//                logger.error("Error saving server data", exception);
 //            }
-            System.out.println("Client disconnected: " + s.getInternalChannel().remoteAddress());
+            logger.info("Client disconnected: " + s.getTargetAddress());
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
-            System.out.println("Registering...");
+            logger.debug("Registering...");
             final User user = users.get(req.data.username);
             if (user == null) {
                 final User newUser = new User(req.data.username, req.data.password);
@@ -61,7 +65,7 @@ public class ChatRuumServer {
         });
 
         server.onRequest(CheckUsernameRequest.class, (session, req) -> {
-            System.out.println("Checking username: " + req.data.username);
+            logger.debug("Checking username: " + req.data.username);
             final User user = users.get(req.data.username);
             if (user != null) {
                 req.sendResponse(new CheckNameResponse(Result.NAME_IN_USE));
@@ -71,7 +75,7 @@ public class ChatRuumServer {
         });
 
         server.onRequest(CheckChannelNameRequest.class, (session, req) -> {
-            System.out.println("Checking channel: " + req.data.channelName);
+            logger.debug("Checking channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
             if (channel != null) {
@@ -82,7 +86,7 @@ public class ChatRuumServer {
         });
 
         server.onRequest(PasswordLoginRequest.class, (session, req) -> {
-            System.out.println("User logging in: " + req.data.username);
+            logger.debug("User logging in: " + req.data.username);
 
             final User user = users.get(req.data.username);
             if (user != null && user.checkPassword(req.data.password)) {
@@ -94,7 +98,7 @@ public class ChatRuumServer {
         });
 
         server.onRequest(CreateChannelRequest.class, (session, req) -> {
-            System.out.println("Trying to create channel: " + req.data.channelName);
+            logger.debug("Trying to create channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
             if (channel == null) {
@@ -107,7 +111,7 @@ public class ChatRuumServer {
         });
 
         server.onRequest(JoinChannelRequest.class, (session, req) -> {
-            System.out.println("Joining channel: " + req.data.channelName);
+            logger.debug("Joining channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
             if (channel != null && channel.checkPassword(req.data.channelPassword)) {
@@ -120,7 +124,7 @@ public class ChatRuumServer {
         });
 
         server.onPersistentRequest(ViewChannelRequest.class, (session, req) -> {
-            System.out.println("Viewing channel: " + req.data.channelName);
+            logger.debug("Viewing channel: " + req.data.channelName);
 
             final Channel channel = channels.get(req.data.channelName);
             final User user = session.getUser();
@@ -146,11 +150,11 @@ public class ChatRuumServer {
 
         if (saveFile != null) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("In shutdown hook");
+                logger.info("Running shutdown hook...");
                 try {
                     ReadWrite.writeServer(saveFile, this);
                 } catch (Exception exception) {
-                    exception.printStackTrace();
+                    logger.error("Error writing server data during shutdown hook:", exception);
                 }
             }, "Shutdown-thread"));
         }

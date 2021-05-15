@@ -5,23 +5,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import networking.data.UserData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name", scope = User.class
 )
 public class User {
+    private static final Logger logger = LogManager.getLogger();
+
     private final String name;
     @NotNull private final Password password;
-    @JsonIgnore
-    private boolean isOnline;
-    private Map<String, Integer> favoriteChannels;
+    @JsonIgnore private boolean isOnline;
+    private final Map<String, Integer> favoriteChannels;
 
     public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password,
                 @JsonProperty(value = "favoriteChannels") Map<String, Integer> favoriteChannels) {
@@ -57,7 +58,7 @@ public class User {
     public void addVisitChannel(String channelName){
         final Integer visits = this.favoriteChannels.getOrDefault(channelName, 0);
         this.favoriteChannels.put(channelName, visits+1);
-        System.out.println(favoriteChannels.toString());
+        logger.debug(favoriteChannels.toString());
     }
 
     @Override

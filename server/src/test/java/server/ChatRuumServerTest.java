@@ -9,6 +9,8 @@ import networking.events.ErrorEvent;
 import networking.persistentrequests.ViewChannelRequest;
 import networking.requests.*;
 import networking.responses.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 
 import java.util.concurrent.*;
@@ -16,6 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ChatRuumServerTest {
+    private static final Logger logger = LogManager.getLogger();
+
     private static final int testPort = 5430;
     private static ChatRuumServer server;
     private static ClientSession session;
@@ -23,7 +27,7 @@ class ChatRuumServerTest {
 
     @BeforeAll
     public static void setupServer() throws Exception {
-        System.out.println("Setting up test");
+        logger.info("Setting up test");
 
         server = new ChatRuumServer(testPort);
         final User robert = new User("roobert", "jfkdsfjkdkjfa");
@@ -31,7 +35,7 @@ class ChatRuumServerTest {
         final Channel yldine = new Channel("yldine", "321");
         server.channels.put("yldine", yldine);
         server.startServer();
-        System.out.println("Server started");
+        logger.info("Server started");
 
         var connectFuture = new CompletableFuture<Void>();
         exceptionCount = new AtomicInteger(0);
@@ -81,11 +85,11 @@ class ChatRuumServerTest {
         String username = "albert";
         session.sendRequest(new CheckUsernameRequest(username))
                 .onResponse((s, r) -> {
-                    System.out.println(r.result);
+                    logger.info(r.result);
                     if (r.result == Result.NAME_FREE) {
-                        System.out.println("The name " + username + " is free");
+                        logger.info("The name " + username + " is free");
                     } else if (r.result == Result.NAME_IN_USE) {
-                        System.out.println("The name " + username + " is already used");
+                        logger.info("The name " + username + " is already used");
                     }
                     result.complete(r.result);
                 });
@@ -100,11 +104,11 @@ class ChatRuumServerTest {
 
         session.sendRequest(new RegisterRequest("albert1", "parool"))
                 .onResponse((s, r) -> {
-                    System.out.println(r.response);
+                    logger.info(r.response);
                     if (r.response == Response.OK) {
-                        System.out.println("New user registered");
+                        logger.info("New user registered");
                     } else if (r.response == Response.FORBIDDEN) {
-                        System.out.println("Failed to register");
+                        logger.info("Failed to register");
                     }
                     response.complete(r.response);
                 });
@@ -121,11 +125,11 @@ class ChatRuumServerTest {
         String userPassword = "valeparool";
         session.sendRequest(new PasswordLoginRequest(username, userPassword))
                 .onResponse((s, r) -> {
-                    System.out.println(r.response.name());
+                    logger.info(r.response.name());
                     if (r.response == Response.OK) {
-                        System.out.println("Login successful. Hello, " + username);
+                        logger.info("Login successful. Hello, " + username);
                     } else if (r.response == Response.FORBIDDEN) {
-                        System.out.println("Failed to login");
+                        logger.info("Failed to login");
                     }
                     response.complete(r.response);
                 });
@@ -142,11 +146,11 @@ class ChatRuumServerTest {
         String userPassword = "parool";
         session.sendRequest(new PasswordLoginRequest(username, userPassword))
                 .onResponse((s, r) -> {
-                    System.out.println(r.response.name());
+                    logger.info(r.response.name());
                     if (r.response == Response.OK) {
-                        System.out.println("Login successful. Hello, " + username);
+                        logger.info("Login successful. Hello, " + username);
                     } else if (r.response == Response.FORBIDDEN) {
-                        System.out.println("Failed to login");
+                        logger.info("Failed to login");
                     }
                     response.complete(r.response);
                 });
@@ -163,11 +167,11 @@ class ChatRuumServerTest {
         String channelPassword = "321";
         session.sendRequest(new JoinChannelRequest(channelName, channelPassword))
                 .onResponse((s, r) -> {
-                    System.out.println(r.response.name());
+                    logger.info(r.response.name());
                     if (r.response == Response.OK) {
-                        System.out.println("Joined channel: " + channelName);
+                        logger.info("Joined channel: " + channelName);
                     } else if (r.response == Response.FORBIDDEN) {
-                        System.out.println("Failed to join channel");
+                        logger.info("Failed to join channel");
                     }
                     response.complete(r.response);
                 });
@@ -183,12 +187,12 @@ class ChatRuumServerTest {
         String channelName = "yldine";
         var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
-            System.out.println(r.response.name());
+            logger.info(r.response.name());
             if (r.response == Response.OK) {
-                System.out.println("Viewing channel: " + channelName);
-                System.out.println("Channel messages: " + r.messages.toString());
+                logger.info("Viewing channel: " + channelName);
+                logger.info("Channel messages: " + r.messages.toString());
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to view channel");
+                logger.info("Failed to view channel");
             }
             view.close();
             response.complete(r.response);
@@ -208,25 +212,25 @@ class ChatRuumServerTest {
 
         var view = session.sendPersistentRequest(new ViewChannelRequest(channelName));
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
-            System.out.println(r.response.name());
+            logger.info(r.response.name());
             if (r.response == Response.OK) {
-                System.out.println("Viewing channel: " + channelName);
+                logger.info("Viewing channel: " + channelName);
             } else if (r.response == Response.FORBIDDEN) {
-                System.out.println("Failed to view channel");
+                logger.info("Failed to view channel");
             }
         });
         view.onResponse(NewMessageResponse.class, (s, r) -> {
-            System.out.println("Received message: " + r.data.text + " from " + r.data.senderName);
+            logger.info("Received message: " + r.data.text + " from " + r.data.senderName);
             message.complete(r.data.text);
         });
 
         session.sendRequest(new SendMessageRequest(channelName, text))
                 .onResponse((s, r) -> {
-                    System.out.println(r.response.name());
+                    logger.info(r.response.name());
                     if (r.response == Response.OK) {
-                        System.out.println("Sent message: " + text + " to " + channelName);
+                        logger.info("Sent message: " + text + " to " + channelName);
                     } else if (r.response == Response.FORBIDDEN) {
-                        System.out.println("Failed to send message");
+                        logger.info("Failed to send message");
                     }
                     sendResponse.complete(r.response);
                 });
@@ -248,11 +252,11 @@ class ChatRuumServerTest {
         String channelPassword = "iba";
         session.sendRequest(new CreateChannelRequest(channelName, channelPassword))
                 .onResponse((s, r) -> {
-                    System.out.println(r.response.name());
+                    logger.info(r.response.name());
                     if (r.response == Response.OK) {
-                        System.out.println("Created channel: " + channelName);
+                        logger.info("Created channel: " + channelName);
                     } else if (r.response == Response.FORBIDDEN) {
-                        System.out.println("Failed to create channel");
+                        logger.info("Failed to create channel");
                     }
                     response.complete(r.response);
                 });

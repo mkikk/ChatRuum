@@ -1,6 +1,8 @@
 package networking.client;
 
 import networking.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Object representing a one-time request
@@ -8,6 +10,8 @@ import networking.*;
  * @param <R> type of the expected response
  */
 public class Request<R extends ResponseData> extends AbstractRequest {
+    private static final Logger logger = LogManager.getLogger();
+
     protected EventHandler<ClientSession, R> handler;
 
     public Request(int id, ClientSession session) {
@@ -25,7 +29,8 @@ public class Request<R extends ResponseData> extends AbstractRequest {
     @SuppressWarnings("unchecked")
     public void receiveResponse(ResponseData data) {
         if (handler == null) {
-            throw new RuntimeException("No handler for response registered");
+            logger.warn("No handler for response registered");
+            return;
         }
         handler.handle(session, (R) data);
     }

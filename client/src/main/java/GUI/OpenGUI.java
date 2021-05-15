@@ -14,11 +14,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.logging.Handler;
 
 public class OpenGUI extends Application {
+    private static final Logger logger = LogManager.getLogger();
+
     private static final int DEFAULT_PORT = 5050;
 
     private static ClientNetworkingManager client;
@@ -84,9 +88,21 @@ public class OpenGUI extends Application {
     }
 
     public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) throws IOException {
-        FXMLLoader loader = new FXMLLoader(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
-        Parent root = loader.load();
+        FXMLLoader loader;
+        Parent root;
         Stage window = (Stage) referableComponent.getScene().getWindow();
+        if (window == null) {
+            // If scene is not active, do not change scene, probably a duplicate result due to networking delays
+            logger.warn("Attempt to change to scene " + fxmlName + " from inactive scene");
+            return;
+        }
+        try {
+            loader = new FXMLLoader(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
+            root = loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException("Loading scene failed", e);
+        }
+
         final Scene newScene = new Scene(root, width, height);
         Contoller controller = loader.getController();
         newScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
@@ -100,7 +116,7 @@ public class OpenGUI extends Application {
         window.setScene(newScene);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         //connectClient("localhost");
         launch();
         stopSession();
