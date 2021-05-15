@@ -47,7 +47,7 @@ public class ChatRuumServer {
 //            try {
 //                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
 //            } catch (Exception exception) {
-//                exception.printStackTrace();
+//                logger.error("Error saving server data", exception);
 //            }
             logger.info("Client disconnected: " + s.getTargetAddress());
         });
@@ -154,7 +154,7 @@ public class ChatRuumServer {
                 try {
                     ReadWrite.writeServer(saveFile, this);
                 } catch (Exception exception) {
-                    exception.printStackTrace();
+                    logger.error("Error writing server data during shutdown hook:", exception);
                 }
             }, "Shutdown-thread"));
         }
