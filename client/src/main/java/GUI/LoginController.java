@@ -3,6 +3,7 @@ package GUI;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -15,9 +16,8 @@ import networking.responses.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LoginController {
+public class LoginController extends Contoller {
     private static final Logger logger = LogManager.getLogger();
-
     @FXML
     Button loginButton;
     @FXML
@@ -38,7 +38,7 @@ public class LoginController {
         });
     }
 
-    public void onLoginButtonPressed(ActionEvent actionEvent) {
+    public void onLoginButtonPressed() {
         if (isLogin) {
             loginUser();
             loginButton.setDisable(true);
@@ -118,5 +118,35 @@ public class LoginController {
                 Platform.runLater(() -> noMatch.setText("Username and password do not match. Try again!"));
             }
         });
+    }
+
+    private void changeToMainMenu() {
+        // If current scene is not active, do not change scene
+        if (loginButton.getScene().getWindow() == null) return;
+        OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
+
+    }
+
+    @Override
+    public void PrimaryAction() {
+        onLoginButtonPressed();
+    }
+
+    @Override
+    public void selectLowerField() {
+        if (usernameText.isFocused())
+            selectField(passwordText);
+        else if (passwordConfirmation.isVisible() && passwordText.isFocused())
+            selectField(passwordConfirmation);
+
+    }
+
+    @Override
+    public void selectUpperField() {
+        if (passwordText.isFocused())
+            selectField(usernameText);
+        else if (passwordConfirmation.isVisible() && passwordConfirmation.isFocused())
+            selectField(passwordText);
+
     }
 }

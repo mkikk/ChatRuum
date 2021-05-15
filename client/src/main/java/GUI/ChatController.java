@@ -28,10 +28,11 @@ import networking.responses.ViewChannelResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ChatController {
+public class ChatController extends Contoller {
     private static final Logger logger = LogManager.getLogger();
 
     @FXML
@@ -61,8 +62,8 @@ public class ChatController {
 
     private PersistentRequest view;
 
-    public void sendMessage(ActionEvent actionEvent) {
-        if (inputText.getText() != null) {
+    public void sendMessage() {
+        if (!inputText.getText().isEmpty()) {
             var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
             req.onResponse((s, r) -> {
                 if (r.response == Response.OK) {
@@ -86,6 +87,7 @@ public class ChatController {
                 logger.debug("Channel messages: " + r.messages.toString());
                 // Display up to last 50 messages to user
                 displayLatestMessages(r.messages);
+
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to view channel");
             }
@@ -97,18 +99,18 @@ public class ChatController {
         });
     }
 
-    public void joinNextRoom(ActionEvent actionEvent) {
+    public void joinNextRoom() {
         // after clicking on button 'Join', user joins new channel
-        checkRoomName(actionEvent);
+        checkRoomName();
     }
 
-    public void leaveCurrentRoom(ActionEvent actionEvent) {
-        // stop receiving new messages, switch scene
+    public void leaveCurrentRoom() throws IOException {
+        // stop recieving new messages, switch scene
         view.close();
         OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
     }
 
-    public void exitChatruum(ActionEvent actionEvent) {
+    public void exitChatruum() {
         // close application
         OpenGUI.stopSession();
         ((Stage) (roomName.getScene().getWindow())).close();
@@ -193,7 +195,7 @@ public class ChatController {
         });
     }
 
-    public void joinRoom(ActionEvent actionEvent) {
+    public void joinRoom() {
         joinNewRoom.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
         req.onResponse((s, r) -> {
@@ -215,16 +217,16 @@ public class ChatController {
         });
     }
 
-    public void checkRoomName(ActionEvent actionEvent) {
+    public void checkRoomName() {
 
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(newChannelText.getText()));
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 logger.debug("Room name free");
-                createRoom(actionEvent);
+                createRoom();
             } else if (r.result == Result.NAME_IN_USE) {
                 logger.debug("Room name exists");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.result == Result.NAME_INVALID) {
                 logger.debug("Room name not allowed");
                 Platform.runLater(() -> errorMessage.setText("Invalid room name"));
@@ -232,7 +234,7 @@ public class ChatController {
         });
     }
 
-    public void createRoom(ActionEvent actionEvent) {
+    public void createRoom() {
         var req = OpenGUI.getSession().sendRequest(
                 new CreateChannelRequest(
                         newChannelText.getText(),
@@ -242,11 +244,32 @@ public class ChatController {
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 logger.debug("Created channel");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to create channel");
                 Platform.runLater(() -> errorMessage.setText("Couldn't create channel. Try again!"));
             }
         });
     }
+
+    @Override
+    public void PrimaryAction() {
+        if (!inputText.isFocused())
+            sendMessage();
+    }
+
+    @Override
+    public void selectLowerField() {
+        if (newChannelText.isFocused())
+            selectField(newChannelPassword);
+
+    }
+
+    @Override
+    public void selectUpperField() {
+        if (newChannelPassword.isFocused())
+            selectField(newChannelText);
+
+    }
+
 }

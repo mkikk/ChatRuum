@@ -13,7 +13,7 @@ import networking.events.NotConnectedEvent;
 
 import java.io.IOException;
 
-public class EnterServerIPController {
+public class EnterServerIPController extends Contoller {
     @FXML
     TextField ServerIPTextField;
     @FXML
@@ -25,7 +25,7 @@ public class EnterServerIPController {
         ((Stage) (((Button) actionEvent.getSource()).getScene().getWindow())).close();
     }
 
-    public void connectToServer(ActionEvent actionEvent) {
+    public void connectToServer() {
         Platform.runLater(() -> ConnectButton.setDisable(true));
         var session = OpenGUI.connectClient(ServerIPTextField.getText());
 
@@ -56,4 +56,18 @@ public class EnterServerIPController {
 
     }
 
+    @Override
+    public void PrimaryAction() {
+        connectToServer();
+    }
+
+    @Override
+    public void selectLowerField() {
+
+    }
+
+    @Override
+    public void selectUpperField() {
+
+    }
 }

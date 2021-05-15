@@ -15,9 +15,8 @@ import networking.responses.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class MainMenuController {
-    private static final Logger logger = LogManager.getLogger();
 
+public class MainMenuController extends Contoller {
     @FXML
     Label UserWelcome, ClientMessage, LatestMessages;
     @FXML
@@ -26,17 +25,20 @@ public class MainMenuController {
     PasswordField channelPasswordText;
     @FXML
     Button joinRoomButton;
+    private static final Logger logger = LogManager.getLogger();
+
 
     @FXML
     public void initialize() {
         Platform.runLater(() -> UserWelcome.setText("Hey, " + OpenGUI.getUsername()));
     }
 
-    public void joinButtonClicked(ActionEvent actionEvent) {
-        checkRoomName(actionEvent);
+    public void joinButtonClicked() {
+        checkRoomName();
+
     }
 
-    public void joinRoom(ActionEvent actionEvent) {
+    public void joinRoom() {
         joinRoomButton.setDisable(true);
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
         req.onResponse((s, r) -> {
@@ -54,16 +56,16 @@ public class MainMenuController {
         });
     }
 
-    public void checkRoomName(ActionEvent actionEvent) {
+    public void checkRoomName() {
 
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(channelNameText.getText()));
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 logger.debug("Room name free");
-                createRoom(actionEvent);
+                createRoom();
             } else if (r.result == Result.NAME_IN_USE) {
                 logger.debug("Room name exists");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.result == Result.NAME_INVALID) {
                 logger.debug("Room name not allowed");
                 Platform.runLater(() -> ClientMessage.setText("Invalid room name"));
@@ -71,7 +73,7 @@ public class MainMenuController {
         });
     }
 
-    public void createRoom(ActionEvent actionEvent) {
+    public void createRoom() {
         var req = OpenGUI.getSession().sendRequest(
                 new CreateChannelRequest(
                         channelNameText.getText(),
@@ -81,11 +83,36 @@ public class MainMenuController {
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 logger.debug("Created channel");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to create channel");
                 Platform.runLater(() -> ClientMessage.setText("Couldn't create channel. Try again!"));
             }
         });
+    }
+
+    private void switchToChatRoom() {
+        if (joinRoomButton.getScene().getWindow() == null) return;
+        OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800);
+
+    }
+
+    @Override
+    public void PrimaryAction() {
+        joinButtonClicked();
+    }
+
+    @Override
+    public void selectLowerField() {
+        if (channelNameText.isFocused())
+            selectField(channelPasswordText);
+
+    }
+
+    @Override
+    public void selectUpperField() {
+        if (channelPasswordText.isFocused())
+            selectField(channelNameText);
+
     }
 }
