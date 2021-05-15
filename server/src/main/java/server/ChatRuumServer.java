@@ -10,6 +10,8 @@ import networking.responses.*;
 import networking.server.ServerNetworkingManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,18 +28,19 @@ public class ChatRuumServer {
     protected final Map<String, Channel> channels = new HashMap<>();
     @JsonIgnore
     private final ServerNetworkingManager<User> server;
-    @JsonIgnore
-    private final String saveFile;
+    @JsonIgnore @Nullable
+    private final ReadWriteManager readWrite;
 
     public ChatRuumServer(int port) {
-        saveFile = null;
+        readWrite = null;
+
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
-    public ChatRuumServer(int port, String saveFile) throws IOException {
-        this.saveFile = saveFile;
-        ReadWrite.readServer(saveFile, this);
+    public ChatRuumServer(int port, @NotNull String saveFile) {
+        readWrite = new ReadWriteManager(saveFile, this);
+
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
@@ -45,12 +48,8 @@ public class ChatRuumServer {
     private void setupServer() {
         server.onEvent(ConnectedEvent.class, (s, e) -> logger.info("Client connected: " + s.getTargetAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
-//            try {
-//                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
-//            } catch (Exception exception) {
-//                logger.error("Error saving server data", exception);
-//            }
             logger.info("Client disconnected: " + s.getTargetAddress());
+            if (readWrite != null) readWrite.tryWriteServer();
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
@@ -163,25 +162,22 @@ public class ChatRuumServer {
         server.onRequest(FavoriteChannelsRequest.class, (session, req) -> {
             req.sendResponse(new FavoriteChannelResponse(Response.OK, session.getUser().getFavoriteChannels()));
         });
-
-        if (saveFile != null) {
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                logger.info("Running shutdown hook...");
-                try {
-                    ReadWrite.writeServer(saveFile, this);
-                } catch (Exception exception) {
-                    logger.error("Error writing server data during shutdown hook:", exception);
-                }
-            }, "Shutdown-thread"));
-        }
     }
 
-    public synchronized void startServer() {
+    public synchronized void startServer() throws IOException {
+        if (readWrite != null) {
+            readWrite.readServer();
+            readWrite.setup();
+        }
         server.start();
     }
 
     public synchronized void stopServer() {
         server.stop();
+        if (readWrite != null) {
+            readWrite.cleanup();
+            readWrite.tryWriteServer();
+        }
     }
 
     public static void main(String[] args) throws IOException {
