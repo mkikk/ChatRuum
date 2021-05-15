@@ -87,7 +87,7 @@ public class OpenGUI extends Application {
         return session;
     }
 
-    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) throws IOException {
+    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) {
         FXMLLoader loader;
         Parent root;
         Stage window = (Stage) referableComponent.getScene().getWindow();

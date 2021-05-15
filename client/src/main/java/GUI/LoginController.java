@@ -123,12 +123,8 @@ public class LoginController extends Contoller {
     private void changeToMainMenu() {
         // If current scene is not active, do not change scene
         if (loginButton.getScene().getWindow() == null) return;
-        try {
-            OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
-        } catch (IOException e) {
-            System.out.println("error opening main menu fxml");
-            return;
-        }
+        OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
+
     }
 
     @Override

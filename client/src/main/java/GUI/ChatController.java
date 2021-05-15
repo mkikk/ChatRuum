@@ -33,7 +33,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ChatController extends Contoller {
-public class ChatController {
     private static final Logger logger = LogManager.getLogger();
 
     @FXML
@@ -105,8 +104,6 @@ public class ChatController {
         checkRoomName();
     }
 
-    public void leaveCurrentRoom(ActionEvent actionEvent) {
-        // stop receiving new messages, switch scene
     public void leaveCurrentRoom() throws IOException {
         // stop recieving new messages, switch scene
         view.close();
@@ -227,10 +224,10 @@ public class ChatController {
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 logger.debug("Room name free");
-                createRoom(actionEvent);
+                createRoom();
             } else if (r.result == Result.NAME_IN_USE) {
                 logger.debug("Room name exists");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.result == Result.NAME_INVALID) {
                 logger.debug("Room name not allowed");
                 Platform.runLater(() -> errorMessage.setText("Invalid room name"));
@@ -238,7 +235,7 @@ public class ChatController {
         });
     }
 
-    public void createRoom(ActionEvent actionEvent) {
+    public void createRoom() {
         var req = OpenGUI.getSession().sendRequest(
                 new CreateChannelRequest(
                         newChannelText.getText(),
@@ -248,7 +245,7 @@ public class ChatController {
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 logger.debug("Created channel");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to create channel");
                 Platform.runLater(() -> errorMessage.setText("Couldn't create channel. Try again!"));

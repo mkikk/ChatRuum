@@ -62,10 +62,10 @@ public class MainMenuController extends Contoller {
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
                 logger.debug("Room name free");
-                createRoom(actionEvent);
+                createRoom();
             } else if (r.result == Result.NAME_IN_USE) {
                 logger.debug("Room name exists");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.result == Result.NAME_INVALID) {
                 logger.debug("Room name not allowed");
                 Platform.runLater(() -> ClientMessage.setText("Invalid room name"));
@@ -84,7 +84,7 @@ public class MainMenuController extends Contoller {
             System.out.println(r.response.name());
             if (r.response == Response.OK) {
                 logger.debug("Created channel");
-                joinRoom(actionEvent);
+                joinRoom();
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to create channel");
                 Platform.runLater(() -> ClientMessage.setText("Couldn't create channel. Try again!"));
@@ -94,12 +94,8 @@ public class MainMenuController extends Contoller {
 
     private void switchToChatRoom() {
         if (joinRoomButton.getScene().getWindow() == null) return;
-        try {
-            OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800);
-        } catch (IOException e) {
-            System.out.println("error opening chat.fxml");
-            return;
-        }
+        OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800);
+
     }
 
     @Override
