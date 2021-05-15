@@ -30,6 +30,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ChatController extends Contoller {
@@ -69,7 +71,7 @@ public class ChatController extends Contoller {
                 if (r.response == Response.OK) {
                     logger.debug("Sent message");
                     // TODO: send request for other users to recieve new message
-                    new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDate.now());
+                    new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDateTime.now().toString());
                     Platform.runLater(() -> inputText.setText(""));
                 } else if (r.response == Response.FORBIDDEN) {
                     logger.debug("Failed to send message");
@@ -149,7 +151,8 @@ public class ChatController extends Contoller {
         info.getChildren().add(messageSender);
 
         // Label for time, when message was sent
-        Label messageTime = new Label(messageData.sendTime.toString());
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        Label messageTime = new Label(timeFormatter.format(LocalDateTime.parse(messageData.sendTime)));
         messageTime.setAlignment(Pos.BOTTOM_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
