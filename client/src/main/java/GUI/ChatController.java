@@ -203,8 +203,8 @@ public class ChatController extends Controller {
 
     public void displayLatestMessages(List<MessageData> messageData) {
         // create messageboxes
-        if (messageData.size() > 50) {
-            for (int i = messageData.size() - 1; i > messageData.size() - 50; i--) {
+        if (messageData.size() >= 50) {
+            for (int i = messageData.size() - 50; i < messageData.size(); i++) {
                 openMessage(messageData.get(i));
             }
         } else {
