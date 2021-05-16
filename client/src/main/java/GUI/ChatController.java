@@ -187,18 +187,20 @@ public class ChatController extends Contoller {
         field.getChildren().add(messageText);
 
         // Edit button
-        final Button edit = new Button("Edit");
-        edit.setAlignment(Pos.BASELINE_RIGHT);
-        edit.maxHeight(30);
-        edit.minHeight(30);
-        edit.setFont(Font.font("Segoe UI", 14));
-        edit.setOnAction(event -> {
-            inputText.setText(messageText.getText());
-            sendButton.setText("EDIT");
-            editMessageTime = messageData.sendTime;
-        });
+        if(OpenGUI.getUsername().equals(messageData.senderName)) {
+            final Button edit = new Button("Edit");
+            edit.setAlignment(Pos.BASELINE_RIGHT);
+            edit.maxHeight(30);
+            edit.minHeight(30);
+            edit.setFont(Font.font("Segoe UI", 14));
+            edit.setOnAction(event -> {
+                inputText.setText(messageText.getText());
+                sendButton.setText("EDIT");
+                editMessageTime = messageData.sendTime;
+            });
 
-        info.getChildren().add(edit);
+            info.getChildren().add(edit);
+        }
 
         AnchorPane.setBottomAnchor(messageText, 10.0);
         AnchorPane.setRightAnchor(messageText, 10.0);
