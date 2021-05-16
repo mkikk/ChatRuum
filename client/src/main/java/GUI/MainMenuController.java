@@ -39,8 +39,7 @@ public class MainMenuController extends Controller {
         });
 
         ClientChannels.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            String selectedChannel = ClientChannels.getSelectionModel().getSelectedItem();
-            channelNameText.setText(selectedChannel);
+            channelNameText.setText(newValue);
         });
 
         // get users previously visited channels

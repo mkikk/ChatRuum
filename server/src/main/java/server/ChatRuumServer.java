@@ -124,18 +124,6 @@ public class ChatRuumServer {
             }
         });
 
-        server.onRequest(CanViewChannelRequest.class, (session, req) -> {
-            logger.debug("Checking if can view channel: " + req.data.channelName);
-
-            final Channel channel = channels.get(req.data.channelName);
-            final User user = session.getUser();
-            if (channel != null && channel.isJoined(user)) {
-                req.sendResponse(new GenericResponse(Response.OK));
-            } else {
-                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
-            }
-        });
-
         server.onPersistentRequest(ViewChannelRequest.class, (session, req) -> {
             logger.debug("Viewing channel: " + req.data.channelName);
 
