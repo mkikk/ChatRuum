@@ -11,9 +11,7 @@ import networking.events.ConnectedEvent;
 import networking.events.ConnectionDroppedEvent;
 import networking.events.NotConnectedEvent;
 
-import java.io.IOException;
-
-public class EnterServerIPController extends Contoller {
+public class EnterServerIPController extends Controller {
     @FXML
     TextField ServerIPTextField;
     @FXML
@@ -57,17 +55,15 @@ public class EnterServerIPController extends Contoller {
     }
 
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         connectToServer();
     }
 
     @Override
     public void selectLowerField() {
-
     }
 
     @Override
     public void selectUpperField() {
-
     }
 }

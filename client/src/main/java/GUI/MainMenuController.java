@@ -1,7 +1,6 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import networking.requests.CheckChannelNameRequest;
@@ -13,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class MainMenuController extends Contoller {
+public class MainMenuController extends Controller {
     @FXML
     ListView ClientChannels, ClientFavourites;
     @FXML
@@ -94,14 +93,8 @@ public class MainMenuController extends Contoller {
         });
     }
 
-    private void switchToChatRoom() {
-        if (joinRoomButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800);
-
-    }
-
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         joinButtonClicked();
     }
 

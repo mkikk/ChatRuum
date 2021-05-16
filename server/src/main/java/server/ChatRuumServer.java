@@ -10,8 +10,11 @@ import networking.responses.*;
 import networking.server.ServerNetworkingManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,18 +28,19 @@ public class ChatRuumServer {
     protected final Map<String, Channel> channels = new HashMap<>();
     @JsonIgnore
     private final ServerNetworkingManager<User> server;
-    @JsonIgnore
-    private final String saveFile;
+    @JsonIgnore @Nullable
+    private final ReadWriteManager readWrite;
 
     public ChatRuumServer(int port) {
-        saveFile = null;
+        readWrite = null;
+
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
 
-    public ChatRuumServer(int port, String saveFile) throws IOException {
-        this.saveFile = saveFile;
-        ReadWrite.readServer(saveFile, this);
+    public ChatRuumServer(int port, @NotNull String saveFile) {
+        readWrite = new ReadWriteManager(saveFile, this);
+
         server = new ServerNetworkingManager<>(port);
         setupServer();
     }
@@ -44,12 +48,8 @@ public class ChatRuumServer {
     private void setupServer() {
         server.onEvent(ConnectedEvent.class, (s, e) -> logger.info("Client connected: " + s.getTargetAddress()));
         server.onEvent(DisconnectedEvent.class, (s, e) -> {
-//            try {
-//                ReadWrite.writeServer("server\\src\\main\\java\\data\\server.json", this);
-//            } catch (Exception exception) {
-//                logger.error("Error saving server data", exception);
-//            }
             logger.info("Client disconnected: " + s.getTargetAddress());
+            if (readWrite != null) readWrite.tryWriteServer();
         });
 
         server.onRequest(RegisterRequest.class, (session, req) -> {
@@ -91,9 +91,9 @@ public class ChatRuumServer {
             final User user = users.get(req.data.username);
             if (user != null && user.checkPassword(req.data.password)) {
                 session.setUser(user);
-                req.sendResponse(new LoginResponse(Response.OK, user.getFavoriteChannels()));
+                req.sendResponse(new GenericResponse(Response.OK));
             } else {
-                req.sendResponse(new LoginResponse(Response.FORBIDDEN, null));
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
 
@@ -147,25 +147,37 @@ public class ChatRuumServer {
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
         });
-
-        if (saveFile != null) {
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                logger.info("Running shutdown hook...");
-                try {
-                    ReadWrite.writeServer(saveFile, this);
-                } catch (Exception exception) {
-                    logger.error("Error writing server data during shutdown hook:", exception);
-                }
-            }, "Shutdown-thread"));
-        }
+        server.onRequest(EditMessageRequest.class, (session, req) -> {
+            final Channel channel = channels.get(req.data.channelName);
+            if (channel == null) {
+                req.sendResponse(new GenericResponse(Response.ERROR));
+                return;
+            }
+            if (channel.editMessage(req.data.textAfter, req.data.time, session.getUser())) {
+                req.sendResponse(new GenericResponse(Response.OK));
+            } else {
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+            }
+        });
+        server.onRequest(FavoriteChannelsRequest.class, (session, req) -> {
+            req.sendResponse(new FavoriteChannelResponse(Response.OK, session.getUser().getFavoriteChannels()));
+        });
     }
 
-    public synchronized void startServer() {
+    public synchronized void startServer() throws IOException {
+        if (readWrite != null) {
+            readWrite.readServer();
+            readWrite.setup();
+        }
         server.start();
     }
 
     public synchronized void stopServer() {
         server.stop();
+        if (readWrite != null) {
+            readWrite.cleanup();
+            readWrite.tryWriteServer();
+        }
     }
 
     public static void main(String[] args) throws IOException {

@@ -10,6 +10,8 @@ apply from: "$rootProject.projectDir/common.gradle"
 dependencies {
     implementation project(':networking')
     compile 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
+
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4'
 }
 
 application {
