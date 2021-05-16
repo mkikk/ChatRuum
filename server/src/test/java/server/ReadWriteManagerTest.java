@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
 import java.util.*;
 
 public class ReadWriteManagerTest {
@@ -13,6 +14,9 @@ public class ReadWriteManagerTest {
 
     @Test
     public void testReadWriteServer() throws Exception {
+        final var time1 = Instant.parse("2020-03-12T13:12:32.321Z");
+        final var time2 = Instant.now();
+
         {
             logger.info("Writing server to JSON");
 
@@ -24,7 +28,7 @@ public class ReadWriteManagerTest {
             chatRuumServer.channels.put("yldine", new Channel(
                     "yldine",
                     null,
-                    Arrays.asList(new Message("TERE", jaagup), new Message("tere??", miilo)),
+                    Arrays.asList(new Message("TERE", jaagup, time1), new Message("tere??", miilo, time2)),
                     new HashSet<>(Arrays.asList(jaagup, miilo))
             ));
             chatRuumServer.channels.put("teine", new Channel("teine", "2312"));
@@ -60,6 +64,9 @@ public class ReadWriteManagerTest {
             assertTrue(stringChannelMap.get("yldine").checkPassword("fasdfads"));
             assertTrue(stringChannelMap.get("teine").checkPassword("2312"));
             assertFalse(stringChannelMap.get("teine").checkPassword("2313"));
+
+            assertEquals(stringChannelMap.get("yldine").getMessages().get(0).getTime(), time1);
+            assertEquals(stringChannelMap.get("yldine").getMessages().get(1).getTime(), time2);
         }
     }
 }
