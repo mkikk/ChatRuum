@@ -149,15 +149,16 @@ public class ChatRuumServer {
             req.sendResponse(new GenericResponse(Response.OK));
         });
         server.onRequest(EditMessageRequest.class, (session, req) -> {
-            logger.debug("hi");
             final Channel channel = channels.get(req.data.channelName);
             if (channel == null) {
-                req.sendResponse(new EditChannelResponse(Response.ERROR, new ArrayList<>()));
+                req.sendResponse(new EditChannelResponse(Response.ERROR));
                 return;
             }
-            channel.editMessage(req.data.textAfter, req.data.time);
-            logger.debug(channel.convertToMessageData());
-            req.sendResponse(new EditChannelResponse(Response.OK, channel.convertToMessageData()));
+            if (channel.editMessage(req.data.textAfter, req.data.time, session.getUser())) {
+                req.sendResponse(new EditChannelResponse(Response.OK));
+            } else {
+                req.sendResponse(new EditChannelResponse(Response.FORBIDDEN));
+            }
         });
 
         if (saveFile != null) {

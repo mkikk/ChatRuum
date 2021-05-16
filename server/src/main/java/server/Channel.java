@@ -12,6 +12,7 @@ import networking.responses.ViewChannelResponse;
 import networking.server.PersistentRequest;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,16 +91,19 @@ public class Channel {
         return password == null || password.checkPassword(givenPassword);
     }
 
-    public void editMessage(String textAfter, String time) {
-        for (int i = 0; i < messages.size(); i++) {
+    public boolean editMessage(String textAfter, Instant time, User requestSender) {
+        for (int i = messages.size()-1; i > 0; i--) {
             final Message message = messages.get(i);
-            if(message.getTime().equals(time) || message.getText().startsWith(time)) {
-                message.setText(textAfter);
-                messages.set(i, message);
-                sendToViewers(new ViewChannelResponse(Response.OK, convertToMessageData()));
-                break;
+            if(message.getTime().equals(time)) {
+                if(requestSender.equals(message.getSender())) {
+                    message.setText(textAfter);
+                    sendToViewers(new ViewChannelResponse(Response.OK, convertToMessageData()));
+                    return true;
+                }
+                return false;
             }
         }
+        return false;
 
     }
 }

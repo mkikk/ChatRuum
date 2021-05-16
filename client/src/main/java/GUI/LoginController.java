@@ -1,9 +1,7 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -16,7 +14,7 @@ import networking.responses.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LoginController extends Contoller {
+public class LoginController extends Controller {
     private static final Logger logger = LogManager.getLogger();
     @FXML
     Button loginButton;

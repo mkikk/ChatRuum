@@ -1,13 +1,10 @@
 package GUI;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -18,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.logging.Handler;
 
 public class OpenGUI extends Application {
     private static final Logger logger = LogManager.getLogger();
@@ -104,7 +100,7 @@ public class OpenGUI extends Application {
         }
 
         final Scene newScene = new Scene(root, width, height);
-        Contoller controller = loader.getController();
+        Controller controller = loader.getController();
         newScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             if(event.getCode() == KeyCode.ENTER)
                 controller.PrimaryAction();

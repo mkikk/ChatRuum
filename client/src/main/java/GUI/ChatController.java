@@ -1,8 +1,6 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,13 +21,12 @@ import networking.responses.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ChatController extends Contoller {
+public class ChatController extends Controller {
     private static final Logger logger = LogManager.getLogger();
 
     @FXML
@@ -47,9 +44,9 @@ public class ChatController extends Contoller {
     @FXML
     ScrollPane messages;
     @FXML
-    VBox messageField = new VBox();
+    VBox messageField;
 
-    String editMessageTime;
+    Instant editMessageTime;
 
     @FXML
     public void initialize() {
@@ -68,8 +65,6 @@ public class ChatController extends Contoller {
                 req.onResponse((s, r) -> {
                     if (r.response == Response.OK) {
                         logger.debug("Message edited");
-                        //new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDateTime.now().toString());
-                        //displayLatestMessages(r.messages);
                         Platform.runLater(() -> inputText.setText(""));
                     } else if (r.response == Response.FORBIDDEN) {
                         logger.debug("Failed to edit message");
@@ -81,8 +76,6 @@ public class ChatController extends Contoller {
                 req.onResponse((s, r) -> {
                     if (r.response == Response.OK) {
                         logger.debug("Sent message");
-                        // TODO: send request for other users to recieve new message
-                        new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDateTime.now().toString());
                         Platform.runLater(() -> inputText.setText(""));
                     } else if (r.response == Response.FORBIDDEN) {
                         logger.debug("Failed to send message");
@@ -99,13 +92,9 @@ public class ChatController extends Contoller {
                 logger.debug("Viewing channel");
                 logger.debug("Channel messages: " + r.messages.toString());
                 // Display up to last 50 messages to user
-                Platform.runLater(() -> {
-                    messageField.getChildren().clear();
-                });
+                Platform.runLater(() -> messageField.getChildren().clear());
                 displayLatestMessages(r.messages);
-                Platform.runLater(() -> {
-                    sendButton.setDisable(false);
-                });
+                Platform.runLater(() -> sendButton.setDisable(false));
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to view channel");
             }
@@ -122,7 +111,7 @@ public class ChatController extends Contoller {
         checkRoomName();
     }
 
-    public void leaveCurrentRoom() throws IOException {
+    public void leaveCurrentRoom() {
         // stop recieving new messages, switch scene
         view.close();
         OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
@@ -167,8 +156,8 @@ public class ChatController extends Contoller {
         info.getChildren().add(messageSender);
 
         // Label for time, when message was sent
-        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Label messageTime = new Label(timeFormatter.format(LocalDateTime.parse(messageData.sendTime)));
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").withZone(ZoneId.systemDefault());
+        Label messageTime = new Label(timeFormatter.format(messageData.sendTime));
         messageTime.setAlignment(Pos.BOTTOM_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
@@ -238,9 +227,7 @@ public class ChatController extends Contoller {
                 view.close();
                 logger.debug("Joined channel:");
                 OpenGUI.setCurrentChatroom(newChannelText.getText());
-                Platform.runLater(() -> {
-                    OpenGUI.switchSceneTo("Chat", joinNewRoom, 1080, 800);
-                });
+                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinNewRoom, 1080, 800));
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to join channel");
                 Platform.runLater(() -> {
