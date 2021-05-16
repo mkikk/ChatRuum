@@ -1,9 +1,6 @@
 package server;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -15,32 +12,25 @@ import java.util.Map;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "name", scope = User.class
 )
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class User {
-    private static final Logger logger = LogManager.getLogger();
-
     private final String name;
     @NotNull private final Password password;
-    @JsonIgnore private boolean isOnline;
     private final Map<String, Integer> favoriteChannels;
+
+    @JsonIgnore private boolean isOnline;
 
     public User(String name, @NotNull String password) {
        this(name, new Password(password), new HashMap<>());
     }
 
+    @JsonCreator
     public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password,
                 @JsonProperty(value = "favoriteChannels") Map<String, Integer> favoriteChannels) {
         this.name = name;
         this.password = password;
         this.isOnline = true;
         this.favoriteChannels = favoriteChannels;
-    }
-
-    public void logOff() {
-        this.isOnline = false;
-    }
-
-    public @NotNull Password getPassword() {
-        return password;
     }
 
     public String getName() {
@@ -52,8 +42,8 @@ public class User {
     }
 
     public void addVisitChannel(String channelName){
-        final Integer visits = this.favoriteChannels.getOrDefault(channelName, 0);
-        this.favoriteChannels.put(channelName, visits+1);
+        final int visits = favoriteChannels.getOrDefault(channelName, 0);
+        favoriteChannels.put(channelName, visits + 1);
     }
 
     @Override

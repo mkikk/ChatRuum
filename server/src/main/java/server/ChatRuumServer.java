@@ -22,6 +22,7 @@ public class ChatRuumServer {
     private static final Logger logger = LogManager.getLogger();
 
     protected static final int DEFAULT_PORT = 5050;
+
     @JsonProperty(value = "users")
     protected final Map<String, User> users = new HashMap<>();
     @JsonProperty(value = "channels")

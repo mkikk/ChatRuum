@@ -1,5 +1,6 @@
 package server;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import networking.data.MessageData;
 
@@ -14,6 +15,7 @@ public class Message{
         this(text, sender, Instant.now());
     }
 
+    @JsonCreator
     public Message(@JsonProperty(value = "text") String text, @JsonProperty(value = "sender") User sender,
                    @JsonProperty(value = "time") Instant time) {
         this.text = text;
@@ -32,6 +34,7 @@ public class Message{
     public Instant getTime() {
         return time;
     }
+
     public void setText(String text) {
         this.text = text;
     }

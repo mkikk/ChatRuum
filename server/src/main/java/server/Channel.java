@@ -1,9 +1,6 @@
 package server;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import networking.ResponseData;
 import networking.data.MessageData;
 import networking.responses.NewMessageResponse;
@@ -16,18 +13,21 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Channel {
     private final String name;
     @Nullable private final Password password;
+
     private final List<Message> messages;
     private final Set<User> users;
-    @JsonIgnore
-    private final List<PersistentRequest<?>> viewingRequests;
+
+    @JsonIgnore private final List<PersistentRequest<?>> viewingRequests;
 
     public Channel(String name, @Nullable String password) {
         this(name, password == null ? null : new Password(password), new ArrayList<>(), new HashSet<>());
     }
 
+    @JsonCreator
     public Channel(@JsonProperty(value = "name") String name,
                    @JsonProperty(value = "password") @Nullable Password password,
                    @JsonProperty(value = "messages") List<Message> messages,
@@ -39,20 +39,16 @@ public class Channel {
         viewingRequests = new ArrayList<>();
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        return new ArrayList<>(users);
     }
 
-    public @Nullable Password getPassword() {
-        return password;
+    public List<Message> getMessages() {
+        return new ArrayList<>(messages);
     }
 
     public List<MessageData> convertToMessageData() {
         return messages.stream().map(Message::convertAsData).collect(Collectors.toList());
-    }
-
-    public List<Message> getMessages() {
-        return messages;
     }
 
     public void sendMessage(Message message) {
