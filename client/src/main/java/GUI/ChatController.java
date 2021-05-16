@@ -157,7 +157,8 @@ public class ChatController extends Controller {
         info.getChildren().add(messageSender);
 
         // Label for time, when message was sent
-        Label messageTime = new Label(messageData.sendTime.toString());
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").withZone(ZoneId.systemDefault());
+        Label messageTime = new Label(timeFormatter.format(messageData.sendTime));
         messageTime.setAlignment(Pos.CENTER_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
