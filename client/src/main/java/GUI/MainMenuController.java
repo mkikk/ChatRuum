@@ -15,12 +15,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class MainMenuController extends Controller {
     @FXML
-    ListView ClientChannels, ClientFavourites;
+    ListView<String> ClientChannels, ClientFavourites;
     @FXML
     Label UserWelcome, ClientMessage;
     @FXML
@@ -31,19 +34,18 @@ public class MainMenuController extends Controller {
     Button joinRoomButton;
     private static final Logger logger = LogManager.getLogger();
 
-    private List<String> channels = new ArrayList<>();
     @FXML
     public void initialize() {
+        UserWelcome.setText("Hey, " + OpenGUI.getUsername());
 
-        Platform.runLater(() -> {
-            UserWelcome.setText("Hey, " + OpenGUI.getUsername());
-
-        });
         // get users previously visited channels
         var channelsReq = OpenGUI.getSession().sendRequest(new FavoriteChannelsRequest());
-        channelsReq.onResponse((r, c) -> {
-            channels = new ArrayList<>(c.channelPopularity.keySet());
-            ObservableList<String> listChannels = FXCollections.observableList(channels);
+        channelsReq.onResponse((s, r) -> {
+            // Sort by number of visits in descending order and collect names into list
+            List<String> channelNames = r.channelPopularity.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .map(Map.Entry::getKey).collect(Collectors.toCollection(ArrayList::new));
+            ObservableList<String> listChannels = FXCollections.observableList(channelNames);
             Platform.runLater(() -> ClientChannels.setItems(listChannels));
         });
     }

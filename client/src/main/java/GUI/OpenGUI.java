@@ -55,6 +55,7 @@ public class OpenGUI extends Application {
 
         Scene scene = new Scene(new Group(), 1080, 720);
         primaryStage.setScene(scene);
+
         switchSceneTo("EnterServerIP", scene);
         scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             if(event.getCode() == KeyCode.ENTER)
@@ -87,14 +88,14 @@ public class OpenGUI extends Application {
     }
 
     public static void switchSceneTo(String fxmlName, Labeled referableComponent) {
-        Stage window = (Stage) referableComponent.getScene().getWindow();
-        if (window == null) {
-            // If scene is not active, do not change scene, probably a duplicate result due to networking delays
+        Scene scene = referableComponent.getScene();
+        if (scene == null) {
+            // If scene is not active, do not change scene, probably a duplicate scene change due to networking delays
             logger.warn("Attempt to change to scene " + fxmlName + " from inactive scene");
             return;
         }
 
-        switchSceneTo(fxmlName, window.getScene());
+        switchSceneTo(fxmlName, scene);
     }
 
     public static void switchSceneTo(String fxmlName, Scene scene) {
@@ -108,7 +109,6 @@ public class OpenGUI extends Application {
         }
 
         controller = loader.getController();
-
         scene.setRoot(root);
     }
 
