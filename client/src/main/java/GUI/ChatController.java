@@ -2,6 +2,7 @@ package GUI;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,14 +18,8 @@ import javafx.stage.Stage;
 import networking.client.PersistentRequest;
 import networking.data.MessageData;
 import networking.persistentrequests.ViewChannelRequest;
-import networking.requests.CheckChannelNameRequest;
-import networking.requests.CreateChannelRequest;
-import networking.requests.JoinChannelRequest;
-import networking.requests.SendMessageRequest;
-import networking.responses.NewMessageResponse;
-import networking.responses.Response;
-import networking.responses.Result;
-import networking.responses.ViewChannelResponse;
+import networking.requests.*;
+import networking.responses.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +47,9 @@ public class ChatController extends Contoller {
     @FXML
     ScrollPane messages;
     @FXML
-    VBox messageField;
+    VBox messageField = new VBox();
+
+    String editMessageTime;
 
     @FXML
     public void initialize() {
@@ -66,30 +63,49 @@ public class ChatController extends Contoller {
 
     public void sendMessage() {
         if (!inputText.getText().isEmpty()) {
-            var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
-            req.onResponse((s, r) -> {
-                if (r.response == Response.OK) {
-                    logger.debug("Sent message");
-                    // TODO: send request for other users to recieve new message
-                    new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDateTime.now().toString());
-                    Platform.runLater(() -> inputText.setText(""));
-                } else if (r.response == Response.FORBIDDEN) {
-                    logger.debug("Failed to send message");
-                }
-            });
+            if (sendButton.getText().equals("EDIT")) {
+                var req = OpenGUI.getSession().sendRequest(new EditMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText(), editMessageTime));
+                req.onResponse((s, r) -> {
+                    if (r.response == Response.OK) {
+                        logger.debug("Message edited");
+                        //new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDateTime.now().toString());
+                        //displayLatestMessages(r.messages);
+                        Platform.runLater(() -> inputText.setText(""));
+                    } else if (r.response == Response.FORBIDDEN) {
+                        logger.debug("Failed to edit message");
+                    }
+                    Platform.runLater(() -> sendButton.setText("SEND"));
+                });
+            } else {
+                var req = OpenGUI.getSession().sendRequest(new SendMessageRequest(OpenGUI.getCurrentChatroom(), inputText.getText()));
+                req.onResponse((s, r) -> {
+                    if (r.response == Response.OK) {
+                        logger.debug("Sent message");
+                        // TODO: send request for other users to recieve new message
+                        new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDateTime.now().toString());
+                        Platform.runLater(() -> inputText.setText(""));
+                    } else if (r.response == Response.FORBIDDEN) {
+                        logger.debug("Failed to send message");
+                    }
+                });
+            }
         }
     }
 
     public void viewChannel() {
         view = OpenGUI.getSession().sendPersistentRequest(new ViewChannelRequest(roomName.getText()));
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
-
             if (r.response == Response.OK) {
                 logger.debug("Viewing channel");
                 logger.debug("Channel messages: " + r.messages.toString());
                 // Display up to last 50 messages to user
+                Platform.runLater(() -> {
+                    messageField.getChildren().clear();
+                });
                 displayLatestMessages(r.messages);
-
+                Platform.runLater(() -> {
+                    sendButton.setDisable(false);
+                });
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to view channel");
             }
@@ -170,11 +186,24 @@ public class ChatController extends Contoller {
 
         field.getChildren().add(messageText);
 
+        // Edit button
+        final Button edit = new Button("Edit");
+        edit.setAlignment(Pos.BASELINE_RIGHT);
+        edit.maxHeight(30);
+        edit.minHeight(30);
+        edit.setFont(Font.font("Segoe UI", 14));
+        edit.setOnAction(event -> {
+            inputText.setText(messageText.getText());
+            sendButton.setText("EDIT");
+            editMessageTime = messageData.sendTime;
+        });
+
+        info.getChildren().add(edit);
+
         AnchorPane.setBottomAnchor(messageText, 10.0);
         AnchorPane.setRightAnchor(messageText, 10.0);
         AnchorPane.setLeftAnchor(messageText, 10.0);
         AnchorPane.setTopAnchor(messageText, 35.0);
-
         // add to Vbox with other messages and scroll to message
         Platform.runLater(() -> {
             this.messageField.getChildren().add(field);
