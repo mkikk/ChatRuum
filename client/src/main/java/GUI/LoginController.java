@@ -105,19 +105,20 @@ public class LoginController extends Controller {
         /*
          * Check if username and password match
          * If not, then tell wrong password
+         *
          */
 
         var req = OpenGUI.getSession().sendRequest(new PasswordLoginRequest(usernameText.getText(), passwordText.getText()));
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 OpenGUI.setUsername(usernameText.getText());
-
-                Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600));
+                Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 700));
             } else {
                 Platform.runLater(() -> noMatch.setText("Username and password do not match. Try again!"));
             }
         });
     }
+    
     @Override
     public void primaryAction() {
         onLoginButtonPressed();

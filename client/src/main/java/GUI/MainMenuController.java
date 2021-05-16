@@ -1,22 +1,28 @@
 package GUI;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import networking.requests.CheckChannelNameRequest;
 import networking.requests.CreateChannelRequest;
+import networking.requests.FavoriteChannelsRequest;
 import networking.requests.JoinChannelRequest;
 import networking.responses.Response;
 import networking.responses.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainMenuController extends Controller {
     @FXML
     ListView ClientChannels, ClientFavourites;
     @FXML
-    Label UserWelcome, ClientMessage, LatestMessages;
+    Label UserWelcome, ClientMessage;
     @FXML
     TextField channelNameText;
     @FXML
@@ -25,19 +31,25 @@ public class MainMenuController extends Controller {
     Button joinRoomButton;
     private static final Logger logger = LogManager.getLogger();
 
-
+    private List<String> channels = new ArrayList<>();
     @FXML
     public void initialize() {
+
         Platform.runLater(() -> {
             UserWelcome.setText("Hey, " + OpenGUI.getUsername());
-            // TODO show client already visited channels, show favourite channels
-        });
 
+        });
+        // get users previously visited channels
+        var channelsReq = OpenGUI.getSession().sendRequest(new FavoriteChannelsRequest());
+        channelsReq.onResponse((r, c) -> {
+            channels = new ArrayList<>(c.channelPopularity.keySet());
+            ObservableList<String> listChannels = FXCollections.observableList(channels);
+            Platform.runLater(() -> ClientChannels.setItems(listChannels));
+        });
     }
 
     public void joinButtonClicked() {
         checkRoomName();
-
     }
 
     public void joinRoom() {
@@ -111,4 +123,5 @@ public class MainMenuController extends Controller {
             selectField(channelNameText);
 
     }
+
 }
