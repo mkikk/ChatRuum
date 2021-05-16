@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import networking.ResponseData;
 import networking.data.MessageData;
 import networking.responses.NewMessageResponse;
+import networking.responses.Response;
+import networking.responses.ViewChannelResponse;
 import networking.server.PersistentRequest;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +64,7 @@ public class Channel {
         sendToViewers(new NewMessageResponse(message.convertAsData()));
     }
 
-    protected void sendToViewers(NewMessageResponse response) {
+    protected void sendToViewers(ResponseData response) {
         for (PersistentRequest<?> listener : viewingRequests) {
             listener.sendResponse(response);
         }
@@ -85,5 +89,21 @@ public class Channel {
 
     public boolean checkPassword(String givenPassword) {
         return password == null || password.checkPassword(givenPassword);
+    }
+
+    public boolean editMessage(String textAfter, Instant time, User requestSender) {
+        for (int i = messages.size()-1; i > 0; i--) {
+            final Message message = messages.get(i);
+            if(message.getTime().equals(time)) {
+                if(requestSender.equals(message.getSender())) {
+                    message.setText(textAfter);
+                    sendToViewers(new ViewChannelResponse(Response.OK, convertToMessageData()));
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+
     }
 }

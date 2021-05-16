@@ -11,9 +11,7 @@ import networking.events.ConnectedEvent;
 import networking.events.ConnectionDroppedEvent;
 import networking.events.NotConnectedEvent;
 
-import java.io.IOException;
-
-public class EnterServerIPController extends Contoller {
+public class EnterServerIPController extends Controller {
     @FXML
     TextField ServerIPTextField;
     @FXML

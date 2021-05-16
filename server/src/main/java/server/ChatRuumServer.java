@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,6 +147,21 @@ public class ChatRuumServer {
 
             channel.sendMessage(new Message(req.data.text, session.getUser()));
             req.sendResponse(new GenericResponse(Response.OK));
+        });
+        server.onRequest(EditMessageRequest.class, (session, req) -> {
+            final Channel channel = channels.get(req.data.channelName);
+            if (channel == null) {
+                req.sendResponse(new GenericResponse(Response.ERROR));
+                return;
+            }
+            if (channel.editMessage(req.data.textAfter, req.data.time, session.getUser())) {
+                req.sendResponse(new GenericResponse(Response.OK));
+            } else {
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
+            }
+        });
+        server.onRequest(FavoriteChannelsRequest.class, (session, req) -> {
+            req.sendResponse(new FavoriteChannelResponse(Response.OK, session.getUser().getFavoriteChannels()));
         });
 
         if (saveFile != null) {

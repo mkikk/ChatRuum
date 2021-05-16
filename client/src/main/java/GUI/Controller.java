@@ -3,7 +3,7 @@ package GUI;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public abstract class Contoller {
+public abstract class Controller {
     abstract void PrimaryAction();
     abstract void selectLowerField();
     abstract void selectUpperField();
