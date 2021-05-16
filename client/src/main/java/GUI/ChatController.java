@@ -40,7 +40,7 @@ public class ChatController extends Controller {
     @FXML
     Label roomName, errorMessage;
     @FXML
-    Button sendButton, joinNewRoom;
+    Button sendButton;
     @FXML
     ScrollPane messages;
     @FXML
@@ -66,7 +66,7 @@ public class ChatController extends Controller {
                         logger.debug("Message edited");
                         Platform.runLater(() -> inputText.setText(""));
                     } else if (r.response == Response.FORBIDDEN) {
-                        logger.debug("Failed to edit message");
+                        logger.warn("Failed to edit message");
                     }
                     Platform.runLater(() -> sendButton.setText("SEND"));
                 });
@@ -77,7 +77,7 @@ public class ChatController extends Controller {
                         logger.debug("Sent message");
                         Platform.runLater(() -> inputText.setText(""));
                     } else if (r.response == Response.FORBIDDEN) {
-                        logger.debug("Failed to send message");
+                        logger.warn("Failed to send message");
                     }
                 });
             }
@@ -96,7 +96,8 @@ public class ChatController extends Controller {
                     sendButton.setDisable(false);
                 });
             } else if (r.response == Response.FORBIDDEN) {
-                logger.debug("Failed to view channel");
+                logger.warn("Failed to view channel");
+                Platform.runLater(this::leaveCurrentRoom);
             }
 
         });
@@ -106,15 +107,10 @@ public class ChatController extends Controller {
         });
     }
 
-    public void joinNextRoom() {
-        // after clicking on button 'Join', user joins new channel
-        checkRoomName();
-    }
-
     public void leaveCurrentRoom() {
         // stop recieving new messages, switch scene
         view.close();
-        OpenGUI.switchSceneTo("MainMenu", joinNewRoom);
+        OpenGUI.switchSceneTo("MainMenu", sendButton);
     }
 
     public void exitChatruum() {
@@ -212,59 +208,6 @@ public class ChatController extends Controller {
                 openMessage(message);
             }
         }
-    }
-
-    public void joinRoom() {
-        joinNewRoom.setDisable(true);
-        var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
-        req.onResponse((s, r) -> {
-            if (r.response == Response.OK) {
-                logger.debug("Joined channel:");
-                view.close(); // stop receiving messages
-                OpenGUI.setCurrentChatroom(newChannelText.getText());
-                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinNewRoom));
-            } else if (r.response == Response.FORBIDDEN) {
-                logger.debug("Failed to join channel");
-                Platform.runLater(() -> {
-                    joinNewRoom.setDisable(false);
-                    errorMessage.setText("Couldn't join to channel.");
-                });
-            }
-        });
-    }
-
-    public void checkRoomName() {
-        var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(newChannelText.getText()));
-        req.onResponse((s, r) -> {
-            if (r.result == Result.NAME_FREE) {
-                logger.debug("Room name free");
-                createRoom();
-            } else if (r.result == Result.NAME_IN_USE) {
-                logger.debug("Room name exists");
-                joinRoom();
-            } else if (r.result == Result.NAME_INVALID) {
-                logger.debug("Room name not allowed");
-                Platform.runLater(() -> errorMessage.setText("Invalid room name"));
-            }
-        });
-    }
-
-    public void createRoom() {
-        var req = OpenGUI.getSession().sendRequest(
-                new CreateChannelRequest(
-                        newChannelText.getText(),
-                        newChannelPassword.getText().isEmpty() ? null : newChannelPassword.getText()
-                )
-        );
-        req.onResponse((s, r) -> {
-            if (r.response == Response.OK) {
-                logger.debug("Created channel");
-                joinRoom();
-            } else if (r.response == Response.FORBIDDEN) {
-                logger.debug("Failed to create channel");
-                Platform.runLater(() -> errorMessage.setText("Couldn't create channel. Try again!"));
-            }
-        });
     }
 
     @Override

@@ -93,13 +93,12 @@
                <children>
                   <HBox alignment="CENTER" layoutX="-3.0" layoutY="27.0" prefHeight="100.0" prefWidth="902.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
                      <children>
-                        <AnchorPane HBox.hgrow="SOMETIMES">
+                        <AnchorPane prefHeight="235.0" prefWidth="245.0" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets bottom="25.0" left="20.0" right="20.0" top="20.0" />
                            </HBox.margin>
                            <children>
-                              <ListView fx:id="ClientChannels" editable="true" focusTraversable="false" layoutX="-7.0" layoutY="35.0" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #d6e1d3; -fx-background-radius: 10; -fx-fixed-cell-size: 40;" AnchorPane.leftAnchor="-7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="35.0">
-                                 <cursor>
+                              <ListView fx:id="ClientChannels" editable="true" focusTraversable="false" layoutX="-7.0" layoutY="35.0" prefHeight="200.0" prefWidth="331.0" style="-fx-background-color: #d6e1d3; -fx-background-radius: 10; -fx-fixed-cell-size: 40;" AnchorPane.leftAnchor="-7.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="35.0">                                 <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </ListView>
@@ -112,8 +111,7 @@
                         </AnchorPane>
                         <AnchorPane prefWidth="300.0">
                            <children>
-                              <Button fx:id="joinRoomButton" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="52.0" mnemonicParsing="false" onAction="#joinButtonClicked" prefHeight="65.0" prefWidth="210.0" style="-fx-background-color: #1e5c9a; -fx-background-radius: 25;" text="JOIN ROOM" textFill="#d6e1d3" AnchorPane.topAnchor="52.0">
-                                 <opaqueInsets>
+                              <Button fx:id="joinRoomButton" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="56.0" mnemonicParsing="false" onAction="#joinButtonClicked" prefHeight="65.0" prefWidth="210.0" style="-fx-background-color: #1e5c9a; -fx-background-radius: 25;" text="JOIN ROOM" textFill="#d6e1d3" AnchorPane.topAnchor="56.0">                                 <opaqueInsets>
                                     <Insets />
                                  </opaqueInsets>
                                  <font>
