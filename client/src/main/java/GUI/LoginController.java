@@ -113,6 +113,7 @@ public class LoginController extends Contoller {
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 OpenGUI.setUsername(usernameText.getText());
+
                 Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600));
             } else {
                 Platform.runLater(() -> noMatch.setText("Username and password do not match. Try again!"));
@@ -123,7 +124,7 @@ public class LoginController extends Contoller {
     private void changeToMainMenu() {
         // If current scene is not active, do not change scene
         if (loginButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
+        OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 700);
 
     }
 

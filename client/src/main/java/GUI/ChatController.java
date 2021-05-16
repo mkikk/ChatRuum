@@ -1,7 +1,6 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -56,6 +55,7 @@ public class ChatController extends Contoller {
     public void initialize() {
         Platform.runLater(() -> {
             roomName.setText(OpenGUI.getCurrentChatroom());
+            messages.setStyle("-fx-font-size: 16px;");
             viewChannel();
         });
     }
@@ -150,10 +150,10 @@ public class ChatController extends Contoller {
 
         // Label for time, when message was sent
         Label messageTime = new Label(messageData.sendTime.toString());
-        messageTime.setAlignment(Pos.BOTTOM_LEFT);
+        messageTime.setAlignment(Pos.CENTER_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
-        messageTime.setPadding(new Insets(0, 0, 0, 15));
+        messageTime.setPadding(new Insets(4, 0, 0, 15));
         messageTime.setFont(Font.font("Segoe UI", 14));
         messageTime.setTextFill(Color.valueOf("#141b2b"));
 
@@ -271,5 +271,4 @@ public class ChatController extends Contoller {
             selectField(newChannelText);
 
     }
-
 }

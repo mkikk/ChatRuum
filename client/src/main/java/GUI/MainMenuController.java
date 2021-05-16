@@ -3,10 +3,7 @@ package GUI;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import networking.requests.CheckChannelNameRequest;
 import networking.requests.CreateChannelRequest;
 import networking.requests.JoinChannelRequest;
@@ -17,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 
 
 public class MainMenuController extends Contoller {
+    @FXML
+    ListView ClientChannels, ClientFavourites;
     @FXML
     Label UserWelcome, ClientMessage, LatestMessages;
     @FXML
@@ -30,7 +29,11 @@ public class MainMenuController extends Contoller {
 
     @FXML
     public void initialize() {
-        Platform.runLater(() -> UserWelcome.setText("Hey, " + OpenGUI.getUsername()));
+        Platform.runLater(() -> {
+            UserWelcome.setText("Hey, " + OpenGUI.getUsername());
+            // TODO show client already visited channels, show favourite channels
+        });
+
     }
 
     public void joinButtonClicked() {

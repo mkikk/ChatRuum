@@ -14,33 +14,36 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.effect.InnerShadow?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ChatController">
+<BorderPane prefWidth="1080.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.ChatController">
    <bottom>
-      <AnchorPane maxHeight="150.0" minHeight="50.0" minWidth="100.0" prefHeight="100.0" style="-fx-background-color: #5394db;" BorderPane.alignment="CENTER">
+      <HBox prefHeight="100.0" prefWidth="1080.0" style="-fx-background-color: #5394db;">
          <children>
-            <Region maxHeight="100.0" minHeight="50.0" minWidth="0.0" prefHeight="100.0" prefWidth="201.0" style="-fx-background-color: #5394db;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
-            <TextArea fx:id="inputText" layoutX="201.0" layoutY="1.0" maxHeight="115.0" minHeight="50.0" minWidth="200.0" prefHeight="99.0" prefWidth="779.0" promptText="Your message..." wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="5.0">
+            <Region maxHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #5394db;" HBox.hgrow="NEVER" />
+            <TextArea fx:id="inputText" maxHeight="115.0" minHeight="50.0" prefHeight="100.0" prefWidth="703.0" promptText="Your message..." style="-fx-background-radius: 5;" wrapText="true" HBox.hgrow="ALWAYS">
                <font>
                   <Font name="Segoe UI" size="16.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
+               <HBox.margin>
+                  <Insets bottom="5.0" top="10.0" />
+               </HBox.margin>
             </TextArea>
-            <Button fx:id="sendButton" defaultButton="true" layoutX="980.0" maxHeight="100.0" maxWidth="115.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="100.0" prefWidth="100.0" text="SEND" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+            <Button fx:id="sendButton" defaultButton="true" ellipsisString="" maxHeight="100.0" maxWidth="115.0" minHeight="50.0" minWidth="75.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="100.0" prefWidth="100.0" style="-fx-background-radius: 10;" text="SEND" HBox.hgrow="NEVER">
                <effect>
                   <Bloom threshold="0.9">
                      <input>
-                        <InnerShadow choke="0.77" height="15.0" radius="7.0" width="15.0">
+                        <InnerShadow blurType="GAUSSIAN" choke="0.23" height="150.0" radius="74.5" width="150.0">
                            <color>
-                              <Color red="0.37254902720451355" green="0.8313725590705872" blue="0.8078431487083435" />
+                              <Color red="0.08627451211214066" green="0.24705882370471954" blue="0.4313725531101227" />
                            </color>
                         </InnerShadow>
                      </input>
@@ -52,9 +55,12 @@
                <font>
                   <Font name="Segoe UI" size="16.0" />
                </font>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="20.0" right="5.0" top="5.0" />
+               </HBox.margin>
             </Button>
          </children>
-      </AnchorPane>
+      </HBox>
    </bottom>
    <top>
       <MenuBar maxHeight="25.0" minHeight="25.0" prefHeight="25.0" BorderPane.alignment="CENTER">
@@ -70,68 +76,91 @@
       </MenuBar>
    </top>
    <left>
-      <AnchorPane minWidth="100.0" prefHeight="676.0" prefWidth="200.0" style="-fx-background-color: #5394db;" BorderPane.alignment="CENTER">
+      <VBox prefWidth="200.0" style="-fx-background-color: #5394db;">
          <children>
-            <Label layoutY="30.0" prefHeight="24.0" prefWidth="200.0" text="Currently in room:" textFill="#00102e" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+            <Label prefHeight="24.0" prefWidth="200.0" text="Currently in room:" textFill="#00102e" VBox.vgrow="NEVER">
                <font>
                   <Font name="Segoe UI Bold" size="20.0" />
                </font>
                <padding>
-                  <Insets left="15.0" />
+                  <Insets left="15.0" top="20.0" />
                </padding>
             </Label>
-            <Label fx:id="roomName" alignment="CENTER" contentDisplay="CENTER" layoutX="-3.0" layoutY="49.0" prefHeight="65.0" prefWidth="190.0" text="roomName" textAlignment="CENTER" textFill="#00102e" underline="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="60.0">
+            <Label fx:id="roomName" alignment="CENTER" contentDisplay="CENTER" prefHeight="24.0" prefWidth="200.0" text="roomName" textAlignment="CENTER" textFill="#00102e" underline="true">
                <font>
-                  <Font name="System Bold" size="20.0" />
+                  <Font name="Segoe UI" size="20.0" />
                </font>
                <padding>
                   <Insets left="15.0" />
                </padding>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
             </Label>
-            <Button fx:id="joinNewRoom" layoutX="63.0" layoutY="649.0" mnemonicParsing="false" onAction="#joinNextRoom" prefWidth="71.0" style="-fx-background-radius: 15;" text="JOIN" AnchorPane.bottomAnchor="40.0">
+            <Region prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            <Label text="Join new room:" textFill="#00102e">
+               <font>
+                  <Font name="Segoe UI" size="20.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="10.0" top="80.0" />
+               </VBox.margin>
+            </Label>
+            <TextField fx:id="newChannelText" style="-fx-background-radius: 10;">
+               <font>
+                  <Font name="Segoe UI" size="16.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <PasswordField fx:id="newChannelPassword" prefHeight="31.0" prefWidth="190.0" style="-fx-background-radius: 10;">
+               <font>
+                  <Font name="Segoe UI" size="16.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </PasswordField>
+            <Label fx:id="errorMessage" alignment="CENTER_RIGHT" prefHeight="19.0" prefWidth="160.0" textFill="#d8e6ff" wrapText="true">
+               <font>
+                  <Font name="Segoe UI" size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="30.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <Button fx:id="joinNewRoom" mnemonicParsing="false" onAction="#joinNextRoom" prefWidth="71.0" style="-fx-background-radius: 15;" text="JOIN" VBox.vgrow="NEVER">
                <font>
                   <Font size="20.0" />
                </font>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <effect>
+                  <InnerShadow height="40.0" radius="29.5" width="80.0">
+                     <color>
+                        <Color red="0.08627451211214066" green="0.24705882370471954" blue="0.4313725531101227" />
+                     </color>
+                  </InnerShadow>
+               </effect>
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
             </Button>
-            <TextField fx:id="newChannelText" layoutX="10.0" layoutY="494.0" style="-fx-background-radius: 10;" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
-               <font>
-                  <Font name="Segoe UI" size="16.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </TextField>
-            <Label layoutX="33.0" layoutY="440.0" text="Join new room:" textFill="#00102e" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
-               <font>
-                  <Font name="Segoe UI" size="20.0" />
-               </font>
-            </Label>
-            <PasswordField fx:id="newChannelPassword" layoutX="1.0" layoutY="611.0" prefHeight="31.0" prefWidth="187.0" style="-fx-background-radius: 10;" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
-               <font>
-                  <Font name="Segoe UI" size="16.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </PasswordField>
-            <Label fx:id="errorMessage" layoutX="31.0" layoutY="649.0" textFill="#d8e6ff" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
-               <font>
-                  <Font name="Segoe UI" size="16.0" />
-               </font>
-            </Label>
          </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-      </AnchorPane>
+      </VBox>
    </left>
    <center>
-      <ScrollPane fx:id="messages" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxWidth="1.7976931348623157E308" prefHeight="708.0" prefWidth="882.0" vvalue="1.0" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="messages" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" minHeight="100.0" prefWidth="700.0" vbarPolicy="ALWAYS" BorderPane.alignment="TOP_CENTER">
          <content>
-            <VBox fx:id="messageField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="675.0" prefWidth="882.0" style="-fx-background-color: #D5DEEFFF;" />
+            <VBox fx:id="messageField" style="-fx-background-color: #D5DEEFFF;" />
          </content>
          <BorderPane.margin>
             <Insets />
@@ -139,6 +168,6 @@
       </ScrollPane>
    </center>
    <right>
-      <Region maxWidth="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Region prefWidth="0.0" BorderPane.alignment="CENTER" />
    </right>
 </BorderPane>
