@@ -11,10 +11,7 @@ import networking.responses.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -31,14 +28,14 @@ public class MainMenuController extends Controller {
     Button joinRoomButton;
     private static final Logger logger = LogManager.getLogger();
 
-    private Map<String, Integer> channelFavorites;
+    private Map<String, Integer> channelFavorites = new HashMap<>();
 
     @FXML
     public void initialize() {
         UserWelcome.setText("Hey, " + OpenGUI.getUsername());
 
         channelNameText.textProperty().addListener((observableValue, oldValue, newValue) -> {
-            channelPasswordText.setVisible(channelFavorites.containsKey(newValue));
+            channelPasswordText.setVisible(!channelFavorites.containsKey(newValue));
         });
 
         ClientChannels.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -51,7 +48,7 @@ public class MainMenuController extends Controller {
         channelsReq.onResponse((s, r) -> {
             channelFavorites = r.channelPopularity;
             Platform.runLater(() -> {
-                channelPasswordText.setVisible(channelFavorites.containsKey(channelNameText.getText()));
+                channelPasswordText.setVisible(!channelFavorites.containsKey(channelNameText.getText()));
             });
 
             // Sort by number of visits in descending order and collect names into list
