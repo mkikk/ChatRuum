@@ -8,10 +8,8 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.BorderPane?>
@@ -98,62 +96,6 @@
                </VBox.margin>
             </Label>
             <Region prefWidth="200.0" VBox.vgrow="ALWAYS" />
-            <Label text="Join new room:" textFill="#00102e">
-               <font>
-                  <Font name="Segoe UI" size="20.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="10.0" top="80.0" />
-               </VBox.margin>
-            </Label>
-            <TextField fx:id="newChannelText" style="-fx-background-radius: 10;">
-               <font>
-                  <Font name="Segoe UI" size="16.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-               <VBox.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </VBox.margin>
-            </TextField>
-            <PasswordField fx:id="newChannelPassword" prefHeight="31.0" prefWidth="190.0" style="-fx-background-radius: 10;">
-               <font>
-                  <Font name="Segoe UI" size="16.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-               <VBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </VBox.margin>
-            </PasswordField>
-            <Label fx:id="errorMessage" alignment="CENTER_RIGHT" prefHeight="19.0" prefWidth="160.0" textFill="#d8e6ff" wrapText="true">
-               <font>
-                  <Font name="Segoe UI" size="16.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="10.0" left="30.0" top="10.0" />
-               </VBox.margin>
-            </Label>
-            <Button fx:id="joinNewRoom" mnemonicParsing="false" onAction="#joinNextRoom" prefWidth="71.0" style="-fx-background-radius: 15;" text="JOIN" VBox.vgrow="NEVER">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-               <effect>
-                  <InnerShadow height="40.0" radius="29.5" width="80.0">
-                     <color>
-                        <Color red="0.08627451211214066" green="0.24705882370471954" blue="0.4313725531101227" />
-                     </color>
-                  </InnerShadow>
-               </effect>
-               <VBox.margin>
-                  <Insets left="10.0" />
-               </VBox.margin>
-            </Button>
          </children>
       </VBox>
    </left>

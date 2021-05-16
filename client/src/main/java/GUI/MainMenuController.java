@@ -1,6 +1,7 @@
 package GUI;
 
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,12 +16,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class MainMenuController extends Controller {
     @FXML
-    ListView ClientChannels, ClientFavourites;
+    ListView<String> ClientChannels;
     @FXML
     Label UserWelcome, ClientMessage;
     @FXML
@@ -31,19 +35,27 @@ public class MainMenuController extends Controller {
     Button joinRoomButton;
     private static final Logger logger = LogManager.getLogger();
 
-    private List<String> channels = new ArrayList<>();
+    private List<String> channelNames = new ArrayList<>();
+
     @FXML
     public void initialize() {
-
-        Platform.runLater(() -> {
-            UserWelcome.setText("Hey, " + OpenGUI.getUsername());
-
+        UserWelcome.setText("Hey, " + OpenGUI.getUsername());
+        channelNameText.focusedProperty().addListener((observableValue, oldValue, newValue) -> {
+            channelPasswordText.setVisible(newValue || !channelNames.contains(channelNameText.getText()));
+        });
+        ClientChannels.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+            String selectedChannel = ClientChannels.getSelectionModel().getSelectedItem();
+            channelNameText.setText(selectedChannel);
         });
         // get users previously visited channels
         var channelsReq = OpenGUI.getSession().sendRequest(new FavoriteChannelsRequest());
-        channelsReq.onResponse((r, c) -> {
-            channels = new ArrayList<>(c.channelPopularity.keySet());
-            ObservableList<String> listChannels = FXCollections.observableList(channels);
+        channelsReq.onResponse((s, r) -> {
+            // Sort by number of visits in descending order and collect names into list
+            channelNames = r.channelPopularity.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .map(Map.Entry::getKey).collect(Collectors.toCollection(ArrayList::new));
+            ObservableList<String> listChannels = FXCollections.observableList(channelNames);
+
             Platform.runLater(() -> ClientChannels.setItems(listChannels));
         });
     }
@@ -54,20 +66,26 @@ public class MainMenuController extends Controller {
 
     public void joinRoom() {
         joinRoomButton.setDisable(true);
-        var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
-        req.onResponse((s, r) -> {
-            if (r.response == Response.OK) {
-                logger.debug("Joined channel:");
-                OpenGUI.setCurrentChatroom(channelNameText.getText());
-                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800));
-            } else if (r.response == Response.FORBIDDEN) {
-                logger.debug("Failed to join channel");
-                Platform.runLater(() -> {
-                    joinRoomButton.setDisable(false);
-                    ClientMessage.setText("Couldn't join to channel.");
-                });
-            }
-        });
+        if (channelNames.contains(channelNameText.getText())) {
+            logger.debug("Joined channel:");
+            OpenGUI.setCurrentChatroom(channelNameText.getText());
+            Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinRoomButton));
+        } else {
+            var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(channelNameText.getText(), channelPasswordText.getText()));
+            req.onResponse((s, r) -> {
+                if (r.response == Response.OK) {
+                    logger.debug("Joined channel:");
+                    OpenGUI.setCurrentChatroom(channelNameText.getText());
+                    Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinRoomButton));
+                } else if (r.response == Response.FORBIDDEN) {
+                    logger.debug("Failed to join channel");
+                    Platform.runLater(() -> {
+                        joinRoomButton.setDisable(false);
+                        ClientMessage.setText("Couldn't join to channel.");
+                    });
+                }
+            });
+        }
     }
 
     public void checkRoomName() {

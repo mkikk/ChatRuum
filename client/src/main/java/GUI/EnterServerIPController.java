@@ -18,7 +18,6 @@ public class EnterServerIPController extends Controller {
     Button ConnectButton, CloseButton;
 
     public void closeClient(ActionEvent actionEvent) {
-        OpenGUI.stopSession();
         // close window
         ((Stage) (((Button) actionEvent.getSource()).getScene().getWindow())).close();
     }
@@ -29,7 +28,7 @@ public class EnterServerIPController extends Controller {
 
         session.onEvent(ConnectedEvent.class, (s, e) -> {
             Platform.runLater(() -> {
-                OpenGUI.switchSceneTo("Login", ConnectButton, 900, 400);
+                OpenGUI.switchSceneTo("Login", ConnectButton);
             });
         });
 
@@ -51,7 +50,6 @@ public class EnterServerIPController extends Controller {
                 networkingError.showAndWait();
             });
         });
-
     }
 
     @Override

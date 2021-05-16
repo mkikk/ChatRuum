@@ -32,7 +32,7 @@
             <Region prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-        <TextField fx:id="ServerIPTextField" alignment="CENTER" prefHeight="59.0" promptText="Enter server IP" style="-fx-background-radius: 15;">
+        <TextField fx:id="ServerIPTextField" text="chatruum.tk" alignment="CENTER" prefHeight="59.0" promptText="Enter server IP" style="-fx-background-radius: 15;">
             <opaqueInsets>
                 <Insets />
             </opaqueInsets>

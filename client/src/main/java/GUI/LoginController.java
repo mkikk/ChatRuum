@@ -61,10 +61,8 @@ public class LoginController extends Controller {
                 Platform.runLater(() -> {
                     passwordConfirmation.setVisible(true);
                     loginButton.setText("Register");
-
                     loginButton.setDisable(false);
                     isLogin = false;
-
                 });
             } else if (r.result == Result.NAME_IN_USE) {
                 Platform.runLater(() -> {
@@ -114,20 +112,12 @@ public class LoginController extends Controller {
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 OpenGUI.setUsername(usernameText.getText());
-                Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 700));
+                Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton));
             } else {
                 Platform.runLater(() -> noMatch.setText("Username and password do not match. Try again!"));
             }
         });
     }
-
-    private void changeToMainMenu() {
-        // If current scene is not active, do not change scene
-        if (loginButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
-
-    }
-
     @Override
     public void primaryAction() {
         onLoginButtonPressed();

@@ -29,6 +29,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ChatController extends Controller {
@@ -53,11 +55,10 @@ public class ChatController extends Controller {
 
     @FXML
     public void initialize() {
-        Platform.runLater(() -> {
-            roomName.setText(OpenGUI.getCurrentChatroom());
-            viewChannel();
-            messages.setStyle("-fx-font-size: 16px");
-        });
+        roomName.setText(OpenGUI.getCurrentChatroom());
+        viewChannel();
+        messages.setStyle("-fx-font-size: 16px");
+
     }
 
     private PersistentRequest view;
@@ -86,7 +87,12 @@ public class ChatController extends Controller {
                 logger.debug("Viewing channel");
                 logger.debug("Channel messages: " + r.messages.toString());
                 // Display up to last 50 messages to user
-                displayLatestMessages(r.messages);
+
+                Platform.runLater(() -> {
+                    messageField.getChildren().clear();
+                    displayLatestMessages(r.messages);
+                    sendButton.setDisable(false);
+                });
 
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to view channel");
@@ -107,12 +113,11 @@ public class ChatController extends Controller {
     public void leaveCurrentRoom() {
         // stop recieving new messages, switch scene
         view.close();
-        OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 700);
+        OpenGUI.switchSceneTo("MainMenu", joinNewRoom);
     }
 
     public void exitChatruum() {
         // close application
-        OpenGUI.stopSession();
         ((Stage) (roomName.getScene().getWindow())).close();
     }
 
@@ -149,7 +154,10 @@ public class ChatController extends Controller {
         info.getChildren().add(messageSender);
 
         // Label for time, when message was sent
-        Label messageTime = new Label(messageData.sendTime.toString());
+
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").withZone(ZoneId.systemDefault());
+        Label messageTime = new Label(timeFormatter.format(messageData.sendTime));
+
         messageTime.setAlignment(Pos.CENTER_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
@@ -167,32 +175,44 @@ public class ChatController extends Controller {
 
         field.getChildren().add(messageText);
 
+        // Edit button
+        if (OpenGUI.getUsername().equals(messageData.senderName)) {
+            final Button edit = new Button("Edit");
+            edit.setAlignment(Pos.BASELINE_RIGHT);
+            edit.maxHeight(30);
+            edit.minHeight(30);
+            edit.setFont(Font.font("Segoe UI", 14));
+            edit.setOnAction(event -> {
+                inputText.setText(messageText.getText());
+                sendButton.setText("EDIT");
+
+            });
+
+            info.getChildren().add(edit);
+        }
+
         AnchorPane.setBottomAnchor(messageText, 10.0);
         AnchorPane.setRightAnchor(messageText, 10.0);
         AnchorPane.setLeftAnchor(messageText, 10.0);
         AnchorPane.setTopAnchor(messageText, 35.0);
 
         // add to Vbox with other messages and scroll to message
-        Platform.runLater(() -> {
-            this.messageField.getChildren().add(field);
-            this.messages.layout();
-            this.messages.setVvalue(1.0);
-        });
+        this.messageField.getChildren().add(field);
+        this.messages.layout();
+        this.messages.setVvalue(1.0);
     }
 
     public void displayLatestMessages(List<MessageData> messageData) {
-        Platform.runLater(() -> {
-            // create messageboxes
-            if (messageData.size() > 50) {
-                for (int i = messageData.size() - 1; i > messageData.size() - 50; i--) {
-                    openMessage(messageData.get(i));
-                }
-            } else if (messageData.size() > 0) {
-                for (MessageData message : messageData) {
-                    openMessage(message);
-                }
+        // create messageboxes
+        if (messageData.size() > 50) {
+            for (int i = messageData.size() - 1; i > messageData.size() - 50; i--) {
+                openMessage(messageData.get(i));
             }
-        });
+        } else {
+            for (int i = messageData.size() - 1; i > 0; i--) {
+                openMessage(messageData.get(i));
+            }
+        }
     }
 
     public void joinRoom() {
@@ -200,13 +220,12 @@ public class ChatController extends Controller {
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
-                // stop receiving messages
-                view.close();
                 logger.debug("Joined channel:");
+                view.close(); // stop receiving messages
                 OpenGUI.setCurrentChatroom(newChannelText.getText());
-                Platform.runLater(() -> {
-                    OpenGUI.switchSceneTo("Chat", joinNewRoom, 1080, 800);
-                });
+
+                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinNewRoom));
+
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to join channel");
                 Platform.runLater(() -> {
@@ -218,7 +237,6 @@ public class ChatController extends Controller {
     }
 
     public void checkRoomName() {
-
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(newChannelText.getText()));
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
