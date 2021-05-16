@@ -59,7 +59,7 @@ public class MainMenuController extends Controller {
             if (r.response == Response.OK) {
                 logger.debug("Joined channel:");
                 OpenGUI.setCurrentChatroom(channelNameText.getText());
-                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800));
+                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinRoomButton));
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to join channel");
                 Platform.runLater(() -> {

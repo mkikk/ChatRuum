@@ -45,7 +45,7 @@
                   <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                   <AnchorPane prefHeight="200.0" prefWidth="500.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <TextField fx:id="channelNameText" alignment="CENTER" layoutX="14.0" layoutY="-28.0" maxHeight="85.0" prefHeight="85.0" prefWidth="475.0" promptText="Enter room name" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="-28.0">
+                        <TextField fx:id="channelNameText" text="main" alignment="CENTER" layoutX="14.0" layoutY="-28.0" maxHeight="85.0" prefHeight="85.0" prefWidth="475.0" promptText="Enter room name" style="-fx-background-radius: 10;" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="-28.0">
                            <padding>
                               <Insets bottom="20.0" top="20.0" />
                            </padding>

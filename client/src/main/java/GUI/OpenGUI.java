@@ -2,12 +2,14 @@ package GUI;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import networking.client.ClientNetworkingManager;
 import networking.client.ClientSession;
@@ -25,6 +27,8 @@ public class OpenGUI extends Application {
     private static ClientSession session;
     private static String username;
     private static String currentChatroom;
+
+    private static Controller controller;
 
     public static String getCurrentChatroom() {
         return currentChatroom;
@@ -48,7 +52,19 @@ public class OpenGUI extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Chatruum");
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
-        switchSceneTo("EnterServerIP", primaryStage, 900, 400);
+
+        Scene scene = new Scene(new Group(), 1080, 720);
+        primaryStage.setScene(scene);
+        switchSceneTo("EnterServerIP", scene);
+        scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+            if(event.getCode() == KeyCode.ENTER)
+                controller.primaryAction();
+            else if(event.getCode() == KeyCode.DOWN)
+                controller.selectLowerField();
+            else if(event.getCode() == KeyCode.UP)
+                controller.selectUpperField();
+        });
+
         primaryStage.show();
     }
 
@@ -59,7 +75,6 @@ public class OpenGUI extends Application {
 
         session = client.connect(address);
         return session;
-
     }
 
     public static void stopSession() {
@@ -71,17 +86,18 @@ public class OpenGUI extends Application {
         return session;
     }
 
-    public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) {
-        switchSceneTo(fxmlName, (Stage) referableComponent.getScene().getWindow(), width, height);
-    }
-
-    public static void switchSceneTo(String fxmlName, Stage window, int width, int height) {
+    public static void switchSceneTo(String fxmlName, Labeled referableComponent) {
+        Stage window = (Stage) referableComponent.getScene().getWindow();
         if (window == null) {
             // If scene is not active, do not change scene, probably a duplicate result due to networking delays
             logger.warn("Attempt to change to scene " + fxmlName + " from inactive scene");
             return;
         }
 
+        switchSceneTo(fxmlName, window.getScene());
+    }
+
+    public static void switchSceneTo(String fxmlName, Scene scene) {
         FXMLLoader loader;
         Parent root;
         try {
@@ -91,17 +107,9 @@ public class OpenGUI extends Application {
             throw new RuntimeException("Loading scene failed", e);
         }
 
-        final Scene newScene = new Scene(root, width, height);
-        Controller controller = loader.getController();
-        newScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-            if(event.getCode() == KeyCode.ENTER)
-                controller.primaryAction();
-            else if(event.getCode() == KeyCode.DOWN)
-                controller.selectLowerField();
-             else if(event.getCode() == KeyCode.UP)
-                controller.selectUpperField();
-        });
-        window.setScene(newScene);
+        controller = loader.getController();
+
+        scene.setRoot(root);
     }
 
     public static void main(String[] args) {

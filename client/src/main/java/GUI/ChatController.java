@@ -50,12 +50,9 @@ public class ChatController extends Controller {
 
     @FXML
     public void initialize() {
-        Platform.runLater(() -> {
-            roomName.setText(OpenGUI.getCurrentChatroom());
-            messages.setStyle("-fx-font-size: 16px;");
-            viewChannel();
-            messages.setStyle("-fx-font-size: 16px");
-        });
+        roomName.setText(OpenGUI.getCurrentChatroom());
+        viewChannel();
+        messages.setStyle("-fx-font-size: 16px");
     }
 
     private PersistentRequest view;
@@ -93,9 +90,11 @@ public class ChatController extends Controller {
             if (r.response == Response.OK) {
                 logger.debug("Viewing channel");
                 // Display up to last 50 messages to user
-                Platform.runLater(() -> messageField.getChildren().clear());
-                displayLatestMessages(r.messages);
-                Platform.runLater(() -> sendButton.setDisable(false));
+                Platform.runLater(() -> {
+                    messageField.getChildren().clear();
+                    displayLatestMessages(r.messages);
+                    sendButton.setDisable(false);
+                });
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to view channel");
             }
@@ -115,12 +114,11 @@ public class ChatController extends Controller {
     public void leaveCurrentRoom() {
         // stop recieving new messages, switch scene
         view.close();
-        OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 700);
+        OpenGUI.switchSceneTo("MainMenu", joinNewRoom);
     }
 
     public void exitChatruum() {
         // close application
-        OpenGUI.stopSession();
         ((Stage) (roomName.getScene().getWindow())).close();
     }
 
@@ -177,7 +175,7 @@ public class ChatController extends Controller {
         field.getChildren().add(messageText);
 
         // Edit button
-        if(OpenGUI.getUsername().equals(messageData.senderName)) {
+        if (OpenGUI.getUsername().equals(messageData.senderName)) {
             final Button edit = new Button("Edit");
             edit.setAlignment(Pos.BASELINE_RIGHT);
             edit.maxHeight(30);
@@ -196,27 +194,24 @@ public class ChatController extends Controller {
         AnchorPane.setRightAnchor(messageText, 10.0);
         AnchorPane.setLeftAnchor(messageText, 10.0);
         AnchorPane.setTopAnchor(messageText, 35.0);
+
         // add to Vbox with other messages and scroll to message
-        Platform.runLater(() -> {
-            this.messageField.getChildren().add(field);
-            this.messages.layout();
-            this.messages.setVvalue(1.0);
-        });
+        this.messageField.getChildren().add(field);
+        this.messages.layout();
+        this.messages.setVvalue(1.0);
     }
 
     public void displayLatestMessages(List<MessageData> messageData) {
-        Platform.runLater(() -> {
-            // create messageboxes
-            if (messageData.size() > 50) {
-                for (int i = messageData.size() - 1; i > messageData.size() - 50; i--) {
-                    openMessage(messageData.get(i));
-                }
-            } else if (messageData.size() > 0) {
-                for (MessageData message : messageData) {
-                    openMessage(message);
-                }
+        // create messageboxes
+        if (messageData.size() > 50) {
+            for (int i = messageData.size() - 1; i > messageData.size() - 50; i--) {
+                openMessage(messageData.get(i));
             }
-        });
+        } else {
+            for (MessageData message : messageData) {
+                openMessage(message);
+            }
+        }
     }
 
     public void joinRoom() {
@@ -224,11 +219,10 @@ public class ChatController extends Controller {
         var req = OpenGUI.getSession().sendRequest(new JoinChannelRequest(newChannelText.getText(), newChannelPassword.getText()));
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
-                // stop receiving messages
-                view.close();
                 logger.debug("Joined channel:");
+                view.close(); // stop receiving messages
                 OpenGUI.setCurrentChatroom(newChannelText.getText());
-                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinNewRoom, 1080, 800));
+                Platform.runLater(() -> OpenGUI.switchSceneTo("Chat", joinNewRoom));
             } else if (r.response == Response.FORBIDDEN) {
                 logger.debug("Failed to join channel");
                 Platform.runLater(() -> {
@@ -240,7 +234,6 @@ public class ChatController extends Controller {
     }
 
     public void checkRoomName() {
-
         var req = OpenGUI.getSession().sendRequest(new CheckChannelNameRequest(newChannelText.getText()));
         req.onResponse((s, r) -> {
             if (r.result == Result.NAME_FREE) {
