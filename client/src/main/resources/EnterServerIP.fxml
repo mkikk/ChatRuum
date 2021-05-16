@@ -4,44 +4,83 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="400.0" maxWidth="900.0" minHeight="400.0" minWidth="900.0" prefHeight="400.0" prefWidth="900.0" style="-fx-background-color: #236fc3;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.EnterServerIPController">
-    <children>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutY="-3.0" prefHeight="125.0" prefWidth="900.0" text="ENTER SERVER IP" textFill="#c9c9c9" underline="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <font>
-                <Font name="Segoe UI" size="48.0" />
-            </font>
-        </Label>
-        <TextField fx:id="ServerIPTextField" alignment="CENTER" layoutX="186.0" layoutY="118.0" prefHeight="59.0" prefWidth="540.0" promptText="Enter server IP" style="-fx-background-radius: 15;" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="180.0">
+<VBox prefWidth="1005.0" style="-fx-background-color: #236fc3;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.EnterServerIPController">
+   <children>
+      <HBox>
+         <children>
+            <Region prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <AnchorPane>
+               <children>
+                    <Label alignment="CENTER" contentDisplay="CENTER" ellipsisString="" prefHeight="75.0" prefWidth="301.0" text="Chatruum" textFill="#c9c9c9">
+                        <font>
+                            <Font name="Segoe UI" size="66.0" />
+                        </font>
+                    </Label>
+                  <Separator layoutX="50.0" layoutY="85.0" prefHeight="0.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" />
+               </children>
+            </AnchorPane>
+            <Region prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+        <TextField fx:id="ServerIPTextField" alignment="CENTER" prefHeight="59.0" promptText="Enter server IP" style="-fx-background-radius: 15;">
             <opaqueInsets>
                 <Insets />
             </opaqueInsets>
             <font>
-                <Font size="18.0" />
+                <Font name="Segoe UI" size="30.0" />
             </font>
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
+         <VBox.margin>
+            <Insets left="50.0" right="50.0" top="30.0" />
+         </VBox.margin>
         </TextField>
-        <Button fx:id="CloseButton" layoutX="566.0" layoutY="266.0" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" mnemonicParsing="false" onAction="#closeClient" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 25;" text="CLOSE" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="240.0">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="ConnectButton" layoutX="191.0" layoutY="266.0" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" mnemonicParsing="false" onAction="#connectToServer" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 25; -fx-background-color: #5fd4ce;" text="CONNECT" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="240.0">
-         <effect>
-            <DropShadow blurType="TWO_PASS_BOX" height="224.12" radius="119.28" width="255.0">
-               <color>
-                  <Color red="0.37254902720451355" green="0.8313725590705872" blue="0.8078431487083435" />
-               </color>
-            </DropShadow>
-         </effect>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-    </children>
-</AnchorPane>
+      <HBox prefHeight="100.0" prefWidth="744.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Region prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+              <Button fx:id="ConnectButton" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" mnemonicParsing="false" onAction="#connectToServer" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 25; -fx-background-color: #5fd4ce;" text="CONNECT">
+               <effect>
+                  <DropShadow blurType="TWO_PASS_BOX" height="224.12" radius="119.28" width="255.0">
+                     <color>
+                        <Color red="0.37254902720451355" green="0.8313725590705872" blue="0.8078431487083435" />
+                     </color>
+                  </DropShadow>
+               </effect>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <Region prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+              <Button fx:id="CloseButton" maxHeight="75.0" maxWidth="150.0" minHeight="75.0" minWidth="150.0" mnemonicParsing="false" onAction="#closeClient" prefHeight="75.0" prefWidth="150.0" style="-fx-background-radius: 25;" text="CLOSE">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <Region prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+         </children>
+         <VBox.margin>
+            <Insets top="75.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" top="30.0" />
+   </padding>
+</VBox>

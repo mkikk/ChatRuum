@@ -52,7 +52,9 @@ public class ChatController extends Controller {
     public void initialize() {
         Platform.runLater(() -> {
             roomName.setText(OpenGUI.getCurrentChatroom());
+            messages.setStyle("-fx-font-size: 16px;");
             viewChannel();
+            messages.setStyle("-fx-font-size: 16px");
         });
     }
 
@@ -113,7 +115,7 @@ public class ChatController extends Controller {
     public void leaveCurrentRoom() {
         // stop recieving new messages, switch scene
         view.close();
-        OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
+        OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 700);
     }
 
     public void exitChatruum() {
@@ -157,10 +159,10 @@ public class ChatController extends Controller {
         // Label for time, when message was sent
         final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").withZone(ZoneId.systemDefault());
         Label messageTime = new Label(timeFormatter.format(messageData.sendTime));
-        messageTime.setAlignment(Pos.BOTTOM_LEFT);
+        messageTime.setAlignment(Pos.CENTER_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
-        messageTime.setPadding(new Insets(0, 0, 0, 15));
+        messageTime.setPadding(new Insets(3, 0, 0, 15));
         messageTime.setFont(Font.font("Segoe UI", 14));
         messageTime.setTextFill(Color.valueOf("#141b2b"));
 
@@ -291,5 +293,4 @@ public class ChatController extends Controller {
             selectField(newChannelText);
 
     }
-
 }

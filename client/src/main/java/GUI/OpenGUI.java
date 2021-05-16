@@ -47,7 +47,6 @@ public class OpenGUI extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Chatruum");
-        primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         switchSceneTo("EnterServerIP", primaryStage, 900, 400);
         primaryStage.show();
