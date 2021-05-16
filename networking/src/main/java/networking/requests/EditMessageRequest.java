@@ -1,11 +1,11 @@
 package networking.requests;
 
 import networking.RequestData;
-import networking.responses.EditChannelResponse;
+import networking.responses.GenericResponse;
 
 import java.time.Instant;
 
-public class EditMessageRequest implements RequestData<EditChannelResponse> {
+public class EditMessageRequest implements RequestData<GenericResponse> {
     public String channelName;
     public String textAfter;
     public Instant time;
