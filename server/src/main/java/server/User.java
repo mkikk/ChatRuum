@@ -24,19 +24,16 @@ public class User {
     @JsonIgnore private boolean isOnline;
     private final Map<String, Integer> favoriteChannels;
 
+    public User(String name, @NotNull String password) {
+       this(name, new Password(password), new HashMap<>());
+    }
+
     public User(@JsonProperty(value = "name") String name, @JsonProperty(value = "password") @NotNull Password password,
                 @JsonProperty(value = "favoriteChannels") Map<String, Integer> favoriteChannels) {
         this.name = name;
         this.password = password;
         this.isOnline = true;
         this.favoriteChannels = favoriteChannels;
-    }
-
-    public User(String name, @NotNull String password) {
-        this.name = name;
-        this.password = new Password(password);
-        this.isOnline = true;
-        this.favoriteChannels = new HashMap<>();
     }
 
     public void logOff() {

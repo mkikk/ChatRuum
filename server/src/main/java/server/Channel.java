@@ -25,11 +25,7 @@ public class Channel {
     private final List<PersistentRequest<?>> viewingRequests;
 
     public Channel(String name, @Nullable String password) {
-        this.name = name;
-        this.password = password == null ? null : new Password(password);
-        messages = new ArrayList<>();
-        users = new HashSet<>();
-        viewingRequests = new ArrayList<>();
+        this(name, password == null ? null : new Password(password), new ArrayList<>(), new HashSet<>());
     }
 
     public Channel(@JsonProperty(value = "name") String name,
@@ -92,7 +88,7 @@ public class Channel {
     }
 
     public boolean editMessage(String textAfter, Instant time, User requestSender) {
-        for (int i = messages.size()-1; i > 0; i--) {
+        for (int i = messages.size()-1; i >= 0; i--) {
             final Message message = messages.get(i);
             if(message.getTime().equals(time)) {
                 if(requestSender.equals(message.getSender())) {

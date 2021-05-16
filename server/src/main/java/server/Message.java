@@ -12,9 +12,7 @@ public class Message{
 
 
     public Message(String text, User sender) {
-        this.text = text;
-        this.sender = sender;
-        this.time = Instant.now();
+        this(text, sender, Instant.now());
     }
 
     public Message(@JsonProperty(value = "text") String text, @JsonProperty(value = "sender") User sender,
