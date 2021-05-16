@@ -90,14 +90,8 @@ public class MainMenuController extends Controller {
         });
     }
 
-    private void switchToChatRoom() {
-        if (joinRoomButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("Chat", joinRoomButton, 1080, 800);
-
-    }
-
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         joinButtonClicked();
     }
 

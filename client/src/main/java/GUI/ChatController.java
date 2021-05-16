@@ -90,7 +90,6 @@ public class ChatController extends Controller {
         view.onResponse(ViewChannelResponse.class, (s, r) -> {
             if (r.response == Response.OK) {
                 logger.debug("Viewing channel");
-                logger.debug("Channel messages: " + r.messages.toString());
                 // Display up to last 50 messages to user
                 Platform.runLater(() -> messageField.getChildren().clear());
                 displayLatestMessages(r.messages);
@@ -274,7 +273,7 @@ public class ChatController extends Controller {
     }
 
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         if (!inputText.isFocused())
             sendMessage();
     }

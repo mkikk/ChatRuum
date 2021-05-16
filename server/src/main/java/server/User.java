@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import networking.data.UserData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +54,6 @@ public class User {
     public void addVisitChannel(String channelName){
         final Integer visits = this.favoriteChannels.getOrDefault(channelName, 0);
         this.favoriteChannels.put(channelName, visits+1);
-        logger.debug(favoriteChannels.toString());
     }
 
     @Override
@@ -68,9 +66,5 @@ public class User {
 
     public boolean checkPassword(String givenPassword) {
         return password.checkPassword(givenPassword);
-    }
-
-    public UserData convertToData() {
-        return new UserData(name, isOnline);
     }
 }

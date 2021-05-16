@@ -45,23 +45,12 @@ public class OpenGUI extends Application {
     // Used sources for keyevent implementation:
     // https://stackoverflow.com/questions/42512513/adding-event-listener-to-mainscene-in-javafx-using-fxml
     @Override
-    public void start(Stage primaryStage) throws Exception {
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/EnterServerIP.fxml"));
-        Parent root = loader.load();
-        Scene mainScene = new Scene(root, 900, 400);
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Chatruum");
-        primaryStage.setScene(mainScene);
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
-        EnterServerIPController controller = loader.getController();
-        mainScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-            if(event.getCode() == KeyCode.ENTER)
-                controller.connectToServer();
-
-        });
+        switchSceneTo("EnterServerIP", primaryStage, 900, 400);
         primaryStage.show();
-
     }
 
     public static ClientSession connectClient(String address) {
@@ -84,14 +73,18 @@ public class OpenGUI extends Application {
     }
 
     public static void switchSceneTo(String fxmlName, Labeled referableComponent, int width, int height) {
-        FXMLLoader loader;
-        Parent root;
-        Stage window = (Stage) referableComponent.getScene().getWindow();
+        switchSceneTo(fxmlName, (Stage) referableComponent.getScene().getWindow(), width, height);
+    }
+
+    public static void switchSceneTo(String fxmlName, Stage window, int width, int height) {
         if (window == null) {
             // If scene is not active, do not change scene, probably a duplicate result due to networking delays
             logger.warn("Attempt to change to scene " + fxmlName + " from inactive scene");
             return;
         }
+
+        FXMLLoader loader;
+        Parent root;
         try {
             loader = new FXMLLoader(OpenGUI.class.getResource("/" + fxmlName + ".fxml"));
             root = loader.load();
@@ -103,7 +96,7 @@ public class OpenGUI extends Application {
         Controller controller = loader.getController();
         newScene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             if(event.getCode() == KeyCode.ENTER)
-                controller.PrimaryAction();
+                controller.primaryAction();
             else if(event.getCode() == KeyCode.DOWN)
                 controller.selectLowerField();
              else if(event.getCode() == KeyCode.UP)

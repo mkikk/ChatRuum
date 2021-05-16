@@ -118,15 +118,8 @@ public class LoginController extends Controller {
         });
     }
 
-    private void changeToMainMenu() {
-        // If current scene is not active, do not change scene
-        if (loginButton.getScene().getWindow() == null) return;
-        OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600);
-
-    }
-
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         onLoginButtonPressed();
     }
 

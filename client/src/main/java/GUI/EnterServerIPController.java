@@ -55,17 +55,15 @@ public class EnterServerIPController extends Controller {
     }
 
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         connectToServer();
     }
 
     @Override
     public void selectLowerField() {
-
     }
 
     @Override
     public void selectUpperField() {
-
     }
 }

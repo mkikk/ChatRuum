@@ -91,9 +91,9 @@ public class ChatRuumServer {
             final User user = users.get(req.data.username);
             if (user != null && user.checkPassword(req.data.password)) {
                 session.setUser(user);
-                req.sendResponse(new LoginResponse(Response.OK, user.getFavoriteChannels()));
+                req.sendResponse(new GenericResponse(Response.OK));
             } else {
-                req.sendResponse(new LoginResponse(Response.FORBIDDEN, null));
+                req.sendResponse(new GenericResponse(Response.FORBIDDEN));
             }
         });
 

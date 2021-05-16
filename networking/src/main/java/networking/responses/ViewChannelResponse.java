@@ -6,6 +6,8 @@ import networking.data.MessageData;
 import java.util.List;
 
 public class ViewChannelResponse implements ResponseData {
+    private static final long serialVersionUID = -8393653610357739682L;
+
     public final Response response;
     public final List<MessageData> messages;
 

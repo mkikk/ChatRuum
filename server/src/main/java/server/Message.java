@@ -10,7 +10,6 @@ public class Message{
     private final User sender;
     private final Instant time;
 
-
     public Message(String text, User sender) {
         this(text, sender, Instant.now());
     }
