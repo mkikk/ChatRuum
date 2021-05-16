@@ -158,7 +158,7 @@
       </VBox>
    </left>
    <center>
-      <ScrollPane fx:id="messages" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" minHeight="100.0" prefWidth="700.0" vbarPolicy="ALWAYS" BorderPane.alignment="TOP_CENTER">
+      <ScrollPane fx:id="messages" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" minHeight="100.0" prefWidth="700.0" BorderPane.alignment="TOP_CENTER">
          <content>
             <VBox fx:id="messageField" style="-fx-background-color: #D5DEEFFF;" />
          </content>

@@ -93,12 +93,12 @@
                <children>
                   <HBox alignment="CENTER" layoutX="-3.0" layoutY="27.0" prefHeight="100.0" prefWidth="902.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
                      <children>
-                        <AnchorPane prefHeight="200.0" HBox.hgrow="SOMETIMES">
+                        <AnchorPane HBox.hgrow="SOMETIMES">
                            <HBox.margin>
                               <Insets bottom="25.0" left="20.0" right="20.0" top="20.0" />
                            </HBox.margin>
                            <children>
-                              <ListView fx:id="ClientChannels" editable="true" focusTraversable="false" layoutY="25.0" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #d6e1d3; -fx-background-radius: 10;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                              <ListView fx:id="ClientChannels" editable="true" focusTraversable="false" layoutX="-7.0" layoutY="35.0" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #d6e1d3; -fx-background-radius: 10; -fx-fixed-cell-size: 40;" AnchorPane.leftAnchor="-7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="35.0">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
@@ -140,23 +140,7 @@
                               </Label>
                            </children>
                         </AnchorPane>
-                        <AnchorPane HBox.hgrow="SOMETIMES">
-                           <HBox.margin>
-                              <Insets bottom="25.0" left="20.0" right="20.0" top="20.0" />
-                           </HBox.margin>
-                           <children>
-                              <ListView fx:id="ClientFavourites" editable="true" focusTraversable="false" layoutY="35.0" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #d6e1d3; -fx-background-radius: 10;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </ListView>
-                              <Label ellipsisString="" text="Your Favourites" textFill="#d6e1d3">
-                                 <font>
-                                    <Font name="Segoe UI" size="24.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </AnchorPane>
+                        <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                </children>

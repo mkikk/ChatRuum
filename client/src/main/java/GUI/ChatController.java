@@ -1,7 +1,6 @@
 package GUI;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,11 +27,11 @@ import networking.responses.ViewChannelResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ChatController extends Contoller {
+public class ChatController extends Controller {
     private static final Logger logger = LogManager.getLogger();
 
     @FXML
@@ -57,6 +56,7 @@ public class ChatController extends Contoller {
         Platform.runLater(() -> {
             roomName.setText(OpenGUI.getCurrentChatroom());
             viewChannel();
+            messages.setStyle("-fx-font-size: 16px");
         });
     }
 
@@ -69,7 +69,7 @@ public class ChatController extends Contoller {
                 if (r.response == Response.OK) {
                     logger.debug("Sent message");
                     // TODO: send request for other users to recieve new message
-                    new MessageData(inputText.getText(), OpenGUI.getUsername(), LocalDate.now());
+                    new MessageData(inputText.getText(), OpenGUI.getUsername(), Instant.now());
                     Platform.runLater(() -> inputText.setText(""));
                 } else if (r.response == Response.FORBIDDEN) {
                     logger.debug("Failed to send message");
@@ -104,10 +104,10 @@ public class ChatController extends Contoller {
         checkRoomName();
     }
 
-    public void leaveCurrentRoom() throws IOException {
+    public void leaveCurrentRoom() {
         // stop recieving new messages, switch scene
         view.close();
-        OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 600);
+        OpenGUI.switchSceneTo("MainMenu", joinNewRoom, 900, 700);
     }
 
     public void exitChatruum() {
@@ -150,10 +150,10 @@ public class ChatController extends Contoller {
 
         // Label for time, when message was sent
         Label messageTime = new Label(messageData.sendTime.toString());
-        messageTime.setAlignment(Pos.BOTTOM_LEFT);
+        messageTime.setAlignment(Pos.CENTER_LEFT);
         messageTime.maxHeight(30);
         messageTime.minHeight(30);
-        messageTime.setPadding(new Insets(0, 0, 0, 15));
+        messageTime.setPadding(new Insets(3, 0, 0, 15));
         messageTime.setFont(Font.font("Segoe UI", 14));
         messageTime.setTextFill(Color.valueOf("#141b2b"));
 
@@ -253,7 +253,7 @@ public class ChatController extends Contoller {
     }
 
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         if (!inputText.isFocused())
             sendMessage();
     }

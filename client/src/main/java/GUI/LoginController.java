@@ -16,7 +16,7 @@ import networking.responses.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LoginController extends Contoller {
+public class LoginController extends Controller {
     private static final Logger logger = LogManager.getLogger();
     @FXML
     Button loginButton;
@@ -107,13 +107,14 @@ public class LoginController extends Contoller {
         /*
          * Check if username and password match
          * If not, then tell wrong password
+         *
          */
 
         var req = OpenGUI.getSession().sendRequest(new PasswordLoginRequest(usernameText.getText(), passwordText.getText()));
         req.onResponse((s, r) -> {
             if (r.response == Response.OK) {
                 OpenGUI.setUsername(usernameText.getText());
-                Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 600));
+                Platform.runLater(() -> OpenGUI.switchSceneTo("MainMenu", loginButton, 900, 700));
             } else {
                 Platform.runLater(() -> noMatch.setText("Username and password do not match. Try again!"));
             }
@@ -128,7 +129,7 @@ public class LoginController extends Contoller {
     }
 
     @Override
-    public void PrimaryAction() {
+    public void primaryAction() {
         onLoginButtonPressed();
     }
 
