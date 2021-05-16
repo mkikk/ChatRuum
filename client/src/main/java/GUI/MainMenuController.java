@@ -50,6 +50,9 @@ public class MainMenuController extends Controller {
         var channelsReq = OpenGUI.getSession().sendRequest(new FavoriteChannelsRequest());
         channelsReq.onResponse((s, r) -> {
             channelFavorites = r.channelPopularity;
+            Platform.runLater(() -> {
+                channelPasswordText.setVisible(channelFavorites.containsKey(channelNameText.getText()));
+            });
 
             // Sort by number of visits in descending order and collect names into list
             List<String> channelNames = r.channelPopularity.entrySet().stream()
