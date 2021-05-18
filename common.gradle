@@ -23,6 +23,12 @@ test {
     useJUnitPlatform()
 }
 
+jar {
+    manifest {
+        attributes("Multi-Release": true)
+    }
+}
+
 sourceSets.main.resources.srcDir("$rootProject.projectDir/common-resources")
 
 // println "SHARED CONFIG LOADED"

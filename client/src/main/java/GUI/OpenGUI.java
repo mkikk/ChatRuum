@@ -117,5 +117,4 @@ public class OpenGUI extends Application {
         launch();
         stopSession();
     }
-
 }
