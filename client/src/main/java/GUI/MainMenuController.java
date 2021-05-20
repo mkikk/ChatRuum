@@ -35,11 +35,14 @@ public class MainMenuController extends Controller {
         UserWelcome.setText("Hey, " + OpenGUI.getUsername());
 
         channelNameText.textProperty().addListener((observableValue, oldValue, newValue) -> {
-            channelPasswordText.setVisible(!channelFavorites.containsKey(newValue));
+            boolean favoriteChannel = channelFavorites.containsKey(newValue);
+
+            channelPasswordText.setVisible(!favoriteChannel);
+            if (!favoriteChannel) ClientChannels.getSelectionModel().clearSelection();
         });
 
         ClientChannels.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            channelNameText.setText(newValue);
+            if (newValue != null) channelNameText.setText(newValue);
         });
 
         // get users previously visited channels
